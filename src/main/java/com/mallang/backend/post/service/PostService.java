@@ -20,9 +20,10 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    public void save(PostDTO postDTO) {
+    public PostDTO save(PostDTO postDTO) {
         PostEntity postEntity = PostEntity.toSaveEntity(postDTO);
         postRepository.save(postEntity);
+        return postDTO;
     }
 
     public List<PostDTO> findAll() {

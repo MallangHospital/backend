@@ -1,62 +1,49 @@
 package com.mallang.backend.post.controller;
 
-
 import com.mallang.backend.post.dto.PostDTO;
 import com.mallang.backend.post.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
-@Controller
+@RestController // 변경: @Controller -> @RestController
 @RequiredArgsConstructor
-@RequestMapping("/post")
+@RequestMapping("/api/posts") // 변경: RESTful 경로 설정
 public class PostController {
 
     private final PostService postService;
 
-    @GetMapping("/save")
-    public String saveForm() {
-        return "save";
-    }
-
-    @PostMapping("/save") //구분해야 에러가 안난다.
-    public String save(@ModelAttribute PostDTO postDTO) {
-        System.out.println("postDTO = " + postDTO);
-        postService.save(postDTO);
-        return "index";
-    }
-
-    @GetMapping("/")
-    public String findAll(Model model) {
-        // DB에서 전체 게시글 데이터를 가져와서 list.html에 보여준다.
+    @GetMapping
+    public ResponseEntity<List<PostDTO>> findAll() {
         List<PostDTO> postDTOList = postService.findAll();
-        model.addAttribute("postList", postDTOList);
-        return "detail";
+        return ResponseEntity.ok(postDTOList); // HTTP 200 응답 반환
     }
 
-    @GetMapping("/update/{id}")
-    public String updateForm(@PathVariable Long id, Model model) {
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDTO> findById(@PathVariable Long id) {
         PostDTO postDTO = postService.findById(id);
-        model.addAttribute("postUpdate", postDTO);
-        return "update";
+        return ResponseEntity.ok(postDTO); // HTTP 200 응답 반환
     }
 
-    @PostMapping("/update")
-    public String update(@ModelAttribute PostDTO postDTO, Model model) {
-        PostDTO post = postService.update(postDTO);
-        model.addAttribute("post", post);
-        return "detail";
-//        return "redirect:/post/" + postDTO.getId();
+    @PostMapping
+    public ResponseEntity<PostDTO> save(@RequestBody PostDTO postDTO) { // @RequestBody 사용
+        PostDTO savedPost = postService.save(postDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedPost); // HTTP 201 응답 반환
     }
 
-    @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Long id) {
+    @PutMapping("/{id}")
+    public ResponseEntity<PostDTO> update(@PathVariable Long id, @RequestBody PostDTO postDTO) {
+        postDTO.setId(id); // 요청 URL에서 ID 설정
+        PostDTO updatedPost = postService.update(postDTO);
+        return ResponseEntity.ok(updatedPost); // HTTP 200 응답 반환
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         postService.delete(id);
-        return "redirect:/post/";
+        return ResponseEntity.noContent().build(); // HTTP 204 응답 반환
     }
 }
