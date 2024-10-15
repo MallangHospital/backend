@@ -1,6 +1,6 @@
-package com.mallang.backend.post.entity;
+package com.mallang.backend.entity;
 
-import com.mallang.backend.post.dto.PostDTO;
+import com.mallang.backend.dto.PostDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

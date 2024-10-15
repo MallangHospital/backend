@@ -1,7 +1,7 @@
-package com.mallang.backend.post.dto;
+package com.mallang.backend.dto;
 
 
-import com.mallang.backend.post.entity.PostEntity;
+import com.mallang.backend.entity.PostEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;

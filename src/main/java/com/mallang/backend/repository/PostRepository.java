@@ -1,6 +1,6 @@
-package com.mallang.backend.post.repository;
+package com.mallang.backend.repository;
 
-import com.mallang.backend.post.entity.PostEntity;
+import com.mallang.backend.entity.PostEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

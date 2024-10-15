@@ -1,7 +1,7 @@
-package com.mallang.backend.post.controller;
+package com.mallang.backend.controller;
 
-import com.mallang.backend.post.dto.PostDTO;
-import com.mallang.backend.post.service.PostService;
+import com.mallang.backend.dto.PostDTO;
+import com.mallang.backend.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

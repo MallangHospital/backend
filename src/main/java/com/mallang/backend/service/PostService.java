@@ -1,8 +1,8 @@
-package com.mallang.backend.post.service;
+package com.mallang.backend.service;
 
-import com.mallang.backend.post.dto.PostDTO;
-import com.mallang.backend.post.entity.PostEntity;
-import com.mallang.backend.post.repository.PostRepository;
+import com.mallang.backend.dto.PostDTO;
+import com.mallang.backend.entity.PostEntity;
+import com.mallang.backend.repository.PostRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

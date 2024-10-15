@@ -1,4 +1,4 @@
-package com.mallang.backend.post.entity;
+package com.mallang.backend.entity;
 
 
 import jakarta.persistence.Column;
