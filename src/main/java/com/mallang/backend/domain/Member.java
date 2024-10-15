@@ -1,9 +1,6 @@
 package com.mallang.backend.domain;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
@@ -17,31 +14,42 @@ import java.util.Set;
 @ToString(exclude = "roleSet")
 public class Member extends BaseEntity{
     @Id
+    @Column(length = 50, nullable = false)
     private String mid;
 
+    @Column(length = 255, nullable = false)
     private String mpw;
-    private String email;
-    private String name;
-    private String phoneNum;
-    private boolean del;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @Builder.Default
-    private Set<MemberRole> roleSet = new HashSet<>();
+    @Column(length = 100, nullable = false, unique = true)
+    private String email;
+
+    @Column(length = 50, nullable = false)
+    private String name;
+
+    @Column(length = 255, nullable = false, unique = true)
+    private String phoneNum;
+
+    @Column(length = 255, nullable = false)
+    private String rrn; // 주민등록번호
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, nullable = false)
+    private Role role;
+
+    @Column(nullable = false)
+    private boolean agreeToTerms;
 
     public void changePassword(String mpw) {
         this.mpw = mpw;
     }
-
     public void changeEmail(String email){
         this.email = email;
     }
-
-    public void addRole(MemberRole memberRole){
-        this.roleSet.add(memberRole);
+    public void changeRole(Role role) {this.role = role;}
+    public void setMid(String mid) {
+        this.mid = mid;
     }
-
-    public void clearRoles() {
-        this.roleSet.clear();
+    public void setMpw(String mpw) {
+        this.mpw = mpw;
     }
 }

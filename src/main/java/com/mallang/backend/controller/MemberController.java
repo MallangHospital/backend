@@ -1,23 +1,36 @@
 package com.mallang.backend.controller;
 
+import com.mallang.backend.dto.MemberJoinDTO;
+import com.mallang.backend.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/member")
-@Log4j2
+
+@RequestMapping("/api/member")
 @RequiredArgsConstructor
+@RestController
 public class MemberController {
-    @GetMapping("/login")
-    public void loginGET(String error, String logout) {
-        log.info("login get..");
-        log.info("logout: " + logout);
+    private final MemberService memberService;
 
-        if(logout != null){
-            log.info("user logout....");
+    // 회원가입 요청 처리
+    @PostMapping("/join")
+    public ResponseEntity<String> join(@RequestBody MemberJoinDTO memberJoinDTO) {
+        try {
+            memberService.join(memberJoinDTO);
+            return ResponseEntity.ok("회원가입이 완료되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // 아이디 중복 확인
+    @GetMapping("/check-id/{mid}")
+    public ResponseEntity<String> checkId(@PathVariable String mid) {
+        if (memberService.isDuplicateId(mid)) {
+            return ResponseEntity.badRequest().body("아이디가 중복되었습니다.");
+        } else {
+            return ResponseEntity.ok("사용 가능한 아이디입니다.");
         }
     }
 }

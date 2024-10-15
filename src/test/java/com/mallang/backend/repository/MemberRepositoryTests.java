@@ -1,7 +1,7 @@
 package com.mallang.backend.repository;
 
 import com.mallang.backend.domain.Member;
-import com.mallang.backend.domain.MemberRole;
+import com.mallang.backend.domain.Role;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +27,12 @@ public class MemberRepositoryTests {
                     .mid("member"+i)
                     .mpw(passwordEncoder.encode("1111"))
                     .email("email"+i+"@aaa.bbb")
+                    .name("jeon"+i)
+                    .phoneNum("01000000000")
                     .build();
 
-            member.addRole(MemberRole.USER);
-
-            if(i>=9){
-                member.addRole(MemberRole.ADMIN);
+            if(i==10){
+                member.changeRole(Role.ROLE_ADMIN);
             }
 
             memberRepository.save(member);
@@ -41,8 +41,7 @@ public class MemberRepositoryTests {
 
     @Test
     public void testRead(){
-        Optional<Member> result = memberRepository.getWithRoles("member10");
+        Optional<Member> result = memberRepository.findById("member10");
         Member member = result.orElseThrow();
-        member.getRoleSet().forEach(memberRole -> log.info(memberRole.name()));
     }
 }
