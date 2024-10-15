@@ -54,6 +54,14 @@ public class SecurityConfig {
         http.sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+        // 로그아웃 설정
+        http.logout(logout -> logout
+                .logoutUrl("/logout")  // 로그아웃 엔드포인트 (기본값: /logout)
+                .logoutSuccessUrl("/")  // 로그아웃 성공 시 리다이렉트할 URL ("/")
+                .invalidateHttpSession(true)  // 세션 무효화 (STATELESS 환경이지만 안전을 위해)
+                .deleteCookies("JSESSIONID")  // 세션 쿠키 삭제
+                .permitAll());
+
         return http.build();
 
     }
