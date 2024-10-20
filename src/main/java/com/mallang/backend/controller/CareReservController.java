@@ -1,6 +1,5 @@
 package com.mallang.backend.controller;
 
-import com.mallang.backend.domain.CareReserv;
 import com.mallang.backend.dto.CareReservDTO;
 import com.mallang.backend.service.CareReservService;
 import lombok.RequiredArgsConstructor;

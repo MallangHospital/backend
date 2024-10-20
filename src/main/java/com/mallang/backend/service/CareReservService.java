@@ -1,9 +1,7 @@
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.CareReserv;
-import com.mallang.backend.domain.Department;
 import com.mallang.backend.domain.Doctor;
-import com.mallang.backend.domain.Member;
 import com.mallang.backend.dto.CareReservDTO;
 import com.mallang.backend.repository.CareReservRepository;
 import lombok.RequiredArgsConstructor;

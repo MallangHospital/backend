@@ -1,7 +1,6 @@
 package com.mallang.backend.repository;
 
 import com.mallang.backend.domain.PostEntity;
-import com.mallang.backend.domain.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

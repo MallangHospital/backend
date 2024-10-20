@@ -2,7 +2,6 @@ package com.mallang.backend.dto;
 
 
 import com.mallang.backend.domain.PostEntity;
-import com.mallang.backend.domain.Role;
 import lombok.*;
 
 import java.time.LocalDateTime;
