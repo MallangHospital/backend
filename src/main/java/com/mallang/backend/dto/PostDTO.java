@@ -1,6 +1,7 @@
 package com.mallang.backend.dto;
 
 
+import com.mallang.backend.domain.PostEntity;
 import com.mallang.backend.domain.Role;
 import lombok.*;
 
@@ -22,7 +23,7 @@ public class PostDTO {
     private LocalDateTime postCreatedTime; //글 작성 시간
     private LocalDateTime postUpdatedTime;
 
-    public static PostDTO toPostDTO(Role.PostEntity postEntity){
+    public static PostDTO toPostDTO(PostEntity postEntity){
         PostDTO postDTO = new PostDTO();
         postDTO.setId(postEntity.getId());
         postDTO.setPostWriter(postEntity.getPostWriter());
@@ -30,8 +31,8 @@ public class PostDTO {
         postDTO.setPostTitle(postEntity.getPostTitle());
         postDTO.setPostContents(postEntity.getPostContents());
         postDTO.setPostHits(postEntity.getPostHits());
-        postDTO.setPostCreatedTime(postEntity.getCreatedTime());
-        postDTO.setPostUpdatedTime(postEntity.getUpdatedTime());
+        postDTO.setPostCreatedTime(postEntity.getRegDate());
+        postDTO.setPostUpdatedTime(postEntity.getModDate());
         return postDTO;
 
     }

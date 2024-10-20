@@ -1,5 +1,6 @@
 package com.mallang.backend.service;
 
+import com.mallang.backend.domain.PostEntity;
 import com.mallang.backend.domain.Role;
 import com.mallang.backend.dto.PostDTO;
 import com.mallang.backend.repository.PostRepository;
@@ -21,15 +22,15 @@ public class PostService {
     private final PostRepository postRepository;
 
     public PostDTO save(PostDTO postDTO) {
-        Role.PostEntity postEntity = Role.PostEntity.toSaveEntity(postDTO);
+        PostEntity postEntity = PostEntity.toSaveEntity(postDTO);
         postRepository.save(postEntity);
         return postDTO;
     }
 
     public List<PostDTO> findAll() {
-        List<Role.PostEntity> postEntityList = postRepository.findAll();
+        List<PostEntity> postEntityList = postRepository.findAll();
         List<PostDTO> postDTOList = new ArrayList<>();
-        for (Role.PostEntity postEntity : postEntityList) {
+        for (PostEntity postEntity : postEntityList) {
             postDTOList.add(PostDTO.toPostDTO(postEntity));
         }
         return postDTOList;
@@ -42,9 +43,9 @@ public class PostService {
 
     @Transactional
     public PostDTO findById(Long id) {
-        Optional<Role.PostEntity> optionalPostEntity = postRepository.findById(id);
+        Optional<PostEntity> optionalPostEntity = postRepository.findById(id);
         if (optionalPostEntity.isPresent()) {
-            Role.PostEntity postEntity = optionalPostEntity.get();
+            PostEntity postEntity = optionalPostEntity.get();
             PostDTO postDTO = PostDTO.toPostDTO(postEntity);
             return postDTO;
         } else {
@@ -53,7 +54,7 @@ public class PostService {
     }
 
     public PostDTO update(PostDTO postDTO) {
-        Role.PostEntity postEntity = Role.PostEntity.toUpdateEntity(postDTO);
+        PostEntity postEntity = PostEntity.toUpdateEntity(postDTO);
         postRepository.save(postEntity);
         return findById(postDTO.getId());
     }
