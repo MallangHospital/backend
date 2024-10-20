@@ -38,5 +38,3 @@ application.properties
 ### VS Code ###
 .vscode/
 .Trash/
-
-.DS_Store
