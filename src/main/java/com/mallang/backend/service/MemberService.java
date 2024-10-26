@@ -63,8 +63,6 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-
-
     // 비밀번호 형식 검사 로직
     private boolean isValidPassword(String password) {
         // 비밀번호 형식 조건: 최소 8글자

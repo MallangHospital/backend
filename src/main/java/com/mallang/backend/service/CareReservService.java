@@ -35,6 +35,4 @@ public class CareReservService {
 
         careReservRepository.save(careReserv);
     }
-
-
 }
