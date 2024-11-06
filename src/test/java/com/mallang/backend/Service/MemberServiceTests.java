@@ -1,12 +1,10 @@
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.Member;
-import com.mallang.backend.domain.Role;
 import com.mallang.backend.dto.MemberJoinDTO;
 import com.mallang.backend.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +19,7 @@ import static org.mockito.Mockito.*;
 public class MemberServiceTests {
 
     @Autowired
-    private MemberService memberService;
+    private AdminService memberService;
     @MockBean
     private MemberRepository memberRepository;
     @MockBean
