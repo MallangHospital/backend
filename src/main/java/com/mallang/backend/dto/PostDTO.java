@@ -30,8 +30,7 @@ public class PostDTO {
         postDTO.setPostTitle(postEntity.getPostTitle());
         postDTO.setPostContents(postEntity.getPostContents());
         postDTO.setPostHits(postEntity.getPostHits());
-        postDTO.setPostCreatedTime(postEntity.getCreatedTime());
-        postDTO.setPostUpdatedTime(postEntity.getUpdatedTime());
+
         return postDTO;
 
     }
