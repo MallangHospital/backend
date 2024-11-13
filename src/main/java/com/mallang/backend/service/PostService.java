@@ -1,4 +1,4 @@
-package com.mallang.backend.service;
+/*package com.mallang.backend.service;
 
 import com.mallang.backend.domain.Role;
 import com.mallang.backend.dto.PostDTO;
@@ -61,4 +61,4 @@ public class PostService {
     public void delete(Long id) {
         postRepository.deleteById(id);
     }
-}
+}*/

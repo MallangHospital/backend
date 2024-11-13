@@ -1,4 +1,4 @@
-package com.mallang.backend.dto;
+/*package com.mallang.backend.dto;
 
 
 import com.mallang.backend.domain.Role;
@@ -22,7 +22,7 @@ public class PostDTO {
     private LocalDateTime postCreatedTime; //글 작성 시간
     private LocalDateTime postUpdatedTime;
 
-    public static PostDTO toPostDTO(Role.PostEntity postEntity){
+    public static PostDTO toPostDTO(PostEntity postEntity){
         PostDTO postDTO = new PostDTO();
         postDTO.setId(postEntity.getId());
         postDTO.setPostWriter(postEntity.getPostWriter());
@@ -34,4 +34,4 @@ public class PostDTO {
         return postDTO;
 
     }
-}
+}*/
