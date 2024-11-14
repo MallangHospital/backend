@@ -3,11 +3,11 @@ package com.mallang.backend.config;
 import com.mallang.backend.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 public class CustomMemberDetails implements UserDetails {
@@ -15,17 +15,9 @@ public class CustomMemberDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
-        Collection<GrantedAuthority> collection = new ArrayList<>();
-
-        collection.add(new GrantedAuthority() {
-
-            @Override
-            public String getAuthority() {
-                return member.getRole().name();
-            }
-        });
-        return collection;
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(member.getRole().name())); // 역할을 SimpleGrantedAuthority로 설정
+        return authorities;
     }
 
     @Override
@@ -56,5 +48,10 @@ public class CustomMemberDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    // Member 객체를 반환하는 메서드 추가
+    public Member getMember() {
+        return member;
     }
 }

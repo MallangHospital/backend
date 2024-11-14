@@ -17,7 +17,7 @@ public class AdminService {
     private MemberRepository memberRepository;
 
     // 회원 가입 처리
-    public Member registerMember(AdminMemberDTO memberDTO) {
+    /*public Member registerMember(AdminMemberDTO memberDTO) {
         Member member = new Member();
         member.setMid(memberDTO.getMid());
         member.setMpw(memberDTO.getMpw());
@@ -29,7 +29,7 @@ public class AdminService {
         member.setAgreeToTerms(memberDTO.isAgreeToTerms());
 
         return memberRepository.save(member);
-    }
+    }*/
 
     // 나머지 메서드는 동일
 }

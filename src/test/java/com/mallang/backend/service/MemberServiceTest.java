@@ -1,10 +1,9 @@
-package com.mallang.backend.Service;
+package com.mallang.backend.service;
 
 import com.mallang.backend.domain.Member;
 import com.mallang.backend.domain.Role;
 import com.mallang.backend.dto.MemberJoinDTO;
 import com.mallang.backend.repository.MemberRepository;
-import com.mallang.backend.service.MemberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -19,7 +18,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class MemberServiceTests {
+public class MemberServiceTest {
 
     @Autowired
     private MemberService memberService;
