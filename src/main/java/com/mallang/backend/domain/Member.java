@@ -48,35 +48,6 @@ public class Member extends BaseEntity {
         this.role = role;
     }
 
-    public void setMid(String mid) {
-        this.mid = mid;
-    }
+    public void setMid(String mid) {this.mid = mid;}
 
-    public void setMpw(String mpw) {
-        this.mpw = mpw;
-    }
-
-    public void setPhoneNum(String phoneNum) {
-        this.phoneNum = phoneNum;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setRrn(String rrn) {
-        this.rrn = rrn;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public void setAgreeToTerms(boolean agreeToTerms) {
-        this.agreeToTerms = agreeToTerms;
-    }
 }
