@@ -26,7 +26,7 @@ public class Doctor {
     @Column(name = "history_item") // 테이블의 컬럼명 설정
     private List<String> history = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY) // Department와의 관계 설정 (다대일)
-    @JoinColumn(name = "department_id") // 외래키 설정
+    @ManyToOne(fetch = FetchType.LAZY, optional = true) // optional을 true로 설정
+    @JoinColumn(name = "department_id")
     private Department department;
 }
