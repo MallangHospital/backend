@@ -10,8 +10,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/notices")
 public class NoticeController {
+
+    private final NoticeService noticeService;
+
     @Autowired
-    private NoticeService noticeService;
+    public NoticeController(NoticeService noticeService) {
+        this.noticeService = noticeService;
+    }
 
     @GetMapping
     public List<NoticeDTO> getAllNotices() {

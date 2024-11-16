@@ -2,12 +2,12 @@ package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Entity
 @Table(name = "departments")
 public class Department {
@@ -21,8 +21,6 @@ public class Department {
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // Doctor와의 관계 설정 (일대다)
     private List<Doctor> doctors = new ArrayList<>();
 
-    // 생성자
-    public Department(String name) {
-        this.name = name;
-    }
+    // 기본 생성자는 @NoArgsConstructor가 제공되므로 생략
+    // name 필드만 설정하는 생성자는 @RequiredArgsConstructor로 자동 제공
 }

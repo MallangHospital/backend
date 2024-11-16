@@ -1,11 +1,19 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "reviews")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,42 +31,14 @@ public class Review {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;           // 리뷰 작성자
 
-    // 기본 생성자
-    public Review() {
+    // @PrePersist를 사용하여 writeDate 초기화
+    @PrePersist
+    protected void onCreate() {
         this.writeDate = LocalDate.now(); // 현재 날짜로 초기화
     }
 
-    // 생성자
-    public Review(String content, int star, Doctor doctor, Member member) {
-        this.content = content;
-        this.star = star;
-        this.doctor = doctor;
-        this.member = member;
-        this.writeDate = LocalDate.now(); // 현재 날짜로 초기화
-    }
-
-    // Getter 메서드들
-    public Long getId() {
-        return id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public LocalDate getWriteDate() {
-        return writeDate;
-    }
-
-    public int getStar() {
-        return star;
-    }
-
-    public Doctor getDoctor() {
-        return doctor;
-    }
-
-    public Member getMember() {
-        return member;
+    // 내용 업데이트 메서드
+    public void updateContent(String newContent) {
+        this.content = newContent;
     }
 }

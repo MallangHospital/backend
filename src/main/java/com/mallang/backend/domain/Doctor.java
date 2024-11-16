@@ -3,11 +3,13 @@ package com.mallang.backend.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor // 기본 생성자 필요
+@AllArgsConstructor // 모든 필드를 매개변수로 하는 생성자 추가
 @Entity
 @Table(name = "doctors")
 public class Doctor {
@@ -27,12 +29,4 @@ public class Doctor {
     @ManyToOne(fetch = FetchType.LAZY) // Department와의 관계 설정 (다대일)
     @JoinColumn(name = "department_id") // 외래키 설정
     private Department department;
-
-    // 생성자
-    public Doctor(String name, String position, List<String> history, Department department) {
-        this.name = name;
-        this.position = position;
-        this.history = history;
-        this.department = department;
-    }
 }

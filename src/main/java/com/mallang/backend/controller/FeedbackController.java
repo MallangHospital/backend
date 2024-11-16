@@ -2,15 +2,15 @@ package com.mallang.backend.controller;
 
 import com.mallang.backend.domain.Feedback;
 import com.mallang.backend.service.FeedbackService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/feedback")
+@RequiredArgsConstructor
 public class FeedbackController {
 
-    @Autowired
-    private FeedbackService feedbackService;
+    private final FeedbackService feedbackService;
 
     @PostMapping
     public String submitFeedback(@RequestBody Feedback feedback) {

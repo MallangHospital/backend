@@ -1,19 +1,19 @@
-
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.News;
 import com.mallang.backend.dto.NewsDTO;
 import com.mallang.backend.repository.NewsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor // final 필드에 대한 생성자 자동 생성
 public class NewsService {
-    @Autowired
-    private NewsRepository newsRepository;
+
+    private final NewsRepository newsRepository;
 
     public List<NewsDTO> getAllNews() {
         return newsRepository.findAll().stream()

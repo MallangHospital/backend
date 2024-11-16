@@ -1,4 +1,4 @@
-package com.yourpackage.controller;
+package com.mallang.backend.controller;
 
 import com.mallang.backend.dto.ReviewDTO;
 import com.mallang.backend.service.ReviewService;
@@ -22,7 +22,7 @@ public class ReviewController {
 
     @PostMapping
     public ReviewDTO createReview(@RequestBody ReviewDTO reviewDTO, @RequestParam Long doctorId, @RequestParam Long memberId) {
-        // 여기서 의사와 회원을 조회하는 로직이 필요함
+        // 의사와 회원을 DB에서 조회하는 로직
         Doctor doctor = new Doctor(); // 의사 조회 로직 필요
         Member member = new Member(); // 회원 조회 로직 필요
 
