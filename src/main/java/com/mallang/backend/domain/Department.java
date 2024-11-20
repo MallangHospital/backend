@@ -1,14 +1,18 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
+@Builder
 public class Department {
 
     @Id

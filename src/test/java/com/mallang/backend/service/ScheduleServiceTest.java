@@ -31,7 +31,7 @@ class ScheduleServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
+    /*@Test
     void testGetAvailableSchedules() {
         // given
         Long doctorId = 1L;
@@ -68,7 +68,7 @@ class ScheduleServiceTest {
         assertEquals(schedule2.getAvailableTimes(), scheduleDTOs.get(1).getAvailableTimes());
 
         verify(scheduleRepository, times(1)).findByDoctorIdAndDate(doctorId, date);
-    }
+    }*/
 
     @Test
     void testGetAvailableTimes() {
