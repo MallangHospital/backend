@@ -21,24 +21,25 @@ public class DoctorService {
         return doctors.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    // Doctor 객체를 DoctorDTO로 변환하는 메서드
+    public List<DoctorDTO> getDoctorsByDepartment(Long departmentId) {
+        return doctorRepository.findByDepartmentId(departmentId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+
     private DoctorDTO convertToDTO(Doctor doctor) {
-        // Department가 null일 경우 처리
-        String departmentName = (doctor.getDepartment() != null) ? doctor.getDepartment().getName() : null;
-
-        // LocalDate -> String 변환 (null 처리)
-        String vacationStartDate = (doctor.getVacationStartDate() != null) ? doctor.getVacationStartDate().toString() : null;
-        String vacationEndDate = (doctor.getVacationEndDate() != null) ? doctor.getVacationEndDate().toString() : null;
-
-        return new DoctorDTO(
-                doctor.getName(),
-                doctor.getPosition(),
-                doctor.getPhoneNumber(),
-                doctor.getPhotoUrl(),
-                vacationStartDate,
-                vacationEndDate,
-                doctor.getHistory(),  // 여기서 강제 변환 없이 바로 사용
-                departmentName
-        );
+        return DoctorDTO.builder()
+                .id(doctor.getId())
+                .name(doctor.getName())
+                .position(doctor.getPosition())
+                .phoneNumber(doctor.getPhoneNumber()) // 전화번호 매핑
+                .photoUrl(doctor.getPhotoUrl()) // 사진 URL 매핑
+                .vacationStartDate(doctor.getVacationStartDate()) // 휴진 시작일 매핑
+                .vacationEndDate(doctor.getVacationEndDate()) // 휴진 종료일 매핑
+                .history(doctor.getHistory()) // 경력 매핑
+                .departmentName(doctor.getDepartment().getName()) // 부서 이름 매핑
+                .build();
     }
 }
