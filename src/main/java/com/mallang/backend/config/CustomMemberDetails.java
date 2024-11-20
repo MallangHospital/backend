@@ -25,6 +25,10 @@ public class CustomMemberDetails implements UserDetails {
         return member.getMpw();
     }
 
+    public String getUserId() {
+        return member.getMid();
+    }
+
     @Override
     public String getUsername() {
         return member.getMid();
