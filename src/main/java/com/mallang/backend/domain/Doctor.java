@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor // 기본 생성자
 @AllArgsConstructor // 모든 필드를 받는 생성자
 @Entity
-@Table(name = "doctors") // 테이블 이름 설정
+
 public class Doctor {
 
     @Id
