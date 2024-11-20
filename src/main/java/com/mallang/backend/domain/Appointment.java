@@ -17,7 +17,7 @@ import java.time.LocalTime;
 public class Appointment extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 기본 키
+    private Long id;// 기본 키
 
     @ManyToOne(fetch = FetchType.LAZY) // Doctor와의 관계 설정 (다대일)
     @JoinColumn(name = "doctor_id", nullable = false) // 외래키 설정, 반드시 설정
