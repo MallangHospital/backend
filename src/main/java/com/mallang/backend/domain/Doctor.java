@@ -1,6 +1,7 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor // 기본 생성자
 @AllArgsConstructor // 모든 필드를 받는 생성자
 @Entity
+@Builder
 
 public class Doctor {
 

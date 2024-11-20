@@ -1,13 +1,8 @@
 package com.mallang.backend.service;
 
-import com.mallang.backend.domain.Appointment;
-import com.mallang.backend.domain.Department;
-import com.mallang.backend.domain.Doctor;
+import com.mallang.backend.domain.*;
 import com.mallang.backend.dto.AppointmentDTO;
-import com.mallang.backend.repository.AppointmentRepository;
-import com.mallang.backend.repository.DepartmentRepository;
-import com.mallang.backend.repository.DoctorRepository;
-import com.mallang.backend.repository.ScheduleRepository;
+import com.mallang.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,38 +20,54 @@ public class AppointmentService {
     private final DoctorRepository doctorRepository;
     private final DepartmentRepository departmentRepository;
     private final ScheduleRepository scheduleRepository;
+    private final AvailableTimeRepository availableTimeRepository;
 
     // 예약 생성
-    public AppointmentDTO createAppointment(AppointmentDTO appointmentDTO, String memberId) {
+    @Transactional
+    public AppointmentDTO createAppointment(AppointmentDTO appointmentDTO) {
+        // 의사 정보 검증
         Doctor doctor = doctorRepository.findById(appointmentDTO.getDoctorId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid doctor ID"));
+
+        // 부서 정보 검증
         Department department = departmentRepository.findById(appointmentDTO.getDepartmentId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid department ID"));
 
         // 예약 날짜와 시간의 가용성 확인
         LocalDate date = appointmentDTO.getAppointmentDate();
         LocalTime time = appointmentDTO.getAppointmentTime();
-        boolean isAvailable = scheduleRepository.findByDoctorAndDate(doctor, date)
-                .map(schedule -> schedule.getAvailableTimes().contains(time))
-                .orElse(false);
 
-        if (!isAvailable) {
-            throw new IllegalStateException("The selected time is not available for this doctor.");
+        // 스케줄 확인
+        Schedule schedule = scheduleRepository.findByDoctorAndDate(doctor, date)
+                .orElseThrow(() -> new IllegalArgumentException("No schedule found for the doctor on the selected date."));
+
+        // AvailableTime 확인 및 예약 가능 여부 체크
+        AvailableTime availableTime = availableTimeRepository.findByScheduleAndTime(schedule, time)
+                .orElseThrow(() -> new IllegalStateException("The selected time is not available for this doctor."));
+
+        if (availableTime.isReserved()) {
+            throw new IllegalStateException("The selected time slot is already reserved.");
         }
 
+        // 예약 생성
         Appointment appointment = Appointment.builder()
                 .doctor(doctor)
                 .department(department)
-                .memberId(memberId) // String 타입 memberId
+                .memberId(appointmentDTO.getMemberId()) // `AppointmentDTO`에서 가져오기
                 .appointmentDate(date)
                 .appointmentTime(time)
                 .symptomDescription(appointmentDTO.getSymptomDescription())
                 .build();
 
+        // AvailableTime 예약 상태 업데이트
+        availableTime.setReserved(true);
+        availableTimeRepository.save(availableTime);
+
         Appointment savedAppointment = appointmentRepository.save(appointment);
         return convertToDTO(savedAppointment);
     }
 
+    // 특정 의사의 특정 날짜에 예약 불가 시간 목록 조회
     @Transactional(readOnly = true)
     public List<String> getUnavailableTimes(Long doctorId, LocalDate date) {
         Doctor doctor = doctorRepository.findById(doctorId)

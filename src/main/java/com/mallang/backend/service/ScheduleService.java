@@ -1,8 +1,9 @@
 package com.mallang.backend.service;
 
+import com.mallang.backend.domain.AvailableTime;
 import com.mallang.backend.domain.Schedule;
 import com.mallang.backend.dto.ScheduleDTO;
-import com.mallang.backend.repository.DoctorRepository;
+import com.mallang.backend.repository.AvailableTimeRepository;
 import com.mallang.backend.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,33 +18,39 @@ import java.util.stream.Collectors;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
-    private final DoctorRepository doctorRepository;
+    private final AvailableTimeRepository availableTimeRepository;
 
-    // 특정 의사의 날짜별 예약 가능한 시간 조회
+    // 예약 가능한 스케줄 조회
     public List<ScheduleDTO> getAvailableSchedules(Long doctorId, LocalDate date) {
         List<Schedule> schedules = scheduleRepository.findByDoctorIdAndDate(doctorId, date);
+
         return schedules.stream()
-                .map(this::convertToDTO)
+                .map(schedule -> ScheduleDTO.builder()
+                        .doctorId(schedule.getDoctor().getId())
+                        .date(schedule.getDate())
+                        .availableTimes(
+                                availableTimeRepository.findByScheduleAndReserved(schedule, false)
+                                        .stream()
+                                        .map(AvailableTime::getTime)
+                                        .collect(Collectors.toList()))
+                        .build())
                 .collect(Collectors.toList());
     }
 
-    // 특정 의사의 예약 가능한 시간 목록 조회
-    public List<LocalTime> getAvailableTimes(Long doctorId, LocalDate date) {
-        // 스케줄 목록 조회
-        List<Schedule> schedules = scheduleRepository.findByDoctorIdAndDate(doctorId, date);
+    // 특정 시간 예약 처리
+    public void reserveTime(Long scheduleId, LocalTime time) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("Schedule not found"));
 
-        // 예약 가능한 시간만 추출하여 반환
-        return schedules.stream()
-                .flatMap(schedule -> schedule.getAvailableTimes().stream())
-                .collect(Collectors.toList());
-    }
+        // Optional 처리
+        AvailableTime availableTime = availableTimeRepository.findByScheduleAndTime(schedule, time)
+                .orElseThrow(() -> new IllegalStateException("Time slot is not available"));
 
-    // Schedule -> ScheduleDTO 변환 로직
-    private ScheduleDTO convertToDTO(Schedule schedule) {
-        return ScheduleDTO.builder()
-                .doctorId(schedule.getDoctor().getId()) // Doctor의 ID 설정
-                .date(schedule.getDate())
-                .availableTimes(schedule.getAvailableTimes())
-                .build();
+        if (availableTime.isReserved()) {
+            throw new IllegalStateException("The selected time is already reserved");
+        }
+
+        availableTime.setReserved(true); // 예약 처리
+        availableTimeRepository.save(availableTime);
     }
 }
