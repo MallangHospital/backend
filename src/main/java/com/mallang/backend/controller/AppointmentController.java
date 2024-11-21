@@ -4,19 +4,19 @@ import com.mallang.backend.config.CustomMemberDetails;
 import com.mallang.backend.domain.Member;
 import com.mallang.backend.dto.AppointmentDTO;
 import com.mallang.backend.service.AppointmentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/appointments")
+@RequiredArgsConstructor
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
-
-    public AppointmentController(AppointmentService appointmentService) {
-        this.appointmentService = appointmentService;
-    }
 
     @PostMapping
     public ResponseEntity<AppointmentDTO> createAppointment(
@@ -31,5 +31,12 @@ public class AppointmentController {
 
         AppointmentDTO createdAppointment = appointmentService.createAppointment(appointmentDTO);
         return ResponseEntity.ok(createdAppointment);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AppointmentDTO>> getAppointments(
+            @AuthenticationPrincipal String memberId) {
+        List<AppointmentDTO> appointments = appointmentService.getAppointmentsByMemberId(memberId);
+        return ResponseEntity.ok(appointments);
     }
 }
