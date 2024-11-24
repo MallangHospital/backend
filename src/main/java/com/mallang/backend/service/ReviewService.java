@@ -119,10 +119,10 @@ public class ReviewService {
     public double calculateDetailAverage(String key) {
         // Key와 인덱스를 매핑 (key에 따라 detailStars의 특정 위치 값 선택)
         Map<String, Integer> detailIndexMap = Map.of(
-                "description", 0,
-                "treatment", 1,
-                "staff", 2,
-                "cleanliness", 3
+                "자세한 설명", 0,
+                "치료 후 결과", 1,
+                "직원의 친절", 2,
+                "청결함", 3
         );
 
         // Key에 해당하는 인덱스를 가져옴
@@ -146,10 +146,10 @@ public class ReviewService {
     public Map<String, Double> calculateDetailAverages(List<Review> reviews) {
         // Key와 detailStars 인덱스를 매핑
         Map<String, Integer> detailIndexMap = Map.of(
-                "description", 0,
-                "treatment", 1,
-                "staff", 2,
-                "cleanliness", 3
+                "자세한 설명", 0,
+                "치료 후 결과", 1,
+                "직원의 친절", 2,
+                "청결함", 3
         );
 
         Map<String, Double> detailAverages = new HashMap<>();

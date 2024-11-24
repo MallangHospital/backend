@@ -1,7 +1,10 @@
 package com.mallang.backend.controller;
 
+import com.mallang.backend.domain.Feedback;
+import com.mallang.backend.domain.Notice;
+import com.mallang.backend.domain.OnlineRegistration;
+import com.mallang.backend.dto.FeedbackDTO;
 import com.mallang.backend.dto.HealthcareReserveDTO;
-import com.mallang.backend.domain.Review;
 import com.mallang.backend.dto.ReviewDTO;
 import com.mallang.backend.service.AdminService;
 import com.mallang.backend.service.HealthcareReserveService;
@@ -9,9 +12,11 @@ import com.mallang.backend.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin")
@@ -21,11 +26,12 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
-    private ReviewService reviewService;
+    private final ReviewService reviewService;
 
     // HealthcareReserveService를 AdminController에 주입
-    public AdminController(HealthcareReserveService healthcareReserveService) {
+    public AdminController(HealthcareReserveService healthcareReserveService, ReviewService reviewService) {
         this.healthcareReserveService = healthcareReserveService;
+        this.reviewService = reviewService;
     }
 
     // 관리자 등록
@@ -87,10 +93,18 @@ public class AdminController {
 
     // 의료진 등록
     @PostMapping("/doctors")
-    public String registerDoctor(@RequestParam String name, @RequestParam String specialty, @RequestParam String contact) {
+    public String registerDoctor(@RequestParam(required = false) String name,
+                                 @RequestParam(required = false) String specialty,
+                                 @RequestParam(required = false) String contact) {
+        // 입력값 검증
+        if (name == null || name.trim().isEmpty() || specialty == null || specialty.trim().isEmpty() || contact == null || contact.trim().isEmpty()) {
+            return "의료진 정보가 입력되지 않았습니다. 확인해주세요.";
+        }
+
+        // 유효성 검증 통과 시, 등록 처리
         try {
             adminService.registerDoctor(name, specialty, contact);
-            return "의료진 등록이 완료되었습니다.";
+            return "의료진이 등록되었습니다.";
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
@@ -111,15 +125,29 @@ public class AdminController {
     @DeleteMapping("/doctors/{doctorId}")
     public String deleteDoctor(@PathVariable int doctorId) {
         adminService.deleteDoctor(doctorId);
-        return "의료진 정보가 삭제되었습니다.";
+        return "삭제되었습니다.";
     }
 
     // 의료진 휴진 정보 등록
     @PostMapping("/vacations")
-    public String registerVacation(@RequestParam int doctorId, @RequestParam String startDate, @RequestParam String endDate) {
+    public String registerVacation(@RequestParam(required = false) String name,
+                                   @RequestParam(required = false) String startDate,
+                                   @RequestParam(required = false) String endDate) {
+        // 각 파라미터 입력값 검증
+        if (name == null || name.trim().isEmpty()) {
+            return "의료진 이름이 입력되지 않았습니다.";
+        }
+        if (startDate == null || startDate.trim().isEmpty()) {
+            return "휴진 시작일이 입력되지 않았습니다.";
+        }
+        if (endDate == null || endDate.trim().isEmpty()) {
+            return "휴진 종료일이 입력되지 않았습니다.";
+        }
+
+        // 유효성 검증 통과 시, 휴진 정보 등록 처리
         try {
-            adminService.registerVacation(doctorId, startDate, endDate);
-            return "의료진 휴진 정보가 등록되었습니다.";
+            adminService.registerVacation(name, startDate, endDate);
+            return "휴진정보 등록이 완료되었습니다.";
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
@@ -133,7 +161,7 @@ public class AdminController {
             @RequestParam String endDate) {
         try {
             adminService.updateVacation(doctorId, startDate, endDate);
-            return "의료진 휴진 정보가 수정되었습니다.";
+            return "휴진정보가 변경되었습니다..";
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         } catch (DateTimeParseException e) {
@@ -148,12 +176,18 @@ public class AdminController {
         return "휴진 정보가 삭제되었습니다.";
     }
 
-    // 건의사항 상태 변경 (읽음, 처리 중, 완료)
-    @PutMapping("/inquiries/{inquiryId}/status")
-    public String updateInquiryStatus(@PathVariable int inquiryId, @RequestParam String status) {
+    // 건의사항 목록 조회
+    @GetMapping("/feedbacks")
+    public List<Feedback> getFeedbackList() {
+        return adminService.getFeedbackList();
+    }
+
+    // 건의사항 상태 변경 (읽음으로 설정)
+    @PutMapping("/feedbacks/{id}/read")
+    public String markFeedbackAsRead(@PathVariable Long id) {
         try {
-            adminService.updateInquiryStatus(inquiryId, status);
-            return "건의사항 상태가 변경되었습니다.";
+            adminService.markFeedbackAsRead(id);
+            return "건의사항이 읽음 상태로 변경되었습니다.";
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
@@ -161,31 +195,70 @@ public class AdminController {
 
     // 공지사항 등록
     @PostMapping("/notices")
-    public String registerNotice(@RequestParam String title, @RequestParam String content) {
+    public ResponseEntity<String> registerNotice(
+            @RequestParam String title,
+            @RequestParam String writer,
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestParam Boolean isSecret, // 비밀글 여부
+            @RequestParam MultipartFile representativeImage, // 대표 이미지
+            @RequestParam MultipartFile attachment, // 첨부 파일
+            @RequestParam String content,
+            @RequestParam String link,
+            @RequestParam String captcha // 자동입력 방지
+    ) {
         try {
-            adminService.registerNotice(title, content);
-            return "공지사항이 등록되었습니다.";
+            // 비밀번호 및 필수 입력값 검증
+            validateNoticeInput(title, content, password, captcha);
+
+            // 공지사항 등록 서비스 호출
+            adminService.registerNotice(
+                    title, writer, email, password, isSecret, representativeImage, attachment, content, link);
+
+            return ResponseEntity.ok("공지사항이 성공적으로 등록되었습니다.");
         } catch (IllegalArgumentException e) {
-            return "등록 실패: " + e.getMessage();
+            return ResponseEntity.badRequest().body("등록 실패: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("시스템 오류: " + e.getMessage());
         }
     }
 
-    // 공지사항 수정
-    @PutMapping("/notices/{noticeId}")
-    public String updateNotice(@PathVariable int noticeId, @RequestParam String title, @RequestParam String content) {
+    // 공지사항 목록 조회
+    @GetMapping("/notices")
+    public ResponseEntity<List<Notice>> getAllNotices() {
         try {
-            adminService.updateNotice(noticeId, title, content);
-            return "공지사항이 수정되었습니다.";
-        } catch (IllegalArgumentException e) {
-            return "수정 실패: " + e.getMessage();
+            List<Notice> notices = adminService.getAllNotices();
+            return ResponseEntity.ok(notices);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
         }
     }
 
     // 공지사항 삭제
-    @DeleteMapping("/notices/{noticeId}")
-    public String deleteNotice(@PathVariable int noticeId) {
-        adminService.deleteNotice(noticeId);
-        return "공지사항이 삭제되었습니다.";
+    @DeleteMapping("/notices")
+    public ResponseEntity<String> deleteNotices(@RequestParam List<Long> noticeIds) {
+        try {
+            adminService.deleteNotices(noticeIds);
+            return ResponseEntity.ok("선택한 공지사항이 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("삭제 중 오류 발생: " + e.getMessage());
+        }
+    }
+
+    //입력 검증 메서드
+    private void validateNoticeInput(String title, String content, String password, String captcha) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("제목이 입력되지 않았습니다. 다시 확인해 주세요");
+        }
+        if (content == null || content.trim().isEmpty()) {
+            throw new IllegalArgumentException("본문란이 비어 있습니다. 내용을 입력해 주세요");
+        }
+        if (password == null || password.length() < 6) {
+            throw new IllegalArgumentException("비밀번호를 다시 확인해주세요");
+        }
+        if (captcha == null || !captcha.equals("12345")) { // 간단한 CAPTCHA 검증 예제
+            throw new IllegalArgumentException("자동입력 방지 코드가 틀렸습니다.");
+        }
     }
 
     // 매거진 등록
@@ -211,6 +284,7 @@ public class AdminController {
         }
     }
 
+
     // 매거진 삭제
     @DeleteMapping("/magazines/{magazineId}")
     public String deleteMagazine(@PathVariable int magazineId) {
@@ -219,14 +293,19 @@ public class AdminController {
     }
 
 
-
-
-
-    // 특정 회원의 건강검진 예약 조회
-    @GetMapping("/reserves/member/{memberId}")
-    public List<HealthcareReserveDTO> getHealthReservesByMemberId(@PathVariable String memberId) {
-        return adminService.getHealthReservesByMemberId(memberId);
+    // 접수 목록 조회
+    @GetMapping("/registrations")
+    public List<OnlineRegistration> getAllRegistrations() {
+        return adminService.getRegistrationList();
     }
+
+    // 환자 세부사항 조회
+    @GetMapping("/registrations/{registrationId}")
+    public OnlineRegistration getRegistrationDetails(@PathVariable Long registrationId) {
+        Optional<OnlineRegistration> registration = adminService.getRegistrationDetails(registrationId);
+        return registration.orElseThrow(() -> new IllegalArgumentException("등록된 환자 정보가 없습니다."));
+    }
+
 
     // 모든 건강검진 예약 조회
     @GetMapping("/reserves")
@@ -234,11 +313,7 @@ public class AdminController {
         return adminService.getAllReservations();
     }
 
-    // 건강검진 예약 취소
-    @DeleteMapping("/reserves/{id}")
-    public void cancelHealthCheck(@PathVariable Long id) {
-        adminService.cancelHealthCheck(id);
-    }
+
 
     // 모든 리뷰 조회
     @GetMapping("/reviews")

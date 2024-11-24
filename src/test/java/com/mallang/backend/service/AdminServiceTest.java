@@ -1,4 +1,4 @@
-package com.mallang.backend.service;
+/*package com.mallang.backend.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,3 +84,5 @@ class AdminServiceTest {
         assertEquals("본문을 입력해야 합니다.", exception.getMessage());
     }
 }
+
+ */

@@ -1,19 +1,18 @@
 package com.mallang.backend.service;
 
-import com.mallang.backend.domain.Admin;
-import com.mallang.backend.domain.Appointment;
+import com.mallang.backend.domain.*;
 
-import com.mallang.backend.domain.Review;
 import com.mallang.backend.dto.AdminDTO;
 import com.mallang.backend.dto.AppointmentDTO;
 import com.mallang.backend.dto.HealthcareReserveDTO;
 import com.mallang.backend.dto.ReviewDTO;
-import com.mallang.backend.repository.AdminRepository;
-import com.mallang.backend.repository.AppointmentRepository;
-import com.mallang.backend.repository.ReviewRepository;
+import com.mallang.backend.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,15 +28,23 @@ public class AdminService {
     private final HealthcareReserveService healthcareReserveService;
     private final AppointmentRepository appointmentRepository; // OnlineRegistrationService 주입
     private final ReviewRepository reviewRepository;
+    private final NoticeRepository noticeRepository;
+    private final FeedbackRepository feedbackRepository;;
+    private final OnlineRegistrationRepository onlineRegistrationRepository;
 
 
     // 생성자를 통해 의존성 주입
     public AdminService(AdminRepository adminRepository, HealthcareReserveService healthcareReserveService,
-                        AppointmentRepository appointmentRepository, ReviewRepository reviewRepository) {
+                        AppointmentRepository appointmentRepository, ReviewRepository reviewRepository,
+                        NoticeRepository noticeRepository, FeedbackRepository feedbackRepository, OnlineRegistrationRepository onlineRegistrationRepository) {
         this.adminRepository = adminRepository;
         this.healthcareReserveService = healthcareReserveService;
         this.appointmentRepository = appointmentRepository;
         this.reviewRepository = reviewRepository;
+
+        this.noticeRepository = noticeRepository;
+        this.feedbackRepository = feedbackRepository;
+        this.onlineRegistrationRepository = onlineRegistrationRepository;
     }
 
     // 관리자 등록
@@ -50,7 +57,7 @@ public class AdminService {
         }
 
         Admin admin = new Admin();
-        admin.setAdminId((Id));
+        admin.setAdminId(Long.valueOf((Id)));
         admin.setAdminPassword(password);
 
         adminRepository.save(admin);
@@ -94,7 +101,7 @@ public class AdminService {
             if (adminRepository.findByAdminId(AdminId).isPresent()) {
                 throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
             }
-            admin.setAdminId(newId);
+            admin.setAdminId(Long.valueOf(newId));
         }
         if (newPassword != null && !newPassword.isEmpty()) {
             admin.setAdminPassword(newPassword);
@@ -119,9 +126,9 @@ public class AdminService {
         System.out.println("의료진 정보 삭제: " + doctorId);
     }
 
-    public void registerVacation(int doctorId, String startDate, String endDate) {
+    public void registerVacation(String doctorName, String startDate, String endDate) {
         validateDates(startDate, endDate);
-        System.out.println("휴진 정보 등록: " + doctorId + ", " + startDate + " - " + endDate);
+        System.out.println("휴진 정보 등록: " + doctorName + ", " + startDate + " - " + endDate);
     }
 
     public void updateVacation(int vacationId, String startDate, String endDate) {
@@ -132,28 +139,67 @@ public class AdminService {
     public void deleteVacation(int vacationId) {
         System.out.println("휴진 정보 삭제: " + vacationId);
     }
-    // 건의사항 업데이트
-    public void updateInquiryStatus(int inquiryId, String status) {
-        if (status == null || status.isEmpty()) {
-            throw new IllegalArgumentException("상태를 입력해야 합니다.");
-        }
-        System.out.println("건의사항 상태 업데이트: " + inquiryId + ", 상태: " + status);
-    }
-    // 공지사항 등록
-    public void registerNotice(String title, String content) {
-        validateTitleAndContent(title, content);
-        System.out.println("공지사항 등록: " + title);
-    }
-    // 공지사항 수정
-    public void updateNotice(int noticeId, String title, String content) {
-        validateTitleAndContent(title, content);
-        System.out.println("공지사항 수정: " + noticeId);
-    }
-    // 공지사항 삭제
-    public void deleteNotice(int noticeId) {
-        System.out.println("공지사항 삭제: " + noticeId);
+
+    // 모든 건의사항 목록 조회 (관리자 전용)
+    public List<Feedback> getFeedbackList() {
+        return feedbackRepository.findAll();
     }
 
+    // 건의사항 상태 변경 (안 읽음 -> 읽음)
+    public void markFeedbackAsRead(Long id) {
+        Feedback feedback = feedbackRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 건의사항을 찾을 수 없습니다."));
+        feedback.setStatus("읽음");
+        feedbackRepository.save(feedback);
+    }
+
+    // 공지사항 등록
+    public void registerNotice(String title, String writer, String email, String password,
+                               Boolean isSecret, MultipartFile representativeImage, MultipartFile attachment,
+                               String content, String link) throws IOException {
+        // 파일 저장 경로 설정
+        String imagePath = saveFile(representativeImage, "images");
+        String attachmentPath = saveFile(attachment, "attachments");
+
+        // Notice 객체 생성
+        Notice notice = Notice.builder()
+                .title(title)
+                .writer(writer)
+                .email(email)
+                .password(password)
+                .isSecret(isSecret)
+                .imagePath(imagePath)
+                .attachmentPath(attachmentPath)
+                .content(content)
+                .link(link)
+                .status(isSecret ? "비공개" : "공고")
+                .build();
+
+        // 저장소에 저장
+        noticeRepository.save(notice);
+    }
+
+
+    // 공지사항 조회
+    public List<Notice> getAllNotices() {
+        return noticeRepository.findAll();
+    }
+
+    // 공지사항 삭제
+    public void deleteNotices(List<Long> noticeIds) {
+        noticeRepository.deleteAllById(noticeIds);
+    }
+
+    // 파일 저장 메서드
+    private String saveFile(MultipartFile file, String directory) throws IOException {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+        String path = "uploads/" + directory + "/" + file.getOriginalFilename();
+        File dest = new File(path);
+        file.transferTo(dest);
+        return path;
+    }
     // 건강매거진 등록
     public void registerMagazine(String title, String content) {
         validateTitleAndContent(title, content);
@@ -186,7 +232,7 @@ public class AdminService {
         return AppointmentDTO.builder()
                 .id(appointment.getId())
                 .doctorId(appointment.getDoctor().getId())
-                .departmentId(appointment.getDepartment().getId())
+                .departmentId(appointment.getDepartment().getDpid())
                 .patientName(appointment.getMember().getName()) // Member의 이름 가져오기
                 .doctorName(appointment.getDoctor().getName()) // Doctor의 이름 가져오기
                 .appointmentDate(appointment.getAppointmentDate())
@@ -195,20 +241,22 @@ public class AdminService {
                 .build();
     }
 
-    // 건강검진 예약 조회 (회원별)
-    public List<HealthcareReserveDTO> getHealthReservesByMemberId(String memberId) {
-        return healthcareReserveService.createReservation(memberId);
+    // 접수 목록 조회
+    public List<OnlineRegistration> getRegistrationList() {
+        return onlineRegistrationRepository.findAll();
     }
+
+    // 환자 세부사항 조회
+    public Optional<OnlineRegistration> getRegistrationDetails(Long registrationId) {
+        return onlineRegistrationRepository.findById(registrationId);
+    }
+
 
     // 모든 건강검진 예약 조회
     public List<HealthcareReserveDTO> getAllReservations() {
         return healthcareReserveService.getAllHealthReserves();
     }
 
-    // 건강검진 예약 취소
-    public void cancelHealthCheck(Long id) {
-        healthcareReserveService.cancelHealthCheck(id);
-    }
 
     public List<ReviewDTO> getAllReviews() {
         List<Review> reviews = reviewRepository.findAll();

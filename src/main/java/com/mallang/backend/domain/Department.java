@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +18,12 @@ public class Department {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 기본 키
+    private Long dpid; // 기본 키
 
     private String name;
 
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // Doctor와의 관계 설정 (일대다)
+    // 의사와의 관계 설정 (1:N, Department -> Doctor)
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Doctor> doctors = new ArrayList<>();
 
     // name 필드만 설정하는 생성자는 @RequiredArgsConstructor로 자동 제공

@@ -17,7 +17,6 @@ import java.util.List;
 @Entity
 public class Doctor {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 기본 키
@@ -37,6 +36,8 @@ public class Doctor {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department; // 의료진이 소속된 부서
+
+
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vacation> vacations = new ArrayList<>(); // 의사와 연결된 휴진 정보 목록
