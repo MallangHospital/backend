@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class HealthcareReserveService {
@@ -32,5 +35,44 @@ public class HealthcareReserveService {
                 .build();
     }
 
+    // 특정 회원의 건강검진 예약 조회
+    @Transactional(readOnly = true)
+    public List<HealthcareReserveDTO> getHealthReservesByMemberId(String memberId) {
+        List<HealthcareReserve> reserves = healthcareReserveRepository.findByMemberId(memberId);
+        return reserves.stream()
+                .map(reserve -> HealthcareReserveDTO.builder()
+                        .hId(reserve.getHId())
+                        .name(reserve.getName())
+                        .memberId(reserve.getMemberId())
+                        .phoneNumber(reserve.getPhoneNumber())
+                        .reserveDate(reserve.getReserveDate())
+                        .hType(reserve.getHType())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    // 모든 건강검진 예약 조회
+    @Transactional(readOnly = true)
+    public List<HealthcareReserveDTO> getAllHealthReserves() {
+        List<HealthcareReserve> healthReserves = healthcareReserveRepository.findAll();
+        return healthReserves.stream()
+                .map(reserve -> HealthcareReserveDTO.builder()
+                        .hId(reserve.getHId())
+                        .name(reserve.getName())
+                        .memberId(reserve.getMemberId())
+                        .phoneNumber(reserve.getPhoneNumber())
+                        .reserveDate(reserve.getReserveDate())
+                        .hType(reserve.getHType())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    // 건강검진 예약 취소
+    @Transactional
+    public void cancelHealthCheck(Long id) {
+        HealthcareReserve reserve = healthcareReserveRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Healthcare reservation not found."));
+        healthcareReserveRepository.delete(reserve);
+    }
 
 }

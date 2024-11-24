@@ -197,7 +197,7 @@ public class AdminService {
 
     // 건강검진 예약 조회 (회원별)
     public List<HealthcareReserveDTO> getHealthReservesByMemberId(String memberId) {
-        return healthcareReserveService.getHealthReservesByMemberId(memberId);
+        return healthcareReserveService.createReservation(memberId);
     }
 
     // 모든 건강검진 예약 조회
