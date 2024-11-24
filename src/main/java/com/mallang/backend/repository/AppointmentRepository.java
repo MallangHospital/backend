@@ -4,6 +4,7 @@ import com.mallang.backend.domain.Appointment;
 import com.mallang.backend.domain.Doctor;
 import com.mallang.backend.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     Optional<Appointment> findByDoctorAndAppointmentDateAndAppointmentTime(Doctor doctor, LocalDate date, LocalTime time);
 
     List<Appointment> findByMember_Mid(String memberId);
+    List<Appointment> findByMember(Member member);
 
     // 특정 의사와 날짜로 예약 목록 조회
     List<Appointment> findByDoctorAndAppointmentDate(Doctor doctor, LocalDate date);

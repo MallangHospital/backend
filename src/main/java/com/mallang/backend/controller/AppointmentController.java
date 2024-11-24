@@ -18,25 +18,27 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
 
+    // 예약 생성
     @PostMapping
     public ResponseEntity<AppointmentDTO> createAppointment(
-            @AuthenticationPrincipal CustomMemberDetails userDetails, // CustomMemberDetails 주입
+            @AuthenticationPrincipal CustomMemberDetails userDetails, // Spring Security로 인증된 사용자 정보
             @RequestBody AppointmentDTO appointmentDTO) {
 
-        System.out.println("Received DTO: " + appointmentDTO);
-
-        // CustomMemberDetails에서 Member 객체를 가져옴
+        // Spring Security에서 인증된 사용자 정보로 Member 객체 가져오기
         Member member = userDetails.getMember();
-        appointmentDTO.setMemberId(member.getMid()); // Member ID 설정
+        System.out.println("Authenticated Member: " + member.getName());
 
-        AppointmentDTO createdAppointment = appointmentService.createAppointment(appointmentDTO);
+        // Service에 Member 객체 전달
+        AppointmentDTO createdAppointment = appointmentService.createAppointment(appointmentDTO, member);
         return ResponseEntity.ok(createdAppointment);
     }
 
+    // 특정 회원의 예약 조회
     @GetMapping
     public ResponseEntity<List<AppointmentDTO>> getAppointments(
-            @AuthenticationPrincipal String memberId) {
-        List<AppointmentDTO> appointments = appointmentService.getAppointmentsByMemberId(memberId);
+            @AuthenticationPrincipal CustomMemberDetails userDetails) {
+        Member member = userDetails.getMember();
+        List<AppointmentDTO> appointments = appointmentService.getAppointmentsByMember(member);
         return ResponseEntity.ok(appointments);
     }
 }

@@ -23,9 +23,8 @@ public class AppointmentService {
     private final ScheduleRepository scheduleRepository;
     private final AvailableTimeRepository availableTimeRepository;
 
-    // 예약 생성
     @Transactional
-    public AppointmentDTO createAppointment(AppointmentDTO appointmentDTO) {
+    public AppointmentDTO createAppointment(AppointmentDTO appointmentDTO, Member member) {
         // 의사 정보 검증
         Doctor doctor = doctorRepository.findById(appointmentDTO.getDoctorId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid doctor ID"));
@@ -54,11 +53,13 @@ public class AppointmentService {
         Appointment appointment = Appointment.builder()
                 .doctor(doctor)
                 .department(department)
-                .member(Member.builder().mid(appointmentDTO.getPatientName()).build()) // Member 엔티티 설정
+                .member(member) // 인증된 Member 객체 직접 설정
                 .appointmentDate(date)
                 .appointmentTime(time)
                 .symptomDescription(appointmentDTO.getSymptomDescription())
                 .build();
+
+        System.out.println("Member during appointment creation: " + member.getName());
 
         // AvailableTime 예약 상태 업데이트
         availableTime.setReserved(true);
@@ -95,7 +96,15 @@ public class AppointmentService {
         return unavailableTimes.stream().distinct().collect(Collectors.toList());
     }
 
-    // 특정 회원 ID로 예약 조회
+    // 특정 회원의 예약 조회
+    @Transactional(readOnly = true)
+    public List<AppointmentDTO> getAppointmentsByMember(Member member) {
+        List<Appointment> appointments = appointmentRepository.findByMember(member);
+        return appointments.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     @Transactional(readOnly = true)
     public List<AppointmentDTO> getAppointmentsByMemberId(String memberId) {
         List<Appointment> appointments = appointmentRepository.findByMember_Mid(memberId);
