@@ -50,4 +50,9 @@ public class Member extends BaseEntity {
 
     public void setMid(String mid) {this.mid = mid;}
 
+    // 전화번호 변경
+    public void changePhoneNumber(String phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
 }
