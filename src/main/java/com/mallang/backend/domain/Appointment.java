@@ -27,8 +27,9 @@ public class Appointment extends BaseEntity{
     @JoinColumn(name = "department_id", nullable = false) // 외래키 설정, 반드시 설정
     private Department department;
 
-    @Column(nullable = false)
-    private String memberId; // 예약한 사용자 ID
+    @ManyToOne(fetch = FetchType.LAZY) // Member와 다대일 관계 설정
+    @JoinColumn(name = "member_id", nullable = false) // Member 외래키 설정
+    private Member member; // 환자 정보
 
     @Column(nullable = false)
     private LocalDate appointmentDate; // 예약 날짜

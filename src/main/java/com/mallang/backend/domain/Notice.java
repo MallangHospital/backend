@@ -49,4 +49,7 @@ public class Notice {
     public void updateContent(String newContent) {
         this.content = newContent;
     }
+    @ManyToOne(fetch = FetchType.LAZY)  // Admin과의 관계 설정
+    @JoinColumn(name = "admin_id")  // 외래 키 설정
+    private Admin admin; // 공지사항을 작성한 관리자
 }

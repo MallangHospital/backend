@@ -39,4 +39,10 @@ public class Feedback {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
+    private String status; // e.g., "읽지 않음", "읽음", "처리 중", "완료"
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private Admin admin;
 }

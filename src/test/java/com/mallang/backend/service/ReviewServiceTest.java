@@ -40,7 +40,7 @@ class ReviewServiceTest {
         review1.setId(1L);
         review1.setContent("Great doctor!");
         review1.setStar(5);
-        review1.setDoctor(doctor);
+        review1.setDoctorName(doctor);
         review1.setMember(member);
 
         Review review2 = new Review();

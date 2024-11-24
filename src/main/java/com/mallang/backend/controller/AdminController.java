@@ -1,30 +1,89 @@
 package com.mallang.backend.controller;
 
-import com.mallang.backend.dto.AppointmentDTO;
-
 import com.mallang.backend.dto.HealthcareReserveDTO;
+import com.mallang.backend.domain.Review;
+import com.mallang.backend.dto.ReviewDTO;
 import com.mallang.backend.service.AdminService;
 import com.mallang.backend.service.HealthcareReserveService;
+import com.mallang.backend.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
 
     private final HealthcareReserveService healthcareReserveService;
+
+    @Autowired
+    private AdminService adminService;
+    private ReviewService reviewService;
+
     // HealthcareReserveService를 AdminController에 주입
     public AdminController(HealthcareReserveService healthcareReserveService) {
         this.healthcareReserveService = healthcareReserveService;
     }
 
-    @Autowired
-    private AdminService adminService;
+    // 관리자 등록
+    @PostMapping("/register")
+    public String registerAdmin(@RequestParam String adminId, @RequestParam String adminPassword) {
+        try {
+            adminService.registerAdmin(adminId, adminPassword);
+            return "관리자 계정이 등록되었습니다.";
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
+        }
+    }
+
+    // 관리자 인증
+    @PostMapping("/login")
+    public String authenticateAdmin(@RequestParam String adminId, @RequestParam String adminPassword) {
+        try {
+            adminService.authenticateAdmin(adminId, adminPassword);
+            return "로그인 성공.";
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
+        }
+    }
+
+    // 관리자 삭제
+    @DeleteMapping("/{adminName}")
+    public String deleteAdmin(@PathVariable String adminName) {
+        try {
+            adminService.deleteAdmin(adminName);
+            return "관리자 계정이 삭제되었습니다.";
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
+        }
+    }
+
+    // 관리자 정보 조회
+    @GetMapping("/{adminId}")
+    public String getAdminById(@PathVariable String adminId) {
+        try {
+            return adminService.getAdminById(adminId).toString();
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
+        }
+    }
+
+    // 관리자 정보 수정
+    @PutMapping("/{adminId}")
+    public String updateAdmin(
+            @PathVariable String adminId,
+            @RequestParam(required = false) String newId,
+            @RequestParam(required = false) String newPassword) {
+        try {
+            adminService.updateAdmin(adminId, newId, newPassword);
+            return "관리자 정보가 수정되었습니다.";
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
+        }
+    }
 
     // 의료진 등록
     @PostMapping("/doctors")
@@ -67,13 +126,18 @@ public class AdminController {
     }
 
     // 의료진 휴진 정보 수정
-    @PutMapping("/vacations/{vacationId}")
-    public String updateVacation(@PathVariable int vacationId, @RequestParam String startDate, @RequestParam String endDate) {
+    @PutMapping("/doctors/{doctorId}/vacation")
+    public String updateDoctorVacation(
+            @PathVariable int doctorId,
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
         try {
-            adminService.updateVacation(vacationId, startDate, endDate);
-            return "휴진 정보가 수정되었습니다.";
+            adminService.updateVacation(doctorId, startDate, endDate);
+            return "의료진 휴진 정보가 수정되었습니다.";
         } catch (IllegalArgumentException e) {
             return e.getMessage();
+        } catch (DateTimeParseException e) {
+            return "날짜 형식이 잘못되었습니다. (yyyy-MM-dd)";
         }
     }
 
@@ -102,7 +166,7 @@ public class AdminController {
             adminService.registerNotice(title, content);
             return "공지사항이 등록되었습니다.";
         } catch (IllegalArgumentException e) {
-            return e.getMessage();
+            return "등록 실패: " + e.getMessage();
         }
     }
 
@@ -113,7 +177,7 @@ public class AdminController {
             adminService.updateNotice(noticeId, title, content);
             return "공지사항이 수정되었습니다.";
         } catch (IllegalArgumentException e) {
-            return e.getMessage();
+            return "수정 실패: " + e.getMessage();
         }
     }
 
@@ -126,12 +190,13 @@ public class AdminController {
 
     // 매거진 등록
     @PostMapping("/magazines")
-    public String registerMagazine(@RequestParam String title, @RequestParam String content) {
+    public String registerMagazine(@RequestParam String title, @RequestParam String content, @RequestParam String password) {
         try {
+            validatePassword(password);
             adminService.registerMagazine(title, content);
             return "건강 매거진이 등록되었습니다.";
         } catch (IllegalArgumentException e) {
-            return e.getMessage();
+            return "등록 실패: " + e.getMessage();
         }
     }
 
@@ -142,7 +207,7 @@ public class AdminController {
             adminService.updateMagazine(magazineId, title, content);
             return "건강 매거진이 수정되었습니다.";
         } catch (IllegalArgumentException e) {
-            return e.getMessage();
+            return "수정 실패: " + e.getMessage();
         }
     }
 
@@ -153,27 +218,62 @@ public class AdminController {
         return "건강 매거진이 삭제되었습니다.";
     }
 
-    // 예약 정보 목록 조회
-    @GetMapping("/appointments")
-    public ResponseEntity<List<AppointmentDTO>> getAppointments() {
-        List<AppointmentDTO> appointments = adminService.getAppointments();
-        return ResponseEntity.ok(appointments);
+
+
+
+
+    // 특정 회원의 건강검진 예약 조회
+    @GetMapping("/reserves/member/{memberId}")
+    public List<HealthcareReserveDTO> getHealthReservesByMemberId(@PathVariable String memberId) {
+        return adminService.getHealthReservesByMemberId(memberId);
     }
 
-    // 접수 확인 조회 구현중...
+    // 모든 건강검진 예약 조회
+    @GetMapping("/reserves")
+    public List<HealthcareReserveDTO> getAllHealthReserves() {
+        return adminService.getAllReservations();
+    }
 
-    // Healthcare 예약 확인 목록 조회
-    @GetMapping("/healthcareReserves")
-    public ResponseEntity<List<HealthcareReserveDTO>> getHealthcareReservations() {
-        List<HealthcareReserveDTO> reservations = healthcareReserveService.getAllReservations();
-        return ResponseEntity.ok(reservations);
+    // 건강검진 예약 취소
+    @DeleteMapping("/reserves/{id}")
+    public void cancelHealthCheck(@PathVariable Long id) {
+        adminService.cancelHealthCheck(id);
+    }
+
+    // 모든 리뷰 조회
+    @GetMapping("/reviews")
+    public ResponseEntity<List<ReviewDTO>> getAllReviews() {
+        List<ReviewDTO> reviews = reviewService.getAllReviews();
+        return ResponseEntity.ok(reviews);
+    }
+
+    // 특정 리뷰 삭제
+    @DeleteMapping("/reviews/{id}")
+    public ResponseEntity<String> deleteReview(@PathVariable Long id) {
+        try {
+            reviewService.deleteReviewById(id);
+            return ResponseEntity.ok("리뷰가 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("리뷰 삭제 중 오류가 발생했습니다.");
+        }
+    }
+
+    // 전체 리뷰 통계 조회 (전체적인 별점 평균, 세분화된 별점 평균, 총 리뷰 수)
+    @GetMapping("/reviews/statistics")
+    public ResponseEntity<?> getReviewStatistics() {
+        try {
+            var statistics = reviewService.calculateReviewStatistics();
+            return ResponseEntity.ok(statistics);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("통계 조회 중 오류가 발생했습니다.");
+        }
     }
 
 
-    // 예약 상세 정보 조회
-    @GetMapping("/appointments/{appointmentId}")
-    public ResponseEntity<AppointmentDTO> getAppointmentDetails(@PathVariable int appointmentId) {
-        AppointmentDTO appointmentDetails = adminService.getAppointmentDetails(appointmentId);
-        return ResponseEntity.ok(appointmentDetails);
+    // 비밀번호 유효성 검사
+    private void validatePassword(String password) {
+        if (password == null || password.isEmpty()) {
+            throw new IllegalArgumentException("비밀번호를 입력해야 합니다.");
+        }
     }
 }

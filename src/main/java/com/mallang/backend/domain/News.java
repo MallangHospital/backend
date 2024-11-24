@@ -32,6 +32,10 @@ public class News {
 
     private LocalDate writeDate;     // 작성 날짜
 
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private Admin admin;
+
     // 기본 생성자에서 writeDate 초기화
     @PrePersist
     protected void onCreate() {
