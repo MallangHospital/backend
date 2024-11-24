@@ -26,7 +26,6 @@ public class AppointmentController {
 
         // Spring Security에서 인증된 사용자 정보로 Member 객체 가져오기
         Member member = userDetails.getMember();
-        System.out.println("Authenticated Member: " + member.getName());
 
         // Service에 Member 객체 전달
         AppointmentDTO createdAppointment = appointmentService.createAppointment(appointmentDTO, member);
