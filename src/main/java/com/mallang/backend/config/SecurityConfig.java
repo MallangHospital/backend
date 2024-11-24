@@ -41,7 +41,7 @@ public class SecurityConfig {
 
         // 경로별 인가 작업
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/api/member/join", "/").permitAll() // 인증 없이 접근 가능
+                .requestMatchers("/api/member/join", "/", "/error").permitAll() // 인증 없이 접근 가능
                 .requestMatchers("/api/admin").hasRole("ADMIN") // 관리자만 접근 가능
                 .anyRequest().authenticated() // 다른 요청은 로그인한 사용자만 접근 가능
         );

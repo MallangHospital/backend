@@ -2,12 +2,15 @@ package com.mallang.backend.service;
 
 import com.mallang.backend.domain.Member;
 import com.mallang.backend.domain.Role;
+import com.mallang.backend.dto.MemberDTO;
 import com.mallang.backend.dto.MemberJoinDTO;
+import com.mallang.backend.dto.MemberUpdateDTO;
 import com.mallang.backend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -85,4 +88,64 @@ public class MemberService {
         // 해당 아이디가 이미 존재하는지 확인
         return memberRepository.existsById(mid);
     }
+
+    // 회원 정보 조회
+    @Transactional(readOnly = true)
+    public MemberDTO getMemberInfo(String memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+        return MemberDTO.builder()
+                .mid(member.getMid())
+                .name(member.getName())
+                .email(member.getEmail())
+                .phoneNum(member.getPhoneNum())
+                .rrn(member.getRrn())
+                .build();
+    }
+
+    public void updateMember(String memberId, MemberUpdateDTO updateDTO) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        // 비밀번호 변경
+        if (updateDTO.getCurrentPassword() != null && updateDTO.getNewPassword() != null) {
+            if (!passwordEncoder.matches(updateDTO.getCurrentPassword(), member.getMpw())) {
+                throw new IllegalArgumentException("Invalid current password");
+            }
+            if (!isValidPassword(updateDTO.getNewPassword())) {
+                throw new IllegalArgumentException("New password does not meet the requirements.");
+            }
+            member.changePassword(passwordEncoder.encode(updateDTO.getNewPassword()));
+        }
+
+        // 이메일 변경
+        if (updateDTO.getEmail() != null) {
+            if (!isValidEmail(updateDTO.getEmail())) {
+                throw new IllegalArgumentException("Invalid email format.");
+            }
+            member.changeEmail(updateDTO.getEmail());
+        }
+
+        // 전화번호 변경
+        if (updateDTO.getPhoneNum() != null) {
+            if (!isValidPhoneNumber(updateDTO.getPhoneNum())) {
+                throw new IllegalArgumentException("Invalid phone number format.");
+            }
+            member.changePhoneNumber(updateDTO.getPhoneNum());
+        }
+
+        memberRepository.save(member);
+    }
+
+    /*public boolean verifyPassword(String memberId, String rawPassword) {
+        // DB에서 Member 조회
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+        System.out.println("Raw Password: " + rawPassword);
+        System.out.println("Encoded Password: " + member.getMpw());
+
+        System.out.println("Password matches: " + passwordEncoder.matches("password1234!", "$2a$10$cFFlGYu83rK52z7xgjHAsOSIrn1rooheb/yErfuXOAAD35qy0ihze"));
+        // 암호화된 비밀번호와 입력한 비밀번호 비교
+        return passwordEncoder.matches(rawPassword, member.getMpw());
+    }*/
 }

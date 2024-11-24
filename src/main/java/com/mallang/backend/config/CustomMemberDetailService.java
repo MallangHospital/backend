@@ -1,5 +1,6 @@
 package com.mallang.backend.config;
 
+import com.mallang.backend.config.CustomMemberDetails;
 import com.mallang.backend.domain.Member;
 import com.mallang.backend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +17,8 @@ public class CustomMemberDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String mid) throws UsernameNotFoundException {
-        Member memberData = memberRepository.findById(mid).get();
-        if (memberData != null) {
-            return new CustomMemberDetails(memberData);
-        }
-        return null;
+        Member memberData = memberRepository.findById(mid)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + mid));
+        return new CustomMemberDetails(memberData);
     }
 }
