@@ -20,6 +20,8 @@ public class Admin {
     // 관리자 계정
     private String adminId;
     private String adminName;
+
+    @Column(name = "admin_password", nullable = false) // DB 열 이름과 매핑
     private String password;
 
     // 의료진 관리
