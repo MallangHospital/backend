@@ -1,42 +1,22 @@
 package com.mallang.backend.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Setter
+@NoArgsConstructor
 public class NoticeDTO {
-    private Long id;
+    private String id;
     private String title;
     private String content;
-
-    // 기본 생성자
-    public NoticeDTO() {}
-
-    // 생성자
-    public NoticeDTO(Long id, String title, String content) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-    }
-
-    // Getter 및 Setter 메서드
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
+    private String author;      // 작성자
+    private String email;       // 이메일
+    private String password;    // 비밀번호
+    private boolean isPrivate;  // 비밀글 여부
+    private String thumbnail;   // 대표 이미지
+    private String attachment;  // 첨부파일
+    private String link;        // 링크
+    private String writeDate;   // 작성 날짜 (LocalDate -> String으로 처리)
 }

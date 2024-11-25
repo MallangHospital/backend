@@ -1,64 +1,40 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "reviews")
+@Getter
+@Setter
 public class Review {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;                 // 리뷰 ID
+    private Long id;
 
-    private String content;          // 리뷰 내용
-    private LocalDate writeDate;     // 작성 날짜
-    private int star;                // 평점
+    private Long memberId; // 사용자 ID
+    private Long memberName; // 사용자 이름
+    private Long doctorId; // 의사 ID
+    private Long doctorName; // 의사 이름
+    private Long star; // 전체 별점
+    private Long departmentId; // 진료과 ID
+    private String departmentName; // 진료과 이름
 
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;           // 리뷰 대상 의사
+    @ElementCollection
+    private List<Integer> detailStars; // 세분화된 별점 (자세한 설명, 치료후 결과, 직원의 친절, 청결함)
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;           // 리뷰 작성자
+    private String content; // 리뷰 내용
+    private String fileUrl; // 첨부 파일 URL
+    private Long memberPassword; // 리뷰 삭제 시 비밀번호
 
-    // 기본 생성자
-    public Review() {
-        this.writeDate = LocalDate.now(); // 현재 날짜로 초기화
-    }
+    private LocalDateTime createdDate; // 리뷰 등록 날짜
 
-    // 생성자
-    public Review(String content, int star, Doctor doctor, Member member) {
-        this.content = content;
-        this.star = star;
-        this.doctor = doctor;
-        this.member = member;
-        this.writeDate = LocalDate.now(); // 현재 날짜로 초기화
-    }
-
-    // Getter 메서드들
-    public Long getId() {
-        return id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public LocalDate getWriteDate() {
-        return writeDate;
-    }
-
-    public int getStar() {
-        return star;
-    }
-
-    public Doctor getDoctor() {
-        return doctor;
-    }
-
-    public Member getMember() {
-        return member;
+    @PrePersist
+    public void onCreate() {
+        this.createdDate = LocalDateTime.now(); // 리뷰 등록 날짜 자동 설정
     }
 }

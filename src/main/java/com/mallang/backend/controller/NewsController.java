@@ -2,16 +2,17 @@ package com.mallang.backend.controller;
 
 import com.mallang.backend.dto.NewsDTO;
 import com.mallang.backend.service.NewsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/news")
+@RequiredArgsConstructor // final 필드에 대해 자동 생성자 생성
 public class NewsController {
-    @Autowired
-    private NewsService newsService;
+
+    private final NewsService newsService;
 
     @GetMapping
     public List<NewsDTO> getAllNews() {

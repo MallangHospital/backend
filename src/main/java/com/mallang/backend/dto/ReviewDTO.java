@@ -1,65 +1,23 @@
 package com.mallang.backend.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+import java.util.List;
+
+@Getter
+@Setter
 public class ReviewDTO {
     private Long id;
-    private String content;
-    private int star;
-    private Long doctorId; // 리뷰 대상 의사 ID
-    private Long memberId; // 리뷰 작성자 ID
-
-    // 기본 생성자
-    public ReviewDTO() {}
-
-    // 생성자
-    public ReviewDTO(Long id, String content, int star, Long doctorId, Long memberId) {
-        this.id = id;
-        this.content = content;
-        this.star = star;
-        this.doctorId = doctorId;
-        this.memberId = memberId;
-    }
-
-    public ReviewDTO(Long id, String content, int star, Long id1, String mid) {
-    }
-
-    // Getter 및 Setter 메서드
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public int getStar() {
-        return star;
-    }
-
-    public void setStar(int star) {
-        this.star = star;
-    }
-
-    public Long getDoctorId() {
-        return doctorId;
-    }
-
-    public void setDoctorId(Long doctorId) {
-        this.doctorId = doctorId;
-    }
-
-    public Long getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(Long memberId) {
-        this.memberId = memberId;
-    }
+    private Long departmentId;
+    private String departmentName;
+    private Long doctorId;
+    private Long doctorName;
+    private Long memberName;
+    private Long memberId; // 리뷰 작성자의 ID
+    private Long memberPassword; // 리뷰 작성작의 Password
+    private Long Star;
+    private List<Integer> detailStar; // 세분화된 별점: [자세한 설명, 치료후 결과, 직원의 친절, 청결함]
+    private String content; // 리뷰 내용
+    private String attachment; // 첨부파일 (파일명 또는 경로)
+    private Long createdAt; // 리뷰 등록 시간
 }
