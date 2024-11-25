@@ -2,7 +2,6 @@ package com.mallang.backend.controller;
 
 import com.mallang.backend.domain.Feedback;
 import com.mallang.backend.domain.Notice;
-import com.mallang.backend.domain.OnlineRegistration;
 import com.mallang.backend.dto.FeedbackDTO;
 import com.mallang.backend.dto.HealthcareReserveDTO;
 import com.mallang.backend.dto.ReviewDTO;
@@ -16,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin")
@@ -290,20 +288,6 @@ public class AdminController {
     public String deleteMagazine(@PathVariable int magazineId) {
         adminService.deleteMagazine(magazineId);
         return "건강 매거진이 삭제되었습니다.";
-    }
-
-
-    // 접수 목록 조회
-    @GetMapping("/registrations")
-    public List<OnlineRegistration> getAllRegistrations() {
-        return adminService.getRegistrationList();
-    }
-
-    // 환자 세부사항 조회
-    @GetMapping("/registrations/{registrationId}")
-    public OnlineRegistration getRegistrationDetails(@PathVariable Long registrationId) {
-        Optional<OnlineRegistration> registration = adminService.getRegistrationDetails(registrationId);
-        return registration.orElseThrow(() -> new IllegalArgumentException("등록된 환자 정보가 없습니다."));
     }
 
 

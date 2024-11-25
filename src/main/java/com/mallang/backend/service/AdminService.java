@@ -57,8 +57,8 @@ public class AdminService {
         }
 
         Admin admin = new Admin();
-        admin.setAdminId(Long.valueOf((Id)));
-        admin.setAdminPassword(password);
+        admin.setAdminId(Id);
+        admin.setPassword(password);
 
         adminRepository.save(admin);
         System.out.println("관리자 등록 완료: "+ admin.getAdminName());
@@ -101,10 +101,10 @@ public class AdminService {
             if (adminRepository.findByAdminId(AdminId).isPresent()) {
                 throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
             }
-            admin.setAdminId(Long.valueOf(newId));
+            admin.setAdminId(newId);
         }
         if (newPassword != null && !newPassword.isEmpty()) {
-            admin.setAdminPassword(newPassword);
+            admin.setPassword(newPassword);
         }
 
         adminRepository.save(admin);
@@ -232,7 +232,7 @@ public class AdminService {
         return AppointmentDTO.builder()
                 .id(appointment.getId())
                 .doctorId(appointment.getDoctor().getId())
-                .departmentId(appointment.getDepartment().getDpid())
+                .departmentId(appointment.getDepartment().getId())
                 .patientName(appointment.getMember().getName()) // Member의 이름 가져오기
                 .doctorName(appointment.getDoctor().getName()) // Doctor의 이름 가져오기
                 .appointmentDate(appointment.getAppointmentDate())

@@ -18,9 +18,9 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     // 관리자 계정
-    private Long adminId;
+    private String adminId;
     private String adminName;
-    private String adminPassword;
+    private String password;
 
     // 의료진 관리
     @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, orphanRemoval = true)
