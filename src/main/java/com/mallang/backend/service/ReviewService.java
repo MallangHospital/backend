@@ -198,15 +198,15 @@ public class ReviewService {
      * 엔티티 -> DTO 변환
      */
     private ReviewDTO convertToDTO(Review review) {
-        ReviewDTO dto = new ReviewDTO();
-        dto.setId(review.getId());
-        dto.setMemberId(review.getMemberId());
-        dto.setDoctorId(review.getDoctorId());
-        dto.setDepartmentId(review.getDepartmentId());
-        dto.setDetailStar(review.getDetailStars());
-        dto.setContent(review.getContent());
-        dto.setAttachment(review.getFileUrl());
-        dto.setCreatedAt(review.getCreatedDate().toEpochSecond(ZoneOffset.UTC));
-        return dto;
+        return ReviewDTO.builder()
+                .id(review.getId())
+                .memberId(review.getMemberId())
+                .doctorId(review.getDoctorId())
+                .departmentId(review.getDepartmentId())
+                .detailStar(review.getDetailStars()) // 세분화된 별점
+                .content(review.getContent())
+                .attachment(review.getFileUrl()) // 첨부파일 경로
+                .createdAt(review.getCreatedDate().toEpochSecond(ZoneOffset.UTC)) // 등록 시간
+                .build();
     }
 }

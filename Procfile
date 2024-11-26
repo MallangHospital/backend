@@ -1,1 +1,1 @@
-web: java -jar target/mallang.jar
+web: java -jar build/libs/backend-0.0.1-SNAPSHOT.jar

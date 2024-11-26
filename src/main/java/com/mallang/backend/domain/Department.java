@@ -24,6 +24,7 @@ public class Department {
 
     // 의사와의 관계 설정 (1:N, Department -> Doctor)
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<Doctor> doctors = new ArrayList<>();
 
     // name 필드만 설정하는 생성자는 @RequiredArgsConstructor로 자동 제공

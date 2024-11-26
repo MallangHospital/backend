@@ -262,18 +262,20 @@ public class AdminService {
         List<Review> reviews = reviewRepository.findAll();
         List<ReviewDTO> reviewDTOList = new ArrayList<>();
 
-        for (com.mallang.backend.domain.Review review : reviews) {
-            ReviewDTO dto = new ReviewDTO();
-            dto.setId(review.getId());
-            dto.setMemberName(review.getMemberName());
-            dto.setDoctorName(review.getDoctorName());
-            dto.setDepartmentName(review.getDepartmentName());
-            dto.setStar(review.getStar());
-            dto.setDetailStar(review.getDetailStars()); // 세분화된 별점
-            dto.setContent(review.getContent());
-            dto.setAttachment(review.getFileUrl()); // 첨부파일 경로
-            dto.setCreatedAt(review.getCreatedDate().toEpochSecond(ZoneOffset.UTC)); // 등록 시간
-            reviewDTOList.add(dto);
+        for (Review review : reviews) {
+            reviewDTOList.add(
+                    ReviewDTO.builder()
+                            .id(review.getId())
+                            .memberName(review.getMemberName())
+                            .doctorName(review.getDoctorName())
+                            .departmentName(review.getDepartmentName())
+                            .Star(review.getStar())
+                            .detailStar(review.getDetailStars()) // 세분화된 별점
+                            .content(review.getContent())
+                            .attachment(review.getFileUrl()) // 첨부파일 경로
+                            .createdAt(review.getCreatedDate().toEpochSecond(ZoneOffset.UTC)) // 등록 시간
+                            .build()
+            );
         }
 
         return reviewDTOList;

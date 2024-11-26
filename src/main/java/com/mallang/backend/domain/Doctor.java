@@ -1,10 +1,7 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 public class Doctor {
 
     @Id
@@ -31,6 +29,7 @@ public class Doctor {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "doctor_history", joinColumns = @JoinColumn(name = "doctor_id"))
     @Column(name = "history_item")
+    @Builder.Default
     private List<String> history = new ArrayList<>(); // 경력 목록
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,6 +39,7 @@ public class Doctor {
 
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Vacation> vacations = new ArrayList<>(); // 의사와 연결된 휴진 정보 목록
 
     @ManyToOne(fetch = FetchType.LAZY)  // Admin과의 관계 설정
