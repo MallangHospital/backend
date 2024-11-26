@@ -18,7 +18,7 @@ public class Department {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long dpid; // 기본 키
+    private Long id; // 기본 키
 
     private String name;
 
