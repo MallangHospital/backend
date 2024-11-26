@@ -1,9 +1,7 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,14 +9,18 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor // 필드를 초기화하는 생성자 추가
+@Builder // 빌더 패턴 추가
 @Entity
 public class Admin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // 관리자 ID (PK)
 
     // 관리자 계정
     private String adminId;
+
     private String adminName;
 
     @Column(name = "admin_password", nullable = false) // DB 열 이름과 매핑

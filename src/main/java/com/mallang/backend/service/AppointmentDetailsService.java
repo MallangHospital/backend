@@ -34,7 +34,6 @@ public class AppointmentDetailsService {
                 .id(Long.valueOf(appointment.getMember().getMid())) // 환자 ID
                 .name(appointment.getMember().getName()) // 환자 이름
                 .contact(appointment.getMember().getPhoneNum()) // 환자 연락처
-                .symptomDescription(appointment.getMember().getSymptomDescription()) // 환자 증상
                 .build();
 
         // AppointmentDTO에 환자 세부사항 포함

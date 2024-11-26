@@ -1,10 +1,7 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,6 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder // 빌더 패턴 추가
 @Entity
 public class Doctor {
 
@@ -37,14 +35,10 @@ public class Doctor {
     @JoinColumn(name = "department_id")
     private Department department; // 의료진이 소속된 부서
 
-
-
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vacation> vacations = new ArrayList<>(); // 의사와 연결된 휴진 정보 목록
 
     @ManyToOne(fetch = FetchType.LAZY)  // Admin과의 관계 설정
     @JoinColumn(name = "admin_id")  // 외래 키 설정
     private Admin admin; // 관리자가 지정한 의료진
-
-    // 기본 생성자와 모든 필드를 초기화하는 생성자가 제공됩니다.
 }
