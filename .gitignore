@@ -28,6 +28,9 @@ out/
 application-aws.properties
 application.properties
 
+.gradle/
+.idea/
+build/
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

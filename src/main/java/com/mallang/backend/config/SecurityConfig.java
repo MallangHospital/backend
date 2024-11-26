@@ -40,7 +40,7 @@ public class SecurityConfig {
         http.httpBasic((auth) -> auth.disable());
 
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/api/member/join", "/", "/error").permitAll() // 인증 없이 접근 가능
+                .requestMatchers("/api/member/join", "/", "/error", "/login").permitAll() // 인증 없이 접근 가능
                 .requestMatchers("/api/doctors").permitAll()  // 모든 사용자가 접근 가능
                 .requestMatchers("/api/admin").hasRole("ADMIN") // 관리자만 접근 가능
                 .anyRequest().authenticated() // 다른 요청은 로그인한 사용자만 접근 가능
