@@ -32,62 +32,6 @@ public class AdminController {
         this.reviewService = reviewService;
     }
 
-    // 관리자 등록
-    @PostMapping("/register")
-    public String registerAdmin(@RequestParam String adminId, @RequestParam String adminPassword) {
-        try {
-            adminService.registerAdmin(adminId, adminPassword);
-            return "관리자 계정이 등록되었습니다.";
-        } catch (IllegalArgumentException e) {
-            return e.getMessage();
-        }
-    }
-
-    // 관리자 인증
-    @PostMapping("/login")
-    public String authenticateAdmin(@RequestParam String adminId, @RequestParam String adminPassword) {
-        try {
-            adminService.authenticateAdmin(adminId, adminPassword);
-            return "로그인 성공.";
-        } catch (IllegalArgumentException e) {
-            return e.getMessage();
-        }
-    }
-
-    // 관리자 삭제
-    @DeleteMapping("/{adminName}")
-    public String deleteAdmin(@PathVariable String adminName) {
-        try {
-            adminService.deleteAdmin(adminName);
-            return "관리자 계정이 삭제되었습니다.";
-        } catch (IllegalArgumentException e) {
-            return e.getMessage();
-        }
-    }
-
-    // 관리자 정보 조회
-    @GetMapping("/{adminId}")
-    public String getAdminById(@PathVariable String adminId) {
-        try {
-            return adminService.getAdminById(adminId).toString();
-        } catch (IllegalArgumentException e) {
-            return e.getMessage();
-        }
-    }
-
-    // 관리자 정보 수정
-    @PutMapping("/{adminId}")
-    public String updateAdmin(
-            @PathVariable String adminId,
-            @RequestParam(required = false) String newId,
-            @RequestParam(required = false) String newPassword) {
-        try {
-            adminService.updateAdmin(adminId, newId, newPassword);
-            return "관리자 정보가 수정되었습니다.";
-        } catch (IllegalArgumentException e) {
-            return e.getMessage();
-        }
-    }
 
     // 의료진 등록
     @PostMapping("/doctors")
@@ -180,16 +124,6 @@ public class AdminController {
         return adminService.getFeedbackList();
     }
 
-    // 건의사항 상태 변경 (읽음으로 설정)
-    @PutMapping("/feedbacks/{id}/read")
-    public String markFeedbackAsRead(@PathVariable Long id) {
-        try {
-            adminService.markFeedbackAsRead(id);
-            return "건의사항이 읽음 상태로 변경되었습니다.";
-        } catch (IllegalArgumentException e) {
-            return e.getMessage();
-        }
-    }
 
     // 공지사항 등록
     @PostMapping("/notices")
@@ -321,7 +255,7 @@ public class AdminController {
     @GetMapping("/reviews/statistics")
     public ResponseEntity<?> getReviewStatistics() {
         try {
-            var statistics = reviewService.calculateReviewStatistics();
+            var statistics = reviewService.calculateDetailAverages();
             return ResponseEntity.ok(statistics);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("통계 조회 중 오류가 발생했습니다.");

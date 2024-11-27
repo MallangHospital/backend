@@ -16,17 +16,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
 @Configuration
-@EnableWebSecurity //시큐리티를 위한 config
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
 
-    //AuthenticationManager Bean 등록
+    // AuthenticationManager Bean 등록
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
@@ -39,10 +37,14 @@ public class SecurityConfig {
         http.formLogin((auth) -> auth.disable());
         http.httpBasic((auth) -> auth.disable());
 
+        // 접근 권한 설정
         /*http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/api/member/join", "/", "/error", "/login").permitAll() // 인증 없이 접근 가능
-                .requestMatchers("/api/doctors").permitAll()  // 모든 사용자가 접근 가능
+                .requestMatchers("/api/member/join", "/", "/error").permitAll() // 인증 없이 접근 가능
+                .requestMatchers("/api/feedback").authenticated() // 인증된 사용자만 접근 가능
                 .requestMatchers("/api/admin").hasRole("ADMIN") // 관리자만 접근 가능
+                .requestMatchers("/api/feedback/admin").hasRole("ADMIN") // 관리자만 접근 가능
+                .requestMatchers("/api/review").authenticated() // 인증된 사용자만 접근 가능
+                .requestMatchers("/api/doctors").authenticated() // 인증된 사용자만 접근 가능
                 .anyRequest().authenticated() // 다른 요청은 로그인한 사용자만 접근 가능
         );*/
 
@@ -50,11 +52,10 @@ public class SecurityConfig {
                 .anyRequest().permitAll() // 모든 요청에 대해 인증 없이 접근 가능
         );
 
-        //JWTFilter 등록
-        http
-                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
-
+        // JWT 필터 등록
+        http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
         http.sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -67,7 +68,6 @@ public class SecurityConfig {
                 .permitAll());
 
         return http.build();
-
     }
 
     @Bean

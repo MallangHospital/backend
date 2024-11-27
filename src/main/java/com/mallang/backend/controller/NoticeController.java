@@ -17,12 +17,12 @@ public class NoticeController {
     public NoticeController(NoticeService noticeService) {
         this.noticeService = noticeService;
     }
-
+    // 모든 공지사항 조회
     @GetMapping
     public List<NoticeDTO> getAllNotices() {
         return noticeService.getAllNotices();
     }
-
+    // 공지사항 작성
     @PostMapping
     public NoticeDTO createNotice(@RequestBody NoticeDTO noticeDTO) {
         return noticeService.createNotice(noticeDTO);

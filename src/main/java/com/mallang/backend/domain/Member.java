@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString(exclude = "roleSet")
 public class Member extends BaseEntity {
+    @Setter
     @Id
     @Column(length = 50, nullable = false)
     private String mid;
@@ -44,8 +45,6 @@ public class Member extends BaseEntity {
     public void changeRole(Role role) {
         this.role = role;
     }
-
-    public void setMid(String mid) {this.mid = mid;}
 
     // 전화번호 변경
     public void changePhoneNumber(String phoneNum) {

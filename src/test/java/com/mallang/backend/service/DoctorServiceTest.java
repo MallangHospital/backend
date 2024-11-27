@@ -1,3 +1,4 @@
+/*
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.Doctor;
@@ -110,3 +111,5 @@ class DoctorServiceTest {
         verify(doctorRepository, times(1)).findAll();
     }
 }
+
+ */

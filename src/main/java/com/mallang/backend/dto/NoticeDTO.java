@@ -9,14 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NoticeDTO {
     private String id;
-    private String title;
-    private String content;
+    private String title;         // 제목
+    private String content;     // 내용
     private String author;      // 작성자
-    private String email;       // 이메일
     private String password;    // 비밀번호
-    private boolean isPrivate;  // 비밀글 여부
-    private String thumbnail;   // 대표 이미지
-    private String attachment;  // 첨부파일
-    private String link;        // 링크
+
     private String writeDate;   // 작성 날짜 (LocalDate -> String으로 처리)
 }

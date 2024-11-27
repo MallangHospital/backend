@@ -1,9 +1,8 @@
-package com.mallang.backend.controller;
-
 import com.mallang.backend.domain.Feedback;
 import com.mallang.backend.service.FeedbackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,5 +30,16 @@ public class FeedbackController {
 
         Feedback savedFeedback = feedbackService.submitFeedback(feedback);
         return ResponseEntity.ok("건의사항이 접수되었습니다. ID: " + savedFeedback.getId());
+    }
+
+    // 모든 건의사항 조회 (관리자 전용)
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')") // 관리자만 접근 가능
+    public ResponseEntity<?> getAllFeedbacks() {
+        try {
+            return ResponseEntity.ok(feedbackService.getAllFeedbacks());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("건의사항 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 }

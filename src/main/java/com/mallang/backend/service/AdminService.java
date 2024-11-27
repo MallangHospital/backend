@@ -1,3 +1,4 @@
+/*
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.*;
@@ -47,28 +48,9 @@ public class AdminService {
         this.onlineRegistrationRepository = onlineRegistrationRepository;
     }
 
-    // 관리자 등록
-    public void registerAdmin(String Id, String password) {
-        if (Id == null || Id.isEmpty() || password == null || password.isEmpty()) {
-            throw new IllegalArgumentException("관리자 계정의 아이디와 비밀번호를 입력해야 합니다.");
-        }
-        if (adminRepository.findByAdminId(Id).isPresent()) {
-            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
-        }
 
-        Admin admin = new Admin();
-        admin.setAdminId(Id);
-        admin.setPassword(password);
 
-        adminRepository.save(admin);
-        System.out.println("관리자 등록 완료: "+ admin.getAdminName());
-    }
 
-    // 관리자 인증
-    public void authenticateAdmin(String Id, String password) {
-        adminRepository.findByAdminIdAndPassword(Id, password)
-                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다."));
-    }
 
     // 관리자 삭제
     public void deleteAdmin(String adminName) {
@@ -81,34 +63,8 @@ public class AdminService {
     }
 
 
-    public AdminDTO getAdminById(String adminId) {
-        Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 관리자를 찾을 수 없습니다: " + adminId));
 
-        AdminDTO adminDTO = new AdminDTO();
-        adminDTO.setAdminName(admin.getAdminName()); // 관리자 이름 설정
-        // 필요 시 추가 정보 설정 가능
 
-        return adminDTO;
-    }
-
-    // 관리자 정보 업데이트
-    public void updateAdmin(String AdminId, String newId, String newPassword) {
-        Admin admin = adminRepository.findByAdminName(AdminId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 관리자를 찾을 수 없습니다: " + AdminId));
-
-        if (AdminId != null && !AdminId.isEmpty()) {
-            if (adminRepository.findByAdminId(AdminId).isPresent()) {
-                throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
-            }
-            admin.setAdminId(newId);
-        }
-        if (newPassword != null && !newPassword.isEmpty()) {
-            admin.setPassword(newPassword);
-        }
-
-        adminRepository.save(admin);
-        System.out.println("관리자 정보 업데이트 완료: ");
     }
 
     // 의료진 관련 기능들
@@ -140,18 +96,6 @@ public class AdminService {
         System.out.println("휴진 정보 삭제: " + vacationId);
     }
 
-    // 모든 건의사항 목록 조회 (관리자 전용)
-    public List<Feedback> getFeedbackList() {
-        return feedbackRepository.findAll();
-    }
-
-    // 건의사항 상태 변경 (안 읽음 -> 읽음)
-    public void markFeedbackAsRead(Long id) {
-        Feedback feedback = feedbackRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 건의사항을 찾을 수 없습니다."));
-        feedback.setStatus("읽음");
-        feedbackRepository.save(feedback);
-    }
 
     // 공지사항 등록
     public void registerNotice(String title, String writer, String email, String password,
@@ -261,7 +205,6 @@ public class AdminService {
     public List<ReviewDTO> getAllReviews() {
         List<Review> reviews = reviewRepository.findAll();
         List<ReviewDTO> reviewDTOList = new ArrayList<>();
-
         for (Review review : reviews) {
             reviewDTOList.add(
                     ReviewDTO.builder()
@@ -277,7 +220,6 @@ public class AdminService {
                             .build()
             );
         }
-
         return reviewDTOList;
     }
 
@@ -355,3 +297,5 @@ public class AdminService {
         }
     }
 }
+
+ */

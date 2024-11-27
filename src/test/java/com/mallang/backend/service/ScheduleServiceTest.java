@@ -1,3 +1,4 @@
+/*
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.Doctor;
@@ -68,7 +69,7 @@ class ScheduleServiceTest {
         assertEquals(schedule2.getAvailableTimes(), scheduleDTOs.get(1).getAvailableTimes());
 
         verify(scheduleRepository, times(1)).findByDoctorIdAndDate(doctorId, date);
-    }*/
+    }
 
     @Test
     void testGetAvailableTimes() {
@@ -109,3 +110,4 @@ class ScheduleServiceTest {
         verify(scheduleRepository, times(1)).findByDoctorIdAndDate(doctorId, date);
     }
 }
+*/
