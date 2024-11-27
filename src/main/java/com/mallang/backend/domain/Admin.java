@@ -1,13 +1,16 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor // 기본 생성자만 사용
+@Setter // 모든 필드에 대해 setter 자동 생성
+@NoArgsConstructor // 기본 생성자 유지
 @Entity
 public class Admin {
 

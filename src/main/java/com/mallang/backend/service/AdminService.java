@@ -93,12 +93,12 @@ public class AdminService {
     }
 
     // 관리자 정보 업데이트
-    public void updateAdmin(String AdminId, String newId, String newPassword) {
-        Admin admin = adminRepository.findByAdminName(AdminId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 관리자를 찾을 수 없습니다: " + AdminId));
+    public void updateAdmin(String adminId, String newId, String newPassword) {
+        Admin admin = adminRepository.findByAdminName(adminId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 관리자를 찾을 수 없습니다: " + adminId));
 
-        if (AdminId != null && !AdminId.isEmpty()) {
-            if (adminRepository.findByAdminId(AdminId).isPresent()) {
+        if (newId != null && !newId.isEmpty()) {
+            if (adminRepository.findByAdminId(newId).isPresent()) {
                 throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
             }
             admin.setAdminId(newId);
@@ -108,7 +108,7 @@ public class AdminService {
         }
 
         adminRepository.save(admin);
-        System.out.println("관리자 정보 업데이트 완료: ");
+        System.out.println("관리자 정보 업데이트 완료: " + admin.getAdminId());
     }
 
     // 의료진 관련 기능들
