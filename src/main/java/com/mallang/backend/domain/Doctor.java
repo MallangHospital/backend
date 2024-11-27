@@ -8,11 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Setter // 모든 필드에 대해 setter 자동 생성
+@NoArgsConstructor // 기본 생성자만 사용
 @Entity
-@Builder
 public class Doctor {
 
     @Id
@@ -29,22 +27,35 @@ public class Doctor {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "doctor_history", joinColumns = @JoinColumn(name = "doctor_id"))
     @Column(name = "history_item")
-    @Builder.Default
     private List<String> history = new ArrayList<>(); // 경력 목록
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department; // 의료진이 소속된 부서
 
-
-
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<Vacation> vacations = new ArrayList<>(); // 의사와 연결된 휴진 정보 목록
 
-    @ManyToOne(fetch = FetchType.LAZY)  // Admin과의 관계 설정
-    @JoinColumn(name = "admin_id")  // 외래 키 설정
-    private Admin admin; // 관리자가 지정한 의료진
+    // 헬퍼 메서드
+    public void addVacation(Vacation vacation) {
+        this.vacations.add(vacation);
+        vacation.setDoctor(this);
+    }
 
-    // 기본 생성자와 모든 필드를 초기화하는 생성자가 제공됩니다.
+    public void addHistoryItem(String historyItem) {
+        this.history.add(historyItem);
+    }
+
+    @Override
+    public String toString() {
+        return "Doctor{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", position='" + position + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", photoUrl='" + photoUrl + '\'' +
+                ", localDate=" + localDate +
+                ", vacationEndDate=" + vacationEndDate +
+                '}';
+    }
 }
