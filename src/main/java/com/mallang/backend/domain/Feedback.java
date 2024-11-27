@@ -5,11 +5,10 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter // 모든 필드에 대해 setter 자동 생성
+@NoArgsConstructor // 기본 생성자만 사용
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Feedback {
 
     @Id
@@ -31,11 +30,19 @@ public class Feedback {
     @Column
     private String email; // 고객 이메일 주소 (선택)
 
-
     @Column(nullable = false)
     private LocalDateTime createdDate = LocalDateTime.now(); // 생성 시간
 
-    @ManyToOne
-    @JoinColumn(name = "admin_id") // 컬럼 이름은 실제 DB 구조에 맞춰야 함
-    private Admin admin; // 관리자로부터 연결된 정보
+    @Override
+    public String toString() {
+        return "Feedback{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", name='" + name + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", createdDate=" + createdDate +
+                '}';
+    }
 }

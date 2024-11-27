@@ -7,11 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Setter // 모든 필드에 대해 setter 자동 생성
+@NoArgsConstructor // 기본 생성자만 사용
 @Entity
-@Builder
 @Table(name = "department") // 매핑할 테이블 이름
 public class Department {
 

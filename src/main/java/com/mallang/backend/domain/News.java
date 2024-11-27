@@ -7,9 +7,8 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Setter // 모든 필드에 대해 setter 자동 생성
+@NoArgsConstructor // 기본 생성자만 유지
 public class News {
 
     @Id
@@ -32,25 +31,30 @@ public class News {
 
     private LocalDate writeDate; // 작성 날짜
 
-    @ManyToOne
-    @JoinColumn(name = "admin_id", nullable = false) // Long 타입 adminId와 매핑
-    private Admin admin;
-
-    // 기본 생성자에서 writeDate 초기화
+    // 작성 날짜 초기화
     @PrePersist
     protected void onCreate() {
-        writeDate = LocalDate.now(); // 현재 날짜로 초기화
-    }
-
-    public News(String name, String title, String content, String website, String newsDTOTitle, String newsDTOContent, String attachment1, String attachment2) {
-        this.name = name;
-        this.title = title;
-        this.content = content;
-        this.writeDate = LocalDate.now(); // 현재 날짜로 초기화
+        this.writeDate = LocalDate.now();
     }
 
     // 내용 업데이트 메서드
     public void updateContent(String newContent) {
         this.content = newContent;
+    }
+
+    @Override
+    public String toString() {
+        return "News{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", website='" + website + '\'' +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", attachment1='" + attachment1 + '\'' +
+                ", attachment2='" + attachment2 + '\'' +
+                ", writeDate=" + writeDate +
+                '}';
     }
 }

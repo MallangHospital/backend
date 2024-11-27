@@ -1,16 +1,16 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor // 기본 생성자만 유지
 public class Notice {
 
     @Id
@@ -47,16 +47,12 @@ public class Notice {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt; // 작성 시간
 
+    // 작성 시간 및 기본 상태 설정
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now(); // 작성 시간 자동 설정
         if (status == null) {
-            status = isSecret ? "비공개" : "공고"; // 비밀 여부에 따라 상태 설정
+            status = Boolean.TRUE.equals(isSecret) ? "비공개" : "공고"; // 비밀 여부에 따라 상태 설정
         }
     }
-
-    @ManyToOne
-    @JoinColumn(name = "admin_id", nullable = false) // 컬럼 이름은 DB에 맞게 설정, 외래 키 제약조건 추가
-    private Admin admin;
-
 }

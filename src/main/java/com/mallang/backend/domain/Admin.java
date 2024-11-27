@@ -7,10 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor // 필드를 초기화하는 생성자 추가
-@Builder // 빌더 패턴 추가
+@NoArgsConstructor // 기본 생성자만 사용
 @Entity
 public class Admin {
 
@@ -18,10 +15,9 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 관리자 ID (PK)
 
-    // 관리자 계정
-    private String adminId;
+    private String adminId; // 관리자 계정
 
-    private String adminName;
+    private String adminName; // 관리자 이름
 
     @Column(name = "admin_password", nullable = false) // DB 열 이름과 매핑
     private String password;

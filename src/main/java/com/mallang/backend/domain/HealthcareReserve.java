@@ -42,7 +42,5 @@ public class HealthcareReserve extends BaseEntity {
         }
     }
 
-    @ManyToOne
-    @JoinColumn(name = "admin_id")
-    private Admin admin;
+
 }

@@ -10,9 +10,9 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor // 기본 생성자
+@AllArgsConstructor // 모든 필드 포함 생성자
+@Builder // 빌더 패턴 추가
 public class Review {
 
     @Id
@@ -44,7 +44,7 @@ public class Review {
     @ElementCollection
     @CollectionTable(name = "review_detail_stars", joinColumns = @JoinColumn(name = "review_id"))
     @Column(name = "detail_star")
-    private List<Integer> detailStars = new ArrayList<>(); // 세분화된 별점
+    private List<Integer> detailStars = new ArrayList<>(); // null 방지
 
     @Column(nullable = false)
     private String content; // 리뷰 내용
@@ -57,10 +57,12 @@ public class Review {
 
     @Builder.Default
     @Column(name = "created_date", nullable = false, updatable = false)
-    private LocalDateTime createdDate = LocalDateTime.now(); // 리뷰 등록 날짜
+    private LocalDateTime createdDate = LocalDateTime.now(); // 리뷰 등록 날짜 기본값
 
     @PrePersist
-    public void onCreate() {
-        this.createdDate = LocalDateTime.now();
+    protected void onCreate() {
+        if (createdDate == null) {
+            createdDate = LocalDateTime.now();
+        }
     }
 }
