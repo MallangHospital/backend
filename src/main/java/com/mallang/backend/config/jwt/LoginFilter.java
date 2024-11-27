@@ -1,5 +1,6 @@
 package com.mallang.backend.config.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mallang.backend.config.CustomMemberDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -25,14 +27,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        String username = obtainUsername(request);
-        String password = obtainPassword(request);
+        try {
+            // JSON 요청에서 username과 password 읽기
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> loginData = mapper.readValue(request.getInputStream(), Map.class);
 
-        System.out.println(username);
+            String username = loginData.get("username");
+            String password = loginData.get("password");
 
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
+            System.out.println("Username: " + username);
+            System.out.println("Password: " + password);
 
-        return authenticationManager.authenticate(authToken);
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
+
+            return authenticationManager.authenticate(authToken);
+        } catch (IOException e) {
+            throw new RuntimeException("Invalid login request format", e);
+        }
     }
 
     @Override //로그인 성공 시

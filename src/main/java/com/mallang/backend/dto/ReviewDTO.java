@@ -8,6 +8,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Builder
 @Getter
 @Setter
 @Builder
@@ -46,6 +47,7 @@ public class ReviewDTO {
 
     @NotBlank(message = "리뷰 내용은 필수 항목입니다.")
     @Size(max = 1000, message = "리뷰 내용은 최대 1000자까지 입력 가능합니다.")
+
     private String content; // 리뷰 내용
 
     private String attachment; // 첨부파일 경로 또는 이름

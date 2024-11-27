@@ -38,14 +38,18 @@ public class SecurityConfig {
         http.httpBasic((auth) -> auth.disable());
 
         // 접근 권한 설정
-        http.authorizeHttpRequests((auth) -> auth
+        /*http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/api/member/join", "/", "/error").permitAll() // 인증 없이 접근 가능
                 .requestMatchers("/api/feedback").authenticated() // 인증된 사용자만 접근 가능
+                .requestMatchers("/api/admin").hasRole("ADMIN") // 관리자만 접근 가능
                 .requestMatchers("/api/feedback/admin").hasRole("ADMIN") // 관리자만 접근 가능
                 .requestMatchers("/api/review").authenticated() // 인증된 사용자만 접근 가능
                 .requestMatchers("/api/doctors").authenticated() // 인증된 사용자만 접근 가능
-                .requestMatchers("/api/admin").hasRole("ADMIN") // 관리자만 접근 가능
                 .anyRequest().authenticated() // 다른 요청은 로그인한 사용자만 접근 가능
+        );*/
+
+        http.authorizeHttpRequests((auth) -> auth
+                .anyRequest().permitAll() // 모든 요청에 대해 인증 없이 접근 가능
         );
 
         // JWT 필터 등록
