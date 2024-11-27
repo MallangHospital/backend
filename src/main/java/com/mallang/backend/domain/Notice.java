@@ -1,16 +1,16 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor // 기본 생성자만 유지
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder // 빌더 패턴 추가
 public class Notice {
 
     @Id
@@ -45,12 +45,15 @@ public class Notice {
     private String status; // 공개 상태 ("공고" 또는 "비공개")
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt; // 작성 시간
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now(); // 작성 시간 기본값 설정
 
     // 작성 시간 및 기본 상태 설정
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now(); // 작성 시간 자동 설정
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now(); // 작성 시간 자동 설정
+        }
         if (status == null) {
             status = Boolean.TRUE.equals(isSecret) ? "비공개" : "공고"; // 비밀 여부에 따라 상태 설정
         }
