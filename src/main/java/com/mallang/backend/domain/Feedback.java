@@ -1,12 +1,14 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter // 모든 필드에 대해 setter 자동 생성
+@NoArgsConstructor // 기본 생성자만 사용
 @Entity
-@Data
 public class Feedback {
 
     @Id
@@ -29,12 +31,18 @@ public class Feedback {
     private String email; // 고객 이메일 주소 (선택)
 
     @Column(nullable = false)
-    private String status = "안 읽음"; // 상태 (기본값: "안 읽음")
-
-    @Column(nullable = false)
     private LocalDateTime createdDate = LocalDateTime.now(); // 생성 시간
 
-    @ManyToOne
-    @JoinColumn(name = "admin_id") // 컬럼 이름은 실제 DB 구조에 맞춰야 함
-    private Admin admin;
+    @Override
+    public String toString() {
+        return "Feedback{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", name='" + name + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", createdDate=" + createdDate +
+                '}';
+    }
 }
