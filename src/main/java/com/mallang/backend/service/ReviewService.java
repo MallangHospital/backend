@@ -1,13 +1,14 @@
 package com.mallang.backend.service;
 
-import com.mallang.backend.dto.ReviewDTO;
 import com.mallang.backend.domain.Review;
+import com.mallang.backend.dto.ReviewDTO;
 import com.mallang.backend.repository.DepartmentRepository;
 import com.mallang.backend.repository.DoctorRepository;
 import com.mallang.backend.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,33 +36,9 @@ public class ReviewService {
         this.doctorRepository = doctorRepository;
     }
 
-    // 리뷰 저장
-    private void saveReview(ReviewDTO reviewDTO, String fileUrl) {
-        // 필수 필드 검증 추가
-        Objects.requireNonNull(reviewDTO.getMemberId(), "Member ID는 필수입니다.");
-        Objects.requireNonNull(reviewDTO.getDoctorId(), "Doctor ID는 필수입니다.");
-        Objects.requireNonNull(reviewDTO.getDepartmentId(), "Department ID는 필수입니다.");
-
-        Review review = Review.builder()
-                .memberId(reviewDTO.getMemberId())
-                .doctorId(reviewDTO.getDoctorId())
-                .departmentId(reviewDTO.getDepartmentId())
-                .departmentName(reviewDTO.getDepartmentName())
-                .doctorName(reviewDTO.getDoctorName())
-                .memberName(reviewDTO.getMemberName())
-                .detailStars(reviewDTO.getDetailStar())
-                .content(reviewDTO.getContent())
-                .fileUrl(fileUrl)
-                .memberPassword(reviewDTO.getMemberPassword())
-                .build();
-
-        reviewRepository.save(review);
-    }
-
     // 리뷰 생성
     @Transactional
     public void createReview(ReviewDTO reviewDTO, MultipartFile file) {
-        // 유효성 검증 추가
         validateReviewDTO(reviewDTO);
 
         String fileUrl = null;
@@ -76,27 +53,27 @@ public class ReviewService {
         saveReview(reviewDTO, fileUrl);
     }
 
-    // 모든 리뷰 조회
-    public List<ReviewDTO> getAllReviews() {
-        return reviewRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDate")).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    // 모든 리뷰 조회 (페이징 지원)
+    public Page<ReviewDTO> getAllReviews(Pageable pageable) {
+        return reviewRepository.findAll(pageable).map(this::convertToDTO);
     }
 
-    // 특정 리뷰 삭제
-    @Transactional
-    public void deleteReviewById(Long id) {
-        if (!reviewRepository.existsById(id)) {
-            throw new NoSuchElementException("해당 리뷰를 찾을 수 없습니다: " + id);
-        }
-        reviewRepository.deleteById(id);
-    }
+    // 리뷰 저장
+    private void saveReview(ReviewDTO reviewDTO, String fileUrl) {
+        Review review = Review.builder()
+                .memberId(reviewDTO.getMemberId())
+                .doctorId(reviewDTO.getDoctorId())
+                .departmentId(reviewDTO.getDepartmentId())
+                .departmentName(reviewDTO.getDepartmentName())
+                .doctorName(reviewDTO.getDoctorName())
+                .memberName(reviewDTO.getMemberName())
+                .detailStars(reviewDTO.getDetailStar())
+                .content(reviewDTO.getContent())
+                .fileUrl(fileUrl)
+                .memberPassword(reviewDTO.getMemberPassword())
+                .build();
 
-    // 비밀번호 검증
-    public boolean isPasswordValidForReview(Long id, String password) {
-        return reviewRepository.findById(id)
-                .map(review -> review.getMemberPassword().equals(password))
-                .orElse(false);
+        reviewRepository.save(review);
     }
 
     // 리뷰 DTO 검증
@@ -126,35 +103,6 @@ public class ReviewService {
     // 특정 의사 ID 유효성 확인
     public boolean isValidDoctor(Long doctorId) {
         return doctorRepository.existsById(doctorId);
-    }
-
-    // 세분화된 별점 평균 계산
-    public Map<String, Double> calculateDetailAverages() {
-        Map<String, Integer> detailIndexMap = Map.of(
-                "description", 0,
-                "treatment", 1,
-                "staff", 2,
-                "cleanliness", 3
-        );
-
-        Map<String, Double> detailAverages = new HashMap<>();
-        List<Review> reviews = reviewRepository.findAll();
-
-        for (Map.Entry<String, Integer> entry : detailIndexMap.entrySet()) {
-            String key = entry.getKey();
-            int index = entry.getValue();
-
-            double average = reviews.stream()
-                    .map(Review::getDetailStars)
-                    .filter(stars -> stars.size() > index)
-                    .mapToDouble(stars -> stars.get(index))
-                    .average()
-                    .orElse(0.0);
-
-            detailAverages.put(key, average);
-        }
-
-        return detailAverages;
     }
 
     // 파일 저장

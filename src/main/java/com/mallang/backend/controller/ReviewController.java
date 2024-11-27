@@ -3,12 +3,14 @@ package com.mallang.backend.controller;
 import com.mallang.backend.dto.ReviewDTO;
 import com.mallang.backend.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,7 +27,6 @@ public class ReviewController {
     // 리뷰 생성
     @PostMapping("/new")
     public ResponseEntity<String> createReview(@RequestBody @Validated ReviewDTO reviewDTO) {
-        System.out.println("Received ReviewDTO: " + reviewDTO.toString());
         try {
             String validationError = validateReview(reviewDTO);
             if (validationError != null) {
@@ -49,13 +50,21 @@ public class ReviewController {
         return null;
     }
 
+    // 리뷰 목록 조회 (페이징 포함)
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAllReviews() {
-        List<ReviewDTO> reviews = reviewService.getAllReviews();
-        Map<String, Double> averages = reviewService.calculateDetailAverages();
+    public ResponseEntity<Map<String, Object>> getAllReviews(
+            @RequestParam(defaultValue = "0") int page, // 기본 페이지 번호
+            @RequestParam(defaultValue = "10") int size // 기본 페이지 크기
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ReviewDTO> reviewPage = reviewService.getAllReviews(pageable);
+
         Map<String, Object> response = new HashMap<>();
-        response.put("reviews", reviews);
-        response.put("averages", averages);
+        response.put("reviews", reviewPage.getContent());
+        response.put("currentPage", reviewPage.getNumber() + 1); // 0부터 시작하므로 +1
+        response.put("totalPages", reviewPage.getTotalPages());
+        response.put("totalReviews", reviewPage.getTotalElements());
+
         return ResponseEntity.ok(response);
     }
 }

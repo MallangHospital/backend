@@ -1,9 +1,7 @@
 package com.mallang.backend.service;
 
-import com.mallang.backend.domain.Admin;
 import com.mallang.backend.domain.Notice;
 import com.mallang.backend.dto.AdminDTO;
-import com.mallang.backend.repository.AdminRepository;
 import com.mallang.backend.repository.NoticeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

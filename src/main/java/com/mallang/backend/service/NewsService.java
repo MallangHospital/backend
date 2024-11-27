@@ -51,14 +51,12 @@ public class NewsService {
     private NewsDTO convertToDTO(News news) {
         return new NewsDTO(
                 news.getId(),
+                news.getTitle(),
                 news.getName(),
                 news.getPassword(),
-                news.getEmail(),
-                news.getWebsite(),
-                news.getTitle(),
-                news.getContent(),
                 news.getAttachment1(),
                 news.getAttachment2(),
+                news.getContent(),
                 news.getWriteDate() != null ? news.getWriteDate() : LocalDate.now() // null 방지
         );
     }
@@ -70,14 +68,12 @@ public class NewsService {
      */
     private News convertToEntity(NewsDTO newsDTO) {
         News news = new News();
+        news.setTitle(newsDTO.getTitle());
         news.setName(newsDTO.getName());
         news.setPassword(newsDTO.getPassword());
-        news.setEmail(newsDTO.getEmail());
-        news.setWebsite(newsDTO.getWebsite());
-        news.setTitle(newsDTO.getTitle());
-        news.setContent(newsDTO.getContent());
         news.setAttachment1(newsDTO.getAttachment1());
         news.setAttachment2(newsDTO.getAttachment2());
+        news.setContent(newsDTO.getContent());
         return news;
     }
 }

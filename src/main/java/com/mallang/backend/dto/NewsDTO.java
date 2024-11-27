@@ -14,13 +14,11 @@ import java.time.LocalDate;
 public class NewsDTO {
 
     private Long id;                // 뉴스 ID
+    private String title;           // 뉴스 제목
     private String name;            // 작성자 이름
     private String password;        // 작성자 비밀번호
-    private String email;           // 작성자 이메일
-    private String website;         // 작성자 홈페이지
-    private String title;           // 뉴스 제목
-    private String content;         // 뉴스 내용
     private String attachment1;     // 첨부파일 1
     private String attachment2;     // 첨부파일 2
+    private String content;         // 뉴스 내용
     private LocalDate writeDate;    // 작성 날짜
 }

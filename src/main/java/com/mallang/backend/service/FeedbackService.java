@@ -19,16 +19,9 @@ public class FeedbackService {
         return feedbackRepository.save(feedback);
     }
 
-    // 모든 건의사항 조회
-    public List<Feedback> getAllFeedback() {
-        return feedbackRepository.findAll();
+    // 모든 건의사항 조회 (관리자 전용)
+    public List<Feedback> getAllFeedbacks() {
+        return feedbackRepository.findAll(); // 모든 건의사항 조회
     }
 
-    // 건의사항 상태 변경
-    public Feedback updateFeedbackStatus(Long id, String status) {
-        Feedback feedback = feedbackRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("건의사항 ID가 존재하지 않습니다."));
-
-        return feedbackRepository.save(feedback);
-    }
 }

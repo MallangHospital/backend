@@ -15,19 +15,19 @@ public class News {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 뉴스 ID
 
+    private String title; // 뉴스 제목
     private String name; // 작성자 이름
     private String password; // 비밀번호
-    private String email; // 이메일
-    private String website; // 홈페이지 URL
-
-    private String title; // 뉴스 제목
-    private String content; // 뉴스 내용
 
     @Column(name = "attachment1")
     private String attachment1; // 첨부파일 1 URL
 
     @Column(name = "attachment2")
     private String attachment2; // 첨부파일 2 URL
+
+    private String content; // 뉴스 내용
+
+
 
     private LocalDate writeDate; // 작성 날짜
 
@@ -46,14 +46,12 @@ public class News {
     public String toString() {
         return "News{" +
                 "id=" + id +
+                ", title='" + title + '\'' +
                 ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", website='" + website + '\'' +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
                 ", attachment1='" + attachment1 + '\'' +
                 ", attachment2='" + attachment2 + '\'' +
+                ", content='" + content + '\'' +
                 ", writeDate=" + writeDate +
                 '}';
     }

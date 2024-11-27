@@ -23,12 +23,8 @@ public class NoticeService {
                     dto.setId(String.valueOf(notice.getId()));
                     dto.setTitle(notice.getTitle());
                     dto.setAuthor(notice.getWriter());
-                    dto.setEmail(notice.getEmail());
                     dto.setPassword(notice.getPassword());
-                    dto.setPrivate(notice.getIsSecret());
-                    dto.setAttachment(notice.getAttachmentPath());
                     dto.setContent(notice.getContent());
-                    dto.setLink(notice.getLink());
                     dto.setWriteDate(notice.getCreatedAt().toString()); // LocalDate -> String 변환
                     return dto;
                 })
@@ -40,12 +36,8 @@ public class NoticeService {
         Notice notice = new Notice(); // 기본 생성자 사용
         notice.setTitle(noticeDTO.getTitle());
         notice.setWriter(noticeDTO.getAuthor());
-        notice.setEmail(noticeDTO.getEmail());
         notice.setPassword(noticeDTO.getPassword());
-        notice.setIsSecret(noticeDTO.isPrivate());
-        notice.setAttachmentPath(noticeDTO.getAttachment());
         notice.setContent(noticeDTO.getContent());
-        notice.setLink(noticeDTO.getLink());
 
         // 공지사항 저장
         notice = noticeRepository.save(notice);
@@ -55,12 +47,8 @@ public class NoticeService {
         dto.setId(String.valueOf(notice.getId()));
         dto.setTitle(notice.getTitle());
         dto.setAuthor(notice.getWriter());
-        dto.setEmail(notice.getEmail());
         dto.setPassword(notice.getPassword());
-        dto.setPrivate(notice.getIsSecret());
-        dto.setAttachment(notice.getAttachmentPath());
         dto.setContent(notice.getContent());
-        dto.setLink(notice.getLink());
         dto.setWriteDate(notice.getCreatedAt().toString()); // LocalDate -> String 변환
         return dto;
     }
