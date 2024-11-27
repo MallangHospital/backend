@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder // 빌더 패턴 추가
 public class Notice {
 
     @Id
@@ -24,39 +24,21 @@ public class Notice {
     private String writer; // 작성자
 
     @Column(nullable = false)
-    private String email; // 이메일
-
-    @Column(nullable = false)
-    private String password; // 비밀번호
-
-    @Column(nullable = false)
-    private Boolean isSecret; // 비밀글 여부
-
-    private String imagePath; // 대표 이미지 경로
-
-    private String attachmentPath; // 첨부 파일 경로
+    private String password; // 관리자 비밀번호
 
     @Column(nullable = false)
     private String content; // 본문 내용
 
-    private String link; // 관련 링크
-
-    @Column(nullable = false)
-    private String status; // 공개 상태 ("공고" 또는 "비공개")
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt; // 작성 시간
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now(); // 작성 시간 기본값 설정
 
+    // 작성 시간 및 기본 상태 설정
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now(); // 작성 시간 자동 설정
-        if (status == null) {
-            status = isSecret ? "비공개" : "공고"; // 비밀 여부에 따라 상태 설정
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now(); // 작성 시간 자동 설정
         }
     }
-
-    @ManyToOne
-    @JoinColumn(name = "admin_id", nullable = false) // 컬럼 이름은 DB에 맞게 설정, 외래 키 제약조건 추가
-    private Admin admin;
-
 }
