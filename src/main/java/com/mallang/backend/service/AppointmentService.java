@@ -54,6 +54,7 @@ public class AppointmentService {
                 .doctor(doctor)
                 .department(department)
                 .member(member) // 인증된 Member 객체 직접 설정
+                .appointmentType(appointmentDTO.getAppointmentType())
                 .appointmentDate(date)
                 .appointmentTime(time)
                 .symptomDescription(appointmentDTO.getSymptomDescription())
@@ -149,6 +150,7 @@ public class AppointmentService {
                 .departmentId(appointment.getDepartment().getId())
                 .patientName(appointment.getMember().getName()) // Member의 이름 가져오기
                 .doctorName(appointment.getDoctor().getName()) // Doctor의 이름 가져오기
+                .appointmentType(appointment.getAppointmentType())
                 .appointmentDate(appointment.getAppointmentDate())
                 .appointmentTime(appointment.getAppointmentTime())
                 .symptomDescription(appointment.getSymptomDescription())
