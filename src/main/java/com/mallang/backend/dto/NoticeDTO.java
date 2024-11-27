@@ -2,17 +2,14 @@ package com.mallang.backend.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class NoticeDTO {
-    private String id;
-    private String title;         // 제목
-    private String content;     // 내용
-    private String author;      // 작성자
-    private String password;    // 비밀번호
-
-    private String writeDate;   // 작성 날짜 (LocalDate -> String으로 처리)
+    private String id; // 공지사항 ID
+    private String title; // 제목
+    private String noticeWriter; // 작성자 이름
+    private String password; // 비밀번호 (작성 시 필요)
+    private String content; // 본문
+    private String writeDate; // 작성 날짜 (문자열)
 }

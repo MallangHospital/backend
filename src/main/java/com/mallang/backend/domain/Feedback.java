@@ -1,48 +1,30 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
-
-@Getter
-@Setter // 모든 필드에 대해 setter 자동 생성
-@NoArgsConstructor // 기본 생성자만 사용
 @Entity
+@Getter
+@Setter
 public class Feedback {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 고유 ID
+    private Long id; // 피드백 ID
 
     @Column(nullable = false)
-    private String title; // 건의사항 제목
-
-    @Column(nullable = false, length = 2000)
-    private String content; // 건의사항 내용
+    private String title; // 제목
 
     @Column(nullable = false)
-    private String name; // 고객 이름
+    private String content; // 본문
 
     @Column(nullable = false)
-    private String phoneNumber; // 고객 휴대폰 번호
-
-    @Column
-    private String email; // 고객 이메일 주소 (선택)
+    private String name; // 작성자 이름
 
     @Column(nullable = false)
-    private LocalDateTime createdDate = LocalDateTime.now(); // 생성 시간
+    private String phoneNumber; // 작성자 전화번호
 
-    @Override
-    public String toString() {
-        return "Feedback{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", name='" + name + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", email='" + email + '\'' +
-                ", createdDate=" + createdDate +
-                '}';
-    }
+    @Column(nullable = false)
+    private String email; // 작성자 이메일
 }

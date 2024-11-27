@@ -7,49 +7,87 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor // 생성자 최소화
+@RequiredArgsConstructor
 public class NoticeService {
 
-    private final NoticeRepository noticeRepository; // 생성자 주입
+    private final NoticeRepository noticeRepository;
 
     // 모든 공지사항 조회
     public List<NoticeDTO> getAllNotices() {
         return noticeRepository.findAll().stream()
                 .map(notice -> {
-                    NoticeDTO dto = new NoticeDTO(); // 기본 생성자 사용
+                    NoticeDTO dto = new NoticeDTO();
                     dto.setId(String.valueOf(notice.getId()));
                     dto.setTitle(notice.getTitle());
-                    dto.setAuthor(notice.getWriter());
-                    dto.setPassword(notice.getPassword());
+                    dto.setNoticeWriter(notice.getNoticeWriter());
                     dto.setContent(notice.getContent());
-                    dto.setWriteDate(notice.getCreatedAt().toString()); // LocalDate -> String 변환
+                    dto.setWriteDate(notice.getCreatedAt().toString());
                     return dto;
                 })
                 .collect(Collectors.toList());
     }
 
-    // 공지사항 생성
+    // 특정 ID 공지사항 조회
+    public NoticeDTO getNoticeById(Long id) {
+        Optional<Notice> noticeOptional = noticeRepository.findById(id);
+        if (noticeOptional.isPresent()) {
+            Notice notice = noticeOptional.get();
+            NoticeDTO dto = new NoticeDTO();
+            dto.setId(String.valueOf(notice.getId()));
+            dto.setTitle(notice.getTitle());
+            dto.setNoticeWriter(notice.getNoticeWriter());
+            dto.setContent(notice.getContent());
+            dto.setWriteDate(notice.getCreatedAt().toString());
+            return dto;
+        }
+        return null; // 공지사항이 존재하지 않을 경우
+    }
+
+    // 공지사항 작성
     public NoticeDTO createNotice(NoticeDTO noticeDTO) {
-        Notice notice = new Notice(); // 기본 생성자 사용
+        Notice notice = new Notice();
         notice.setTitle(noticeDTO.getTitle());
-        notice.setWriter(noticeDTO.getAuthor());
+        notice.setNoticeWriter(noticeDTO.getNoticeWriter());
         notice.setPassword(noticeDTO.getPassword());
         notice.setContent(noticeDTO.getContent());
 
-        // 공지사항 저장
-        notice = noticeRepository.save(notice);
+        Notice savedNotice = noticeRepository.save(notice);
 
-        // NoticeDTO 반환
         NoticeDTO dto = new NoticeDTO();
-        dto.setId(String.valueOf(notice.getId()));
-        dto.setTitle(notice.getTitle());
-        dto.setAuthor(notice.getWriter());
-        dto.setPassword(notice.getPassword());
-        dto.setContent(notice.getContent());
-        dto.setWriteDate(notice.getCreatedAt().toString()); // LocalDate -> String 변환
+        dto.setId(String.valueOf(savedNotice.getId()));
+        dto.setTitle(savedNotice.getTitle());
+        dto.setNoticeWriter(savedNotice.getNoticeWriter());
+        dto.setContent(savedNotice.getContent());
+        dto.setWriteDate(savedNotice.getCreatedAt().toString());
         return dto;
+    }
+
+    // 공지사항 삭제
+    public boolean deleteNoticeById(Long id) {
+        if (noticeRepository.existsById(id)) {
+            noticeRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    // 공지사항 수정
+    public boolean updateNoticeById(Long id, NoticeDTO noticeDTO) {
+        Optional<Notice> noticeOptional = noticeRepository.findById(id);
+
+        if (noticeOptional.isPresent()) {
+            Notice notice = noticeOptional.get();
+            notice.setTitle(noticeDTO.getTitle());
+            notice.setContent(noticeDTO.getContent());
+            notice.setPassword(noticeDTO.getPassword());
+            noticeRepository.save(notice);
+            return true;
+        }
+
+        return false; // 수정할 공지사항이 존재하지 않을 경우
     }
 }

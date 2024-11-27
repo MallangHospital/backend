@@ -1,3 +1,4 @@
+/*
 package com.mallang.backend.dto;
 
 import lombok.Getter;
@@ -50,3 +51,5 @@ public class AdminDTO {
     private String patientDoctor; // 담당 의사 이름
     private String reservationStatus; // 예약 상태
 }
+
+ */

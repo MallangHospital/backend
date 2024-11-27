@@ -6,74 +6,88 @@ import com.mallang.backend.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor // final 필드에 대한 생성자 자동 생성
+@RequiredArgsConstructor
 public class NewsService {
 
     private final NewsRepository newsRepository;
 
-    /**
-     * 모든 뉴스 가져오기
-     * @return 뉴스 목록 DTO
-     */
+    // 건강매거진 전체 조회
     public List<NewsDTO> getAllNews() {
         return newsRepository.findAll().stream()
-                .map(this::convertToDTO) // 변환 로직을 헬퍼 메서드로 분리
+                .map(news -> {
+                    NewsDTO dto = new NewsDTO();
+                    dto.setId(news.getId());
+                    dto.setTitle(news.getTitle());
+                    dto.setNewsWriter(news.getNewsWriter());
+                    dto.setContent(news.getContent());
+                    dto.setCreatedAt(news.getCreatedAt().toString());
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 뉴스 생성
-     *
-     * @param newsDTO 생성할 뉴스 정보 DTO
-     * @return 생성된 뉴스 DTO
-     */
+    // 특정 ID 건강매거진 조회
+    public NewsDTO getNewsById(Long id) {
+        Optional<News> newsOptional = newsRepository.findById(id);
+        if (newsOptional.isPresent()) {
+            News news = newsOptional.get();
+            NewsDTO dto = new NewsDTO();
+            dto.setId(news.getId());
+            dto.setTitle(news.getTitle());
+            dto.setNewsWriter(news.getNewsWriter());
+            dto.setContent(news.getContent());
+            dto.setCreatedAt(news.getCreatedAt().toString());
+            return dto;
+        }
+        return null;
+    }
+
+    // 건강매거진 작성
     public NewsDTO createNews(NewsDTO newsDTO) {
-        // DTO를 엔티티로 변환
-        News news = convertToEntity(newsDTO);
-
-        // 데이터 저장
-        news = newsRepository.save(news);
-
-        // 저장된 엔티티를 DTO로 변환하여 반환
-        return convertToDTO(news);
-    }
-
-    /**
-     * News 엔티티를 NewsDTO로 변환하는 헬퍼 메서드
-     * @param news News 엔티티
-     * @return NewsDTO
-     */
-    private NewsDTO convertToDTO(News news) {
-        return new NewsDTO(
-                news.getId(),
-                news.getTitle(),
-                news.getName(),
-                news.getPassword(),
-                news.getAttachment1(),
-                news.getAttachment2(),
-                news.getContent(),
-                news.getWriteDate() != null ? news.getWriteDate() : LocalDate.now() // null 방지
-        );
-    }
-
-    /**
-     * NewsDTO를 News 엔티티로 변환하는 헬퍼 메서드
-     * @param newsDTO NewsDTO
-     * @return News 엔티티
-     */
-    private News convertToEntity(NewsDTO newsDTO) {
         News news = new News();
         news.setTitle(newsDTO.getTitle());
-        news.setName(newsDTO.getName());
-        news.setPassword(newsDTO.getPassword());
-        news.setAttachment1(newsDTO.getAttachment1());
-        news.setAttachment2(newsDTO.getAttachment2());
+        news.setNewsWriter(newsDTO.getNewsWriter());
         news.setContent(newsDTO.getContent());
-        return news;
+        news.setPassword(newsDTO.getPassword());
+
+        News savedNews = newsRepository.save(news);
+
+        NewsDTO dto = new NewsDTO();
+        dto.setId(savedNews.getId());
+        dto.setTitle(savedNews.getTitle());
+        dto.setNewsWriter(savedNews.getNewsWriter());
+        dto.setContent(savedNews.getContent());
+        dto.setCreatedAt(savedNews.getCreatedAt().toString());
+        return dto;
+    }
+
+    // 건강매거진 수정
+    public boolean updateNewsById(Long id, NewsDTO newsDTO) {
+        Optional<News> newsOptional = newsRepository.findById(id);
+
+        if (newsOptional.isPresent()) {
+            News news = newsOptional.get();
+            news.setTitle(newsDTO.getTitle());
+            news.setContent(newsDTO.getContent());
+            news.setPassword(newsDTO.getPassword());
+            newsRepository.save(news);
+            return true;
+        }
+
+        return false; // 수정할 건강매거진이 존재하지 않을 경우
+    }
+
+    // 건강매거진 삭제
+    public boolean deleteNewsById(Long id) {
+        if (newsRepository.existsById(id)) {
+            newsRepository.deleteById(id);
+            return true;
+        }
+        return false; // 삭제할 건강매거진이 존재하지 않을 경우
     }
 }

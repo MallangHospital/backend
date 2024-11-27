@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,14 +13,18 @@ public class FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
 
-    // 건의사항 등록
+    // 모든 건의사항 조회
+    public List<Feedback> getAllFeedback() {
+        return feedbackRepository.findAll();
+    }
+
+    // 특정 ID 건의사항 조회
+    public Feedback getFeedbackById(Long id) {
+        return feedbackRepository.findById(id).orElse(null);
+    }
+
+    // 건의사항 작성
     public Feedback submitFeedback(Feedback feedback) {
         return feedbackRepository.save(feedback);
     }
-
-    // 모든 건의사항 조회 (관리자 전용)
-    public List<Feedback> getAllFeedbacks() {
-        return feedbackRepository.findAll(); // 모든 건의사항 조회
-    }
-
 }

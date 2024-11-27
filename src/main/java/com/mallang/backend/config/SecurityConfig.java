@@ -6,6 +6,7 @@ import com.mallang.backend.config.jwt.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,18 +39,27 @@ public class SecurityConfig {
         http.httpBasic((auth) -> auth.disable());
 
         // 접근 권한 설정
-        /*http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/api/member/join", "/", "/error").permitAll() // 인증 없이 접근 가능
-                .requestMatchers("/api/feedback").authenticated() // 인증된 사용자만 접근 가능
-                .requestMatchers("/api/admin").hasRole("ADMIN") // 관리자만 접근 가능
-                .requestMatchers("/api/feedback/admin").hasRole("ADMIN") // 관리자만 접근 가능
-                .requestMatchers("/api/review").authenticated() // 인증된 사용자만 접근 가능
-                .requestMatchers("/api/doctors").authenticated() // 인증된 사용자만 접근 가능
-                .anyRequest().authenticated() // 다른 요청은 로그인한 사용자만 접근 가능
-        );*/
-
         http.authorizeHttpRequests((auth) -> auth
-                .anyRequest().permitAll() // 모든 요청에 대해 인증 없이 접근 가능
+                .requestMatchers("/api/member/join", "/", "/error").permitAll() // 인증 없이 접근 가능
+
+                .requestMatchers("/api/feedback").authenticated() // 인증된 사용자만 접근 가능
+                .requestMatchers("/api/feedback/admin").hasRole("ADMIN") // 관리자만 접근 가능
+
+                .requestMatchers("/api/notices").permitAll() // 공지사항 조회는 모두 접근 가능
+                .requestMatchers(HttpMethod.POST, "/api/notices").hasRole("ADMIN") // 공지사항 작성은 관리자만 접근가능
+
+                .requestMatchers("/api/news").permitAll() // 건강매거진 조회는 모두 접근 가능
+                .requestMatchers(HttpMethod.POST, "/api/news").hasRole("ADMIN") // 건강매거진 작성은 관리자만 가능
+
+                .requestMatchers("/api/review").permitAll() // 리뷰 조회는 모두 접근 가능
+                .requestMatchers(HttpMethod.POST, "/api/review").authenticated() // 리뷰 작성은 인증된 사용자만 가능
+                .requestMatchers(HttpMethod.PUT, "/api/review/**").authenticated() // 리뷰 수정은 인증된 사용자만 가능
+                .requestMatchers(HttpMethod.DELETE, "/api/review/**").authenticated() // 리뷰 삭제는 인증된 사용자만 가능
+
+                .requestMatchers("/api/doctors").authenticated() // 인증된 사용자만 접근 가능
+
+                .requestMatchers("/api/admin").hasRole("ADMIN") // 관리자만 접근 가능
+                .anyRequest().authenticated() // 다른 요청은 로그인한 사용자만 접근 가능
         );
 
         // JWT 필터 등록
