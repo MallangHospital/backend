@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 
 @Configuration
@@ -25,6 +26,7 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     //AuthenticationManager Bean 등록
     @Bean
@@ -38,6 +40,8 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable());
         http.formLogin((auth) -> auth.disable());
         http.httpBasic((auth) -> auth.disable());
+
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource)); // CORS 설정 등록
 
         /*http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/api/member/join", "/", "/error", "/login").permitAll() // 인증 없이 접근 가능
