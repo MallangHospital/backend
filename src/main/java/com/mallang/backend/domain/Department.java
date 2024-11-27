@@ -1,31 +1,40 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
-@RequiredArgsConstructor
+@Setter // 모든 필드에 대해 setter 자동 생성
+@NoArgsConstructor // 기본 생성자만 사용
 @Entity
-@Builder
+@Table(name = "department") // 매핑할 테이블 이름
 public class Department {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 기본 키
+    @Column(name = "dpid") // 데이터베이스의 실제 컬럼 이름과 매핑
+    private Long id;
 
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    // 의사와의 관계 설정 (1:N, Department -> Doctor)
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Builder.Default
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Doctor> doctors = new ArrayList<>();
 
-    // name 필드만 설정하는 생성자는 @RequiredArgsConstructor로 자동 제공
+    // 헬퍼 메서드
+    public void addDoctor(Doctor doctor) {
+        this.doctors.add(doctor);
+        doctor.setDepartment(this);
+    }
+
+    @Override
+    public String toString() {
+        return "Department{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
