@@ -1,4 +1,3 @@
-/*
 
 package com.mallang.backend.controller;
 
@@ -33,5 +32,3 @@ public class HealthcareReserveController {
         return ResponseEntity.ok(createdReservation);
     }
 }
-
- */
