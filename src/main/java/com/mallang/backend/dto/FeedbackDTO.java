@@ -1,12 +1,17 @@
 package com.mallang.backend.dto;
 
-import lombok.Data;
-import java.time.LocalDateTime;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@Builder
 public class FeedbackDTO {
     private Long id;
+    private String title;
+    private String content;
     private String name;
-    private String briefContent; // 내용 요약 (한 줄)
-    private LocalDateTime createdDate;
+    private String phoneNumber;
+    private String email;
 }

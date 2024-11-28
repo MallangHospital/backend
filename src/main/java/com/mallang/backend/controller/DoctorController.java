@@ -4,26 +4,57 @@ import com.mallang.backend.dto.DoctorDTO;
 import com.mallang.backend.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/doctors")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')") // 관리자 전용
 public class DoctorController {
-    private final DoctorService doctorService; // 생성자는 Lombok이 자동 생성
 
-    @GetMapping("/doctors")
-    public List<DoctorDTO> getAllDoctors() {
-        return doctorService.getAllDoctors();
+    private final DoctorService doctorService;
+
+    // 모든 의료진 정보 조회
+    @GetMapping
+    public ResponseEntity<List<DoctorDTO>> getAllDoctors() {
+        return ResponseEntity.ok(doctorService.getAllDoctors());
     }
 
-    // 특정 부서의 의사 목록 조회
-    @GetMapping(params = "departmentId")
-    public ResponseEntity<List<DoctorDTO>> getDoctorsByDepartment(@RequestParam Long departmentId) {
-        List<DoctorDTO> doctors = doctorService.getDoctorsByDepartment(departmentId);
-        return ResponseEntity.ok(doctors);
+    // 특정 의료진 정보 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<DoctorDTO> getDoctorById(@PathVariable Long id) {
+        return ResponseEntity.ok(doctorService.getDoctorById(id));
+    }
+
+    // 의료진 정보 등록
+    @PostMapping
+    public ResponseEntity<String> createDoctor(
+            @RequestPart DoctorDTO doctorDTO,
+            @RequestPart(required = false) MultipartFile photo
+    ) {
+        doctorService.createDoctor(doctorDTO, photo);
+        return ResponseEntity.ok("Doctor created successfully.");
+    }
+
+    // 의료진 정보 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateDoctor(
+            @PathVariable Long id,
+            @RequestPart DoctorDTO doctorDTO,
+            @RequestPart(required = false) MultipartFile photo
+    ) {
+        doctorService.updateDoctor(id, doctorDTO, photo);
+        return ResponseEntity.ok("Doctor updated successfully.");
+    }
+
+    // 의료진 정보 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteDoctor(@PathVariable Long id) {
+        doctorService.deleteDoctor(id);
+        return ResponseEntity.ok("Doctor deleted successfully.");
     }
 }

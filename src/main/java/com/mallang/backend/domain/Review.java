@@ -4,15 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor // 기본 생성자
-@AllArgsConstructor // 모든 필드 포함 생성자
-@Builder // 빌더 패턴 추가
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Review {
 
     @Id
@@ -20,49 +19,36 @@ public class Review {
     private Long id; // 리뷰 ID
 
     @Column(name = "member_id", nullable = false)
-    private Long memberId; // 사용자 ID
-
-    @Column(name = "member_name")
-    private String memberName; // 사용자 이름
+    private String memberId; // 작성자 ID
 
     @Column(name = "doctor_id", nullable = false)
     private Long doctorId; // 의사 ID
 
-    @Column(name = "doctor_name")
-    private String doctorName; // 의사 이름
+    @Column(name = "department_id", nullable = false)
+    private Long departmentId; // 진료과 ID
 
     @Column(nullable = false)
     private double star; // 전체 별점
 
-    @Column(name = "department_id", nullable = false)
-    private Long departmentId; // 진료과 ID
-
-    @Column(name = "department_name")
-    private String departmentName; // 진료과 이름
-
-    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "review_detail_stars", joinColumns = @JoinColumn(name = "review_id"))
     @Column(name = "detail_star")
-    private List<Integer> detailStars = new ArrayList<>(); // null 방지
+    private List<Integer> detailStars; // 세부 별점 리스트
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String content; // 리뷰 내용
 
-    @Column(name = "file_url")
-    private String fileUrl; // 첨부 파일 URL
-
     @Column(name = "member_password", nullable = false)
-    private String memberPassword; // 리뷰 삭제 시 비밀번호
+    private String memberPassword; // 비밀번호
 
-    @Builder.Default
+    @Column(name = "receipt_file_path")
+    private String receiptFilePath; // 병원 방문 인증 파일 경로
+
     @Column(name = "created_date", nullable = false, updatable = false)
-    private LocalDateTime createdDate = LocalDateTime.now(); // 리뷰 등록 날짜 기본값
+    private LocalDateTime createdDate = LocalDateTime.now(); // 생성일
 
     @PrePersist
     protected void onCreate() {
-        if (createdDate == null) {
-            createdDate = LocalDateTime.now();
-        }
+        this.createdDate = LocalDateTime.now();
     }
 }

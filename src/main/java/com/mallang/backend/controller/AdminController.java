@@ -1,11 +1,10 @@
+/*
 package com.mallang.backend.controller;
 
 import com.mallang.backend.domain.Feedback;
 import com.mallang.backend.domain.Notice;
-import com.mallang.backend.dto.FeedbackDTO;
 import com.mallang.backend.dto.HealthcareReserveDTO;
 import com.mallang.backend.dto.ReviewDTO;
-import com.mallang.backend.service.AdminService;
 import com.mallang.backend.service.HealthcareReserveService;
 import com.mallang.backend.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ public class AdminController {
     private final HealthcareReserveService healthcareReserveService;
 
     @Autowired
-    private AdminService adminService;
     private final ReviewService reviewService;
 
     // HealthcareReserveService를 AdminController에 주입
@@ -270,3 +268,5 @@ public class AdminController {
         }
     }
 }
+
+ */

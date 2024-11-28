@@ -2,69 +2,76 @@ package com.mallang.backend.controller;
 
 import com.mallang.backend.dto.ReviewDTO;
 import com.mallang.backend.service.ReviewService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/review")
+@RequiredArgsConstructor
 public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @Autowired
-    public ReviewController(ReviewService reviewService) {
-        this.reviewService = reviewService;
-    }
-
-    // 리뷰 생성
-    @PostMapping("/new")
-    public ResponseEntity<String> createReview(@RequestBody @Validated ReviewDTO reviewDTO) {
-        try {
-            String validationError = validateReview(reviewDTO);
-            if (validationError != null) {
-                return ResponseEntity.badRequest().body(validationError);
-            }
-            reviewService.createReview(reviewDTO, null);
-            return ResponseEntity.ok("리뷰가 성공적으로 등록되었습니다.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("리뷰 등록 중 오류가 발생했습니다: " + e.getMessage());
-        }
-    }
-
-    private String validateReview(ReviewDTO reviewDTO) {
-        if (!reviewService.isValidDepartment(reviewDTO.getDepartmentId())) {
-            return "유효하지 않은 진료과 ID입니다.";
-        }
-        if (!reviewService.isValidDoctor(reviewDTO.getDoctorId())) {
-            return "유효하지 않은 의사 ID입니다.";
-        }
-        return null;
-    }
-
-    // 리뷰 목록 조회 (페이징 포함)
+    // 모든 리뷰 조회 (로그인하지 않은 사용자도 접근 가능)
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAllReviews(
-            @RequestParam(defaultValue = "0") int page, // 기본 페이지 번호
-            @RequestParam(defaultValue = "10") int size // 기본 페이지 크기
+    public ResponseEntity<?> getAllReviews(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ReviewDTO> reviewPage = reviewService.getAllReviews(pageable);
+        return ResponseEntity.ok(reviewService.getReviewsWithPagination(page, size));
+    }
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("reviews", reviewPage.getContent());
-        response.put("currentPage", reviewPage.getNumber() + 1); // 0부터 시작하므로 +1
-        response.put("totalPages", reviewPage.getTotalPages());
-        response.put("totalReviews", reviewPage.getTotalElements());
+    // 특정 의사에 대한 리뷰 조회 (로그인하지 않은 사용자도 접근 가능)
+    @GetMapping("/doctor/{doctorId}")
+    public ResponseEntity<?> getReviewsByDoctor(
+            @PathVariable Long doctorId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(reviewService.getReviewsByDoctorWithPagination(doctorId, page, size));
+    }
 
-        return ResponseEntity.ok(response);
+    // 리뷰 작성 (진료기록이 있는 사용자만 가능)
+    @PostMapping
+    @PreAuthorize("@customSecurityService.hasMedicalRecord(authentication.name)")
+    public ResponseEntity<?> createReview(
+            @ModelAttribute ReviewDTO reviewDTO,
+            @RequestPart(required = false) MultipartFile receiptFile
+    ) {
+        ReviewDTO savedReview = reviewService.createReview(reviewDTO, receiptFile);
+        return ResponseEntity.ok("리뷰가 성공적으로 등록되었습니다! ID: " + savedReview.getId());
+    }
+
+    // 리뷰 수정 (작성자 본인만 가능, 비밀번호 필요)
+    @PutMapping("/{id}")
+    @PreAuthorize("@customSecurityService.isReviewOwner(authentication.name, #id)")
+    public ResponseEntity<?> updateReview(
+            @PathVariable Long id,
+            @ModelAttribute ReviewDTO reviewDTO
+    ) {
+        boolean isUpdated = reviewService.updateReview(id, reviewDTO);
+        if (isUpdated) {
+            return ResponseEntity.ok("리뷰가 성공적으로 수정되었습니다!");
+        } else {
+            return ResponseEntity.badRequest().body("리뷰 수정에 실패하였습니다. 비밀번호를 확인해주세요.");
+        }
+    }
+
+    // 리뷰 삭제 (작성자는 비밀번호 필요, 관리자는 비밀번호 없이 가능)
+    @DeleteMapping("/{id}")
+    @PreAuthorize("@customSecurityService.isReviewOwnerOrAdmin(authentication.name, #id)")
+    public ResponseEntity<?> deleteReview(
+            @PathVariable Long id,
+            @RequestParam(required = false) String password
+    ) {
+        boolean isDeleted = reviewService.deleteReview(id, password);
+        if (isDeleted) {
+            return ResponseEntity.ok("리뷰가 성공적으로 삭제되었습니다!");
+        } else {
+            return ResponseEntity.badRequest().body("리뷰 삭제에 실패하였습니다. 비밀번호를 확인해주세요.");
+        }
     }
 }
