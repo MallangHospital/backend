@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Notice {
+public class Notice extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,11 +29,5 @@ public class Notice {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content; // 본문
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt; // 작성 날짜
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
 }

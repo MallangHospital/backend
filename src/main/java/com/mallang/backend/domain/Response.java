@@ -1,11 +1,13 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -15,12 +17,13 @@ public class Response {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 응답 ID
 
-    @Column(nullable = false)
-    private String memberId; // 응답한 사용자 ID
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_id", nullable = false)
+    private Question question; // 질문과의 관계
 
     @Column(nullable = false)
-    private Long questionId; // 질문 ID
+    private String memberId; // 응답자의 사용자 ID
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String answer; // 응답 내용
+    @Column(nullable = false)
+    private Integer answer; // 선택한 답변 (1~5 범위: 매우 그렇다 ~ 매우 그렇지 않다)
 }

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class News {
+public class News extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +33,4 @@ public class News {
     @Column(nullable = false)
     private String content; // 본문
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now(); // 작성 날짜
 }

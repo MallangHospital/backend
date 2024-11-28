@@ -1,14 +1,14 @@
 package com.mallang.backend.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DoctorVacationDTO {
     private Long id; // 휴진 ID
     private Long doctorId; // 의사 ID

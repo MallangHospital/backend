@@ -18,14 +18,12 @@ public class FeedbackController {
 
     // 모든 건의사항 조회 (관리자 전용)
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')") // 관리자만 접근 가능
     public ResponseEntity<List<FeedbackDTO>> getAllFeedback() {
         return ResponseEntity.ok(feedbackService.getAllFeedback());
     }
 
     // 특정 ID 건의사항 조회 (관리자 전용)
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // 관리자만 접근 가능
     public ResponseEntity<?> getFeedbackById(@PathVariable Long id) {
         FeedbackDTO feedback = feedbackService.getFeedbackById(id);
         if (feedback != null) {
@@ -37,7 +35,6 @@ public class FeedbackController {
 
     // 건의사항 작성 (사용자 전용)
     @PostMapping
-    @PreAuthorize("hasRole('USER')") // 사용자만 접근 가능
     public ResponseEntity<?> submitFeedback(@RequestBody FeedbackDTO feedbackDTO) {
         if (feedbackDTO.getTitle() == null || feedbackDTO.getTitle().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다.");

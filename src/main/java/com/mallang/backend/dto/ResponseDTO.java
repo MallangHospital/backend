@@ -1,8 +1,10 @@
 package com.mallang.backend.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Setter
 @Getter
 @Builder
 @AllArgsConstructor

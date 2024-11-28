@@ -4,7 +4,6 @@ import com.mallang.backend.dto.NewsDTO;
 import com.mallang.backend.service.NewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,58 +32,35 @@ public class NewsController {
         }
     }
 
-    // 건강매거진 작성 (관리자 전용)
+    // 건강매거진 작성 (관리자 접근 가능)
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createNews(
-            @RequestParam String title,
-            @RequestParam String content,
-            @RequestParam String password
-    ) {
-        if (title.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다. 다시 확인해 주세요.");
+    public ResponseEntity<?> createNews(@RequestBody NewsDTO newsDTO) {
+        if (newsDTO.getTitle() == null || newsDTO.getTitle().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다.");
         }
-        if (content.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("본문란이 비어 있습니다. 내용을 입력해 주세요.");
+        if (newsDTO.getContent() == null || newsDTO.getContent().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("본문란이 비어 있습니다.");
         }
-        if (password.trim().isEmpty()) {
+        if (newsDTO.getPassword() == null || newsDTO.getPassword().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("비밀번호를 다시 확인해주세요.");
         }
-
-        NewsDTO newsDTO = NewsDTO.builder()
-                .title(title)
-                .content(content)
-                .password(password)
-                .build();
 
         NewsDTO savedNews = newsService.createNews(newsDTO);
-        return ResponseEntity.ok("등록이 완료되었습니다.");
+        return ResponseEntity.ok(savedNews);
     }
 
-    // 건강매거진 수정 (관리자 전용)
+    // 건강매거진 수정 (모든 관리자 접근 가능)
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateNews(
-            @PathVariable Long id,
-            @RequestParam String title,
-            @RequestParam String content,
-            @RequestParam String password
-    ) {
-        if (title.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다. 다시 확인해 주세요.");
+    public ResponseEntity<?> updateNews(@PathVariable Long id, @RequestBody NewsDTO newsDTO) {
+        if (newsDTO.getTitle() == null || newsDTO.getTitle().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다.");
         }
-        if (content.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("본문란이 비어 있습니다. 내용을 입력해 주세요.");
+        if (newsDTO.getContent() == null || newsDTO.getContent().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("본문란이 비어 있습니다.");
         }
-        if (password.trim().isEmpty()) {
+        if (newsDTO.getPassword() == null || newsDTO.getPassword().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("비밀번호를 다시 확인해주세요.");
         }
-
-        NewsDTO newsDTO = NewsDTO.builder()
-                .title(title)
-                .content(content)
-                .password(password)
-                .build();
 
         boolean isUpdated = newsService.updateNewsById(id, newsDTO);
 
@@ -95,9 +71,8 @@ public class NewsController {
         }
     }
 
-    // 건강매거진 삭제 (관리자 전용)
+    // 건강매거진 삭제 (모든 관리자 접근 가능)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteNews(@PathVariable Long id) {
         boolean isDeleted = newsService.deleteNewsById(id);
 

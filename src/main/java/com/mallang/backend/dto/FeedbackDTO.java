@@ -1,12 +1,12 @@
 package com.mallang.backend.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FeedbackDTO {
     private Long id;
     private String title;
@@ -14,4 +14,5 @@ public class FeedbackDTO {
     private String name;
     private String phoneNumber;
     private String email;
+    private String regDate;
 }

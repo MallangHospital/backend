@@ -1,4 +1,4 @@
-package com.mallang.backend.service;
+/*package com.mallang.backend.service;
 
 import com.mallang.backend.domain.Appointment;
 import com.mallang.backend.dto.AppointmentDTO;
@@ -51,3 +51,5 @@ public class AppointmentDetailsService {
                 .build();
     }
 }
+
+ */

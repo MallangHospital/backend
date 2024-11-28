@@ -18,16 +18,18 @@ public class Doctor {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+
+    @Column(name = "position", nullable = false)
     private String specialty; // 전문 분야
 
-    @Column(nullable = false)
+    @Column(name = "phone_number",nullable = false)
     private String contact; // 연락처
 
+    @Column(name = "photo_url",nullable = false)
     private String photoPath; // 사진 URL
 
     @ManyToOne
-    @JoinColumn(name = "department_id", nullable = false)
+    @JoinColumn(name = "department_id", nullable = true)
     private Department department; // 소속 진료과 (양방향 매핑)
 
 }

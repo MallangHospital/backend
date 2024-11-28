@@ -42,21 +42,29 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/api/member/join", "/", "/error").permitAll() // 인증 없이 접근 가능
 
-                .requestMatchers("/api/feedback").authenticated() // 인증된 사용자만 접근 가능
-                .requestMatchers("/api/feedback/admin").hasRole("ADMIN") // 관리자만 접근 가능
+                //관리자 허용
+                .requestMatchers(HttpMethod.GET, "/api/feedback/**").hasRole("ADMIN") // 피드백 전체 조회, ID조회 허용
 
-                .requestMatchers("/api/notices").permitAll() // 공지사항 조회는 모두 접근 가능
-                .requestMatchers(HttpMethod.POST, "/api/notices").hasRole("ADMIN") // 공지사항 작성은 관리자만 접근가능
+                .requestMatchers(HttpMethod.GET, "/api/news/**").hasRole("ADMIN") // 뉴스 전체 조회,특정 ID조회 허용
+                .requestMatchers(HttpMethod.POST, "/api/news").hasRole("ADMIN")  // 뉴스 작성 허용
+                .requestMatchers(HttpMethod.DELETE, "/api/news/**").hasRole("ADMIN")  // 뉴스 삭제허용
+                .requestMatchers(HttpMethod.PUT, "/api/news/**").hasRole("ADMIN")  //뉴스 수정허용
 
-                .requestMatchers("/api/news").permitAll() // 건강매거진 조회는 모두 접근 가능
-                .requestMatchers(HttpMethod.POST, "/api/news").hasRole("ADMIN") // 건강매거진 작성은 관리자만 가능
 
-                .requestMatchers("/api/review").permitAll() // 리뷰 조회는 모두 접근 가능
-                .requestMatchers(HttpMethod.POST, "/api/review").authenticated() // 리뷰 작성은 인증된 사용자만 가능
-                .requestMatchers(HttpMethod.PUT, "/api/review/**").authenticated() // 리뷰 수정은 인증된 사용자만 가능
-                .requestMatchers(HttpMethod.DELETE, "/api/review/**").authenticated() // 리뷰 삭제는 인증된 사용자만 가능
+                .requestMatchers(HttpMethod.GET, "/api/doctor").hasRole("ADMIN") // 의사 전체 조회, ID조회는 허용
+                .requestMatchers(HttpMethod.POST, "/api/doctor").hasRole("ADMIN")  // 의사 등록 허용
+                .requestMatchers(HttpMethod.DELETE, "/api/doctor/**").hasRole("ADMIN")  // 공지 삭제허용
+                .requestMatchers(HttpMethod.PUT, "/api/doctor/**").hasRole("ADMIN")  // 공지 수정허용
 
-                .requestMatchers("/api/doctors").authenticated() // 인증된 사용자만 접근 가능
+
+
+                .requestMatchers(HttpMethod.GET, "/api/notice").hasRole("ADMIN") // 공지사항 전체 조회, ID조회는 허용
+                .requestMatchers(HttpMethod.POST, "/api/notice").hasRole("ADMIN")  // 공지 작성 허용
+                .requestMatchers(HttpMethod.DELETE, "/api/notice/**").hasRole("ADMIN")  // 공지 삭제허용
+                .requestMatchers(HttpMethod.PUT, "/api/notice/**").hasRole("ADMIN")  // 공지 수정허용
+
+
+
 
                 .requestMatchers("/api/admin").hasRole("ADMIN") // 관리자만 접근 가능
                 .anyRequest().authenticated() // 다른 요청은 로그인한 사용자만 접근 가능

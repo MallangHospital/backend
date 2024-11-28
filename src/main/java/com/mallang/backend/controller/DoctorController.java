@@ -4,16 +4,13 @@ import com.mallang.backend.dto.DoctorDTO;
 import com.mallang.backend.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/doctors")
+@RequestMapping("/api/doctor")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')") // 관리자 전용
 public class DoctorController {
 
     private final DoctorService doctorService;
@@ -30,13 +27,9 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.getDoctorById(id));
     }
 
-    // 의료진 정보 등록
     @PostMapping
-    public ResponseEntity<String> createDoctor(
-            @RequestPart DoctorDTO doctorDTO,
-            @RequestPart(required = false) MultipartFile photo
-    ) {
-        doctorService.createDoctor(doctorDTO, photo);
+    public ResponseEntity<String> createDoctor(@RequestBody DoctorDTO doctorDTO) {
+        doctorService.createDoctor(doctorDTO, null); // 사진 없이 등록
         return ResponseEntity.ok("Doctor created successfully.");
     }
 
@@ -44,10 +37,9 @@ public class DoctorController {
     @PutMapping("/{id}")
     public ResponseEntity<String> updateDoctor(
             @PathVariable Long id,
-            @RequestPart DoctorDTO doctorDTO,
-            @RequestPart(required = false) MultipartFile photo
+            @RequestBody DoctorDTO doctorDTO
     ) {
-        doctorService.updateDoctor(id, doctorDTO, photo);
+        doctorService.updateDoctor(id, doctorDTO, null); // 사진 없이 수정
         return ResponseEntity.ok("Doctor updated successfully.");
     }
 

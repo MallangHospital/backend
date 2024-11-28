@@ -1,6 +1,7 @@
 package com.mallang.backend.config;
 
 import com.mallang.backend.domain.Member;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,8 +10,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Getter
 @RequiredArgsConstructor
 public class CustomMemberDetails implements UserDetails {
+    // Member 객체를 반환하는 메서드 추가
     private final Member member;
 
     @Override
@@ -27,6 +30,10 @@ public class CustomMemberDetails implements UserDetails {
 
     public String getUserId() {
         return member.getMid();
+    }
+
+    public String getName() {
+        return member.getName();
     }
 
     @Override
@@ -54,8 +61,4 @@ public class CustomMemberDetails implements UserDetails {
         return true;
     }
 
-    // Member 객체를 반환하는 메서드 추가
-    public Member getMember() {
-        return member;
-    }
 }

@@ -13,12 +13,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class HealthcareReserveService {
-
     private final HealthcareReserveRepository healthcareReserveRepository;
 
-    // 건강검진 예약 생성
     @Transactional
-    public HealthcareReserveDTO createHealthcareReserve(HealthcareReserveDTO dto) {
+    public HealthcareReserveDTO createReservation(HealthcareReserveDTO dto) {
         HealthcareReserve reservation = HealthcareReserve.builder()
                 .name(dto.getName())
                 .memberId(dto.getMemberId())
@@ -26,36 +24,46 @@ public class HealthcareReserveService {
                 .reserveDate(dto.getReserveDate())
                 .hType(dto.getHType())
                 .build();
-
         HealthcareReserve savedReservation = healthcareReserveRepository.save(reservation);
-
-        return convertToDTO(savedReservation);
+        return HealthcareReserveDTO.builder()
+                .hId(savedReservation.getHId())
+                .name(savedReservation.getName())
+                .memberId(savedReservation.getMemberId())
+                .phoneNumber(savedReservation.getPhoneNumber())
+                .reserveDate(savedReservation.getReserveDate())
+                .hType(savedReservation.getHType())
+                .build();
     }
 
     // 특정 회원의 건강검진 예약 조회
     @Transactional(readOnly = true)
     public List<HealthcareReserveDTO> getHealthReservesByMemberId(String memberId) {
         List<HealthcareReserve> reserves = healthcareReserveRepository.findByMemberId(memberId);
-
         return reserves.stream()
-                .map(this::convertToDTO)
+                .map(reserve -> HealthcareReserveDTO.builder()
+                        .hId(reserve.getHId())
+                        .name(reserve.getName())
+                        .memberId(reserve.getMemberId())
+                        .phoneNumber(reserve.getPhoneNumber())
+                        .reserveDate(reserve.getReserveDate())
+                        .hType(reserve.getHType())
+                        .build())
                 .collect(Collectors.toList());
     }
 
-    // 특정 건강검진 예약 조회
-    @Transactional(readOnly = true)
-    public HealthcareReserveDTO getHealthcareReserveById(Long id) {
-        HealthcareReserve reserve = healthcareReserveRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Healthcare reserve not found with id: " + id));
-
-        return convertToDTO(reserve);
-    }
-
-    // 모든 건강검진 예약 조회 (관리자 전용)
+    // 모든 건강검진 예약 조회
     @Transactional(readOnly = true)
     public List<HealthcareReserveDTO> getAllHealthReserves() {
-        return healthcareReserveRepository.findAll().stream()
-                .map(this::convertToDTO)
+        List<HealthcareReserve> healthReserves = healthcareReserveRepository.findAll();
+        return healthReserves.stream()
+                .map(reserve -> HealthcareReserveDTO.builder()
+                        .hId(reserve.getHId())
+                        .name(reserve.getName())
+                        .memberId(reserve.getMemberId())
+                        .phoneNumber(reserve.getPhoneNumber())
+                        .reserveDate(reserve.getReserveDate())
+                        .hType(reserve.getHType())
+                        .build())
                 .collect(Collectors.toList());
     }
 
@@ -67,15 +75,4 @@ public class HealthcareReserveService {
         healthcareReserveRepository.delete(reserve);
     }
 
-    // HealthcareReserve -> HealthcareReserveDTO 변환
-    private HealthcareReserveDTO convertToDTO(HealthcareReserve reserve) {
-        return HealthcareReserveDTO.builder()
-                .hId(reserve.getHId())
-                .name(reserve.getName())
-                .memberId(reserve.getMemberId())
-                .phoneNumber(reserve.getPhoneNumber())
-                .reserveDate(reserve.getReserveDate())
-                .hType(reserve.getHType())
-                .build();
-    }
 }

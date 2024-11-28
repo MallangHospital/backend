@@ -1,38 +1,37 @@
+/*
+
 package com.mallang.backend.controller;
 
+import com.mallang.backend.config.CustomMemberDetails;
+import com.mallang.backend.domain.Member;
 import com.mallang.backend.dto.HealthcareReserveDTO;
 import com.mallang.backend.service.HealthcareReserveService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/healthcare-reserves")
-@RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')") // 관리자 전용
+@RequestMapping("/healthcareReserve")
 public class HealthcareReserveController {
 
     private final HealthcareReserveService healthcareReserveService;
 
-    // 모든 건강검진 예약 정보 조회
-    @GetMapping
-    public ResponseEntity<List<HealthcareReserveDTO>> getAllHealthcareReserves() {
-        return ResponseEntity.ok(healthcareReserveService.getAllHealthReserves());
+    public HealthcareReserveController(HealthcareReserveService healthcareReserveService) {
+        this.healthcareReserveService = healthcareReserveService;
     }
 
-    // 특정 건강검진 예약 정보 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<HealthcareReserveDTO> getHealthcareReserveDetails(@PathVariable Long id) {
-        return ResponseEntity.ok(healthcareReserveService.getHealthcareReserveById(id));
-    }
+    @PostMapping
+    public ResponseEntity<HealthcareReserveDTO> createReservation(
+            @AuthenticationPrincipal CustomMemberDetails userDetails, // CustomMemberDetails 주입
+            @RequestBody HealthcareReserveDTO dto) {
 
-    // 건강검진 예약 취소
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> cancelHealthcareReserve(@PathVariable Long id) {
-        healthcareReserveService.cancelHealthCheck(id);
-        return ResponseEntity.ok("건강검진 예약이 취소되었습니다.");
+        // CustomMemberDetails에서 Member 객체를 가져옴
+        Member member = userDetails.getMember();
+        dto.setMemberId(member.getMid());
+
+        HealthcareReserveDTO createdReservation = healthcareReserveService.createReservation(dto);
+        return ResponseEntity.ok(createdReservation);
     }
 }
+
+ */

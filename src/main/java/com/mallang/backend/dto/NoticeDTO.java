@@ -1,12 +1,12 @@
 package com.mallang.backend.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class NoticeDTO {
     private String id; // 공지사항 ID
     private String title; // 제목

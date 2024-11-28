@@ -24,7 +24,7 @@ public class NoticeService {
                         .title(notice.getTitle())
                         .noticeWriter(notice.getNoticeWriter())
                         .content(notice.getContent())
-                        .writeDate(notice.getCreatedAt().toString())
+                        .writeDate(notice.getRegDate().toString())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -37,7 +37,7 @@ public class NoticeService {
                 .title(notice.getTitle())
                 .noticeWriter(notice.getNoticeWriter())
                 .content(notice.getContent())
-                .writeDate(notice.getCreatedAt().toString())
+                .writeDate(notice.getRegDate().toString())
                 .build()).orElse(null);
     }
 
@@ -57,7 +57,7 @@ public class NoticeService {
                 .title(savedNotice.getTitle())
                 .noticeWriter(savedNotice.getNoticeWriter())
                 .content(savedNotice.getContent())
-                .writeDate(savedNotice.getCreatedAt().toString())
+                .writeDate(savedNotice.getRegDate().toString())
                 .build();
     }
 

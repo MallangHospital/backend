@@ -1,43 +1,42 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class Appointment {
-
+@AllArgsConstructor
+@NoArgsConstructor
+public class Appointment extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id;// 기본 키
 
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY) // Doctor와의 관계 설정 (다대일)
+    @JoinColumn(name = "doctor_id", nullable = false) // 외래키 설정, 반드시 설정
     private Doctor doctor;
 
-    @ManyToOne
-    @JoinColumn(name = "department_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY) // Department와의 관계 설정 (다대일)
+    @JoinColumn(name = "department_id", nullable = false) // 외래키 설정, 반드시 설정
     private Department department;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @ManyToOne(fetch = FetchType.LAZY) // Member와 다대일 관계 설정
+    @JoinColumn(name = "member_id", nullable = false) // Member 외래키 설정
+    private Member member; // 환자 정보
 
     @Column(nullable = false)
-    private LocalDate appointmentDate;
+    private LocalDate appointmentDate; // 예약 날짜
 
     @Column(nullable = false)
-    private LocalTime appointmentTime;
+    private LocalTime appointmentTime; // 예약 시간
 
-    private String symptomDescription; // 증상
+    private String symptomDescription; // 증상 설명
 
-    @Column(nullable = false)
-    private String status; // 예약 상태 ("예약중", "취소" 등)
 }
