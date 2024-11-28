@@ -2,10 +2,9 @@ package com.mallang.backend.repository;
 
 import com.mallang.backend.domain.Doctor;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Arrays;
-import java.util.List;
-
+@Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
-    List<Doctor> findByDepartmentId(Long departmentId);
+    // 필요 시 추가적인 커스텀 쿼리 메서드 정의
 }

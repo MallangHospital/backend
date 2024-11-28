@@ -1,48 +1,131 @@
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.Feedback;
+import com.mallang.backend.dto.FeedbackDTO;
 import com.mallang.backend.repository.FeedbackRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-@ActiveProfiles("test")
-@SpringBootTest
+
 class FeedbackServiceTest {
 
-    @Mock
-    private FeedbackRepository feedbackRepository; // mock FeedbackRepository
-
     @InjectMocks
-    private FeedbackService feedbackService; // FeedbackService에 mock된 FeedbackRepository를 주입
+    private FeedbackService feedbackService;
+
+    @Mock
+    private FeedbackRepository feedbackRepository;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
-    void testSubmitFeedback() {
-        // Given: 테스트 데이터 준비
-        Feedback feedback = new Feedback();
-        feedback.setTitle("Great service");
-        feedback.setContent("The service was excellent.");
-        feedback.setName("John Doe");
-        feedback.setPhoneNumber("123-456-7890");
-        feedback.setEmail("johndoe@example.com");
+    void getAllFeedback_ShouldReturnFeedbackList() {
+        // Arrange
+        Feedback feedback1 = Feedback.builder()
+                .id(1L)
+                .title("Feedback 1")
+                .content("Content 1")
+                .name("User 1")
+                .phoneNumber("010-1111-1111")
+                .email("user1@example.com")
+                .build();
 
-        // mock FeedbackRepository가 save 메서드를 호출할 때 위 피드백 객체를 반환하도록 설정
-        when(feedbackRepository.save(feedback)).thenReturn(feedback);
+        Feedback feedback2 = Feedback.builder()
+                .id(2L)
+                .title("Feedback 2")
+                .content("Content 2")
+                .name("User 2")
+                .phoneNumber("010-2222-2222")
+                .email("user2@example.com")
+                .build();
 
-        // When: 서비스 메서드 호출
-        Feedback savedFeedback = feedbackService.submitFeedback(feedback);
+        when(feedbackRepository.findAll()).thenReturn(Arrays.asList(feedback1, feedback2));
 
-        // Then: 반환된 피드백 객체 검증
-        assertNotNull(savedFeedback); // 반환값이 null이 아님을 확인
-        assertEquals("Great service", savedFeedback.getTitle()); // 제목 검증
-        assertEquals("The service was excellent.", savedFeedback.getContent()); // 내용 검증
-        assertEquals("John Doe", savedFeedback.getName()); // 이름 검증
+        // Act
+        List<FeedbackDTO> feedbackList = feedbackService.getAllFeedback();
 
-        // Verify: mock 메서드가 호출되었는지 확인
-        verify(feedbackRepository, times(1)).save(feedback); // save() 메서드가 정확히 한 번 호출되었는지 확인
+        // Assert
+        assertEquals(2, feedbackList.size());
+        assertEquals("Feedback 1", feedbackList.get(0).getTitle());
+        verify(feedbackRepository, times(1)).findAll();
+    }
+
+    @Test
+    void getFeedbackById_ShouldReturnFeedback_WhenExists() {
+        // Arrange
+        Feedback feedback = Feedback.builder()
+                .id(1L)
+                .title("Feedback 1")
+                .content("Content 1")
+                .name("User 1")
+                .phoneNumber("010-1111-1111")
+                .email("user1@example.com")
+                .build();
+
+        when(feedbackRepository.findById(1L)).thenReturn(Optional.of(feedback));
+
+        // Act
+        FeedbackDTO feedbackDTO = feedbackService.getFeedbackById(1L);
+
+        // Assert
+        assertNotNull(feedbackDTO);
+        assertEquals("Feedback 1", feedbackDTO.getTitle());
+        verify(feedbackRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void getFeedbackById_ShouldReturnNull_WhenNotExists() {
+        // Arrange
+        when(feedbackRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act
+        FeedbackDTO feedbackDTO = feedbackService.getFeedbackById(1L);
+
+        // Assert
+        assertNull(feedbackDTO);
+        verify(feedbackRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void submitFeedback_ShouldSaveFeedback() {
+        // Arrange
+        FeedbackDTO feedbackDTO = FeedbackDTO.builder()
+                .title("New Feedback")
+                .content("New Content")
+                .name("New User")
+                .phoneNumber("010-3333-3333")
+                .email("newuser@example.com")
+                .build();
+
+        Feedback feedback = Feedback.builder()
+                .id(1L)
+                .title("New Feedback")
+                .content("New Content")
+                .name("New User")
+                .phoneNumber("010-3333-3333")
+                .email("newuser@example.com")
+                .build();
+
+        when(feedbackRepository.save(any(Feedback.class))).thenReturn(feedback);
+
+        // Act
+        FeedbackDTO savedFeedback = feedbackService.submitFeedback(feedbackDTO);
+
+        // Assert
+        assertNotNull(savedFeedback);
+        assertEquals("New Feedback", savedFeedback.getTitle());
+        verify(feedbackRepository, times(1)).save(any(Feedback.class));
     }
 }

@@ -7,63 +7,78 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor // final 필드에 대한 생성자 자동 생성
+@RequiredArgsConstructor
 public class NewsService {
 
     private final NewsRepository newsRepository;
 
-    /**
-     * 모든 뉴스 가져오기
-     * @return 뉴스 목록 DTO
-     */
+    // 건강매거진 전체 조회
     public List<NewsDTO> getAllNews() {
         return newsRepository.findAll().stream()
-                .map(news -> new NewsDTO(
-                        news.getId(),
-                        news.getName(),
-                        news.getPassword(),
-                        news.getEmail(),
-                        news.getWebsite(),
-                        news.getTitle(),
-                        news.getContent(),
-                        news.getAttachment1(),
-                        news.getAttachment2(),
-                        news.getWriteDate()
-                ))
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 뉴스 생성
-     * @param newsDTO 생성할 뉴스 정보 DTO
-     * @return 생성된 뉴스 DTO
-     */
+    // 특정 ID 건강매거진 조회
+    public NewsDTO getNewsById(Long id) {
+        return newsRepository.findById(id).map(this::convertToDTO).orElse(null);
+    }
+
+    // 건강매거진 작성
     public NewsDTO createNews(NewsDTO newsDTO) {
-        News news = new News(
-                newsDTO.getName(),
-                newsDTO.getPassword(),
-                newsDTO.getEmail(),
-                newsDTO.getWebsite(),
-                newsDTO.getTitle(),
-                newsDTO.getContent(),
-                newsDTO.getAttachment1(),
-                newsDTO.getAttachment2()
-        );
-        news = newsRepository.save(news);
-        return new NewsDTO(
-                news.getId(),
-                news.getName(),
-                news.getPassword(),
-                news.getEmail(),
-                news.getWebsite(),
-                news.getTitle(),
-                news.getContent(),
-                news.getAttachment1(),
-                news.getAttachment2(),
-                news.getWriteDate()
-        );
+        News news = convertToEntity(newsDTO);
+        News savedNews = newsRepository.save(news);
+        return convertToDTO(savedNews);
+    }
+
+    // 건강매거진 수정
+    public boolean updateNewsById(Long id, NewsDTO newsDTO) {
+        Optional<News> newsOptional = newsRepository.findById(id);
+
+        if (newsOptional.isPresent()) {
+            News news = newsOptional.get();
+            news.setTitle(newsDTO.getTitle());
+            news.setContent(newsDTO.getContent());
+            news.setPassword(newsDTO.getPassword());
+            newsRepository.save(news);
+            return true;
+        }
+
+        return false; // 수정할 건강매거진이 존재하지 않을 경우
+    }
+
+    // 건강매거진 삭제
+    public boolean deleteNewsById(Long id) {
+        if (newsRepository.existsById(id)) {
+            newsRepository.deleteById(id);
+            return true;
+        }
+        return false; // 삭제할 건강매거진이 존재하지 않을 경우
+    }
+
+    // DTO -> Entity 변환
+    private News convertToEntity(NewsDTO newsDTO) {
+        News news = new News();
+        news.setTitle(newsDTO.getTitle());
+        news.setNewsWriter(newsDTO.getNewsWriter());
+        news.setContent(newsDTO.getContent());
+        news.setPassword(newsDTO.getPassword());
+        return news;
+    }
+
+    // Entity -> DTO 변환
+    private NewsDTO convertToDTO(News news) {
+        return NewsDTO.builder()
+                .id(news.getId())
+                .title(news.getTitle())
+                .newsWriter(news.getNewsWriter())
+                .content(news.getContent())
+                .password(news.getPassword())
+                .createdAt(news.getRegDate().toString())
+                .build();
     }
 }
