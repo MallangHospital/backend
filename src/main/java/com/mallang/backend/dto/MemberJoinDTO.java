@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Builder
 @Data
-@NoArgsConstructor
+@NoArgsConstructor // 기본 생성자 추가
 @AllArgsConstructor
 public class MemberJoinDTO {
     private String mid;
@@ -16,4 +16,5 @@ public class MemberJoinDTO {
     private String name;
     private String phoneNum; //휴대폰번호
     private String rrn; //주민등록번호
+    private boolean agreeToTerms;  // 약관 동의 여부
 }

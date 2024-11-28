@@ -1,8 +1,7 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,31 +9,46 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // 리뷰 ID
 
-    private Long memberId; // 사용자 ID
-    private Long memberName; // 사용자 이름
+    @Column(name = "member_id", nullable = false)
+    private String memberId; // 작성자 ID
+
+    @Column(name = "doctor_id", nullable = false)
     private Long doctorId; // 의사 ID
-    private Long doctorName; // 의사 이름
-    private int star; // 전체 별점
+
+    @Column(name = "department_id", nullable = false)
     private Long departmentId; // 진료과 ID
-    private String departmentName; // 진료과 이름
+
+    @Column(nullable = false)
+    private double star; // 전체 별점
 
     @ElementCollection
-    private List<Integer> detailStars; // 세분화된 별점 (자세한 설명, 치료후 결과, 직원의 친절, 청결함)
+    @CollectionTable(name = "review_detail_stars", joinColumns = @JoinColumn(name = "review_id"))
+    @Column(name = "detail_star")
+    private List<Integer> detailStars; // 세부 별점 리스트
 
+    @Column(nullable = false, length = 1000)
     private String content; // 리뷰 내용
-    private String fileUrl; // 첨부 파일 URL
-    private Long memberPassword; // 리뷰 삭제 시 비밀번호
 
-    private LocalDateTime createdDate; // 리뷰 등록 날짜
+    @Column(name = "member_password", nullable = false)
+    private String memberPassword; // 비밀번호
+
+    @Column(name = "receipt_file_path")
+    private String receiptFilePath; // 병원 방문 인증 파일 경로
+
+    @Column(name = "created_date", nullable = false, updatable = false)
+    private LocalDateTime createdDate = LocalDateTime.now(); // 생성일
 
     @PrePersist
-    public void onCreate() {
-        this.createdDate = LocalDateTime.now(); // 리뷰 등록 날짜 자동 설정
+    protected void onCreate() {
+        this.createdDate = LocalDateTime.now();
     }
 }

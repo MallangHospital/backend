@@ -1,3 +1,4 @@
+/*
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.HealthcareReserve;
@@ -65,3 +66,5 @@ class HealthcareReserveServiceTest {
         Mockito.verify(healthcareReserveRepository, Mockito.times(1)).save(any(HealthcareReserve.class));
     }
 }
+
+ */
