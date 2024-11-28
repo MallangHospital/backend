@@ -27,8 +27,6 @@ public class Review {
     @Column(name = "department_id", nullable = false)
     private Long departmentId; // 진료과 ID
 
-    @Column(nullable = false)
-    private double star; // 전체 별점
 
     @ElementCollection
     @CollectionTable(name = "review_detail_stars", joinColumns = @JoinColumn(name = "review_id"))

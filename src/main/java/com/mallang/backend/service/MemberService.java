@@ -20,11 +20,6 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     public void join(MemberJoinDTO memberJoinDTO) {
-        // 약관 동의 확인
-        if (!memberJoinDTO.isAgreeToTerms()) {
-            throw new IllegalArgumentException("약관에 동의해야 합니다.");
-        }
-
         // 아이디 중복 확인
         if (memberRepository.existsById(memberJoinDTO.getMid())) {
             throw new IllegalArgumentException("아이디가 이미 존재합니다.");
@@ -136,16 +131,4 @@ public class MemberService {
 
         memberRepository.save(member);
     }
-
-    /*public boolean verifyPassword(String memberId, String rawPassword) {
-        // DB에서 Member 조회
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
-        System.out.println("Raw Password: " + rawPassword);
-        System.out.println("Encoded Password: " + member.getMpw());
-
-        System.out.println("Password matches: " + passwordEncoder.matches("password1234!", "$2a$10$cFFlGYu83rK52z7xgjHAsOSIrn1rooheb/yErfuXOAAD35qy0ihze"));
-        // 암호화된 비밀번호와 입력한 비밀번호 비교
-        return passwordEncoder.matches(rawPassword, member.getMpw());
-    }*/
 }

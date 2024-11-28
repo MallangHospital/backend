@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class DoctorVacationService {
+public class
+DoctorVacationService {
 
     private final DoctorVacationRepository vacationRepository;
     private final DoctorRepository doctorRepository; // DoctorRepository 추가

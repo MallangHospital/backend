@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/healthcareReserve")
 public class HealthcareReserveController {
@@ -30,5 +32,12 @@ public class HealthcareReserveController {
 
         HealthcareReserveDTO createdReservation = healthcareReserveService.createReservation(dto);
         return ResponseEntity.ok(createdReservation);
+    }
+
+    // 전체 건강검진 예약 조회 (관리자만 접근 가능)
+    @GetMapping
+    public ResponseEntity<List<HealthcareReserveDTO>> getAllReservations() {
+        List<HealthcareReserveDTO> reservations = healthcareReserveService.getAllHealthReserves();
+        return ResponseEntity.ok(reservations);
     }
 }

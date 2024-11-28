@@ -58,19 +58,4 @@ public class MemberController {
         memberService.updateMember(memberId, memberUpdateDTO);
         return ResponseEntity.ok("Member information updated successfully.");
     }
-
-    /*// 비밀번호 확인
-    @PostMapping("/verify-password")
-    public ResponseEntity<?> verifyPassword(
-            @AuthenticationPrincipal CustomMemberDetails userDetails,
-            @RequestBody String password) {
-
-        String memberId = userDetails.getUserId();
-        boolean isPasswordValid = memberService.verifyPassword(memberId, password);
-
-        if (!isPasswordValid) {
-            return ResponseEntity.status(401).body("Invalid password.");
-        }
-        return ResponseEntity.ok("Password verified successfully.");
-    }*/
 }
