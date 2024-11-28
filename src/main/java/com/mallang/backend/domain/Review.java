@@ -19,14 +19,13 @@ public class Review {
     private Long id; // 리뷰 ID
 
     @Column(name = "member_id", nullable = false)
-    private String memberId; // 작성자 ID
+    private Long memberId; // 작성자 ID (Long으로 수정)
 
     @Column(name = "doctor_id", nullable = false)
     private Long doctorId; // 의사 ID
 
     @Column(name = "department_id", nullable = false)
     private Long departmentId; // 진료과 ID
-
 
     @ElementCollection
     @CollectionTable(name = "review_detail_stars", joinColumns = @JoinColumn(name = "review_id"))
@@ -44,9 +43,4 @@ public class Review {
 
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate = LocalDateTime.now(); // 생성일
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdDate = LocalDateTime.now();
-    }
 }

@@ -27,12 +27,6 @@ public class DoctorService {
                 .collect(Collectors.toList());
     }
 
-    // 특정 의료진 정보 조회
-    public DoctorDTO getDoctorById(Long id) {
-        return doctorRepository.findById(id)
-                .map(this::convertToDTO)
-                .orElseThrow(() -> new IllegalArgumentException("Doctor not found with id: " + id));
-    }
 
     // 의료진 등록
     public void createDoctor(DoctorDTO doctorDTO, MultipartFile photo) {
@@ -66,7 +60,7 @@ public class DoctorService {
     }
 
     // 사진 저장 로직 예제
-    private String savePhoto(MultipartFile photo) {
+    String savePhoto(MultipartFile photo) {
         try {
             String uploadDir = "uploads/photos/"; // 사진 저장 경로
             String fileName = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
