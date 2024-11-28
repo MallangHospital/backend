@@ -31,6 +31,10 @@ public class Appointment extends BaseEntity{
     @JoinColumn(name = "member_id", nullable = false) // Member 외래키 설정
     private Member member; // 환자 정보
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false) // 필드가 null이 아닌 값으로 설정되어야 함
+    private AppointmentType appointmentType;
+
     @Column(nullable = false)
     private LocalDate appointmentDate; // 예약 날짜
 

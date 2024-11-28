@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -24,6 +25,7 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     // AuthenticationManager Bean 등록
     @Bean
@@ -37,9 +39,9 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable());
         http.formLogin((auth) -> auth.disable());
         http.httpBasic((auth) -> auth.disable());
-
+      
         // 접근 권한 설정
-        http.authorizeHttpRequests((auth) -> auth
+        /*http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/api/member/join", "/", "/error").permitAll() // 인증 없이 접근 가능
 
                 //관리자 허용
@@ -61,13 +63,19 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/notice").hasRole("ADMIN") // 공지사항 전체 조회, ID조회는 허용
                 .requestMatchers(HttpMethod.POST, "/api/notice").hasRole("ADMIN")  // 공지 작성 허용
                 .requestMatchers(HttpMethod.DELETE, "/api/notice/**").hasRole("ADMIN")  // 공지 삭제허용
-                .requestMatchers(HttpMethod.PUT, "/api/notice/**").hasRole("ADMIN")  // 공지 수정허용
+                .requestMatchers(HttpMethod.PUT, "/api/notice/**").hasRole("ADMIN")  // 공지 수정허용*/
+                
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource)); // CORS 설정 등록
 
-
-
-
+        /*http.authorizeHttpRequests((auth) -> auth
+                .requestMatchers("/api/member/join", "/", "/error", "/login").permitAll() // 인증 없이 접근 가능
+                .requestMatchers("/api/doctors").permitAll()  // 모든 사용자가 접근 가능
                 .requestMatchers("/api/admin").hasRole("ADMIN") // 관리자만 접근 가능
                 .anyRequest().authenticated() // 다른 요청은 로그인한 사용자만 접근 가능
+        );*/
+      
+        http.authorizeHttpRequests((auth) -> auth
+                .anyRequest().permitAll() // 모든 요청에 대해 인증 없이 접근 가능
         );
 
         // JWT 필터 등록

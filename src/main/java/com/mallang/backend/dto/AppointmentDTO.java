@@ -1,5 +1,6 @@
 package com.mallang.backend.dto;
 
+import com.mallang.backend.domain.AppointmentType;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ public class AppointmentDTO {
     private Long departmentId; // 진료과 ID
     private String patientName; // 환자 이름
     private String doctorName; // 의사 이름
+    private AppointmentType appointmentType;
     private LocalDate appointmentDate; // 예약 날짜
     private LocalTime appointmentTime; // 예약 시간
     private String symptomDescription; // 증상 설명
