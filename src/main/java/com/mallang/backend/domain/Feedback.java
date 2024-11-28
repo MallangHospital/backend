@@ -1,30 +1,32 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Feedback {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 피드백 ID
+    private Long id;
 
     @Column(nullable = false)
-    private String title; // 제목
+    private String title;
+
+    @Column(nullable = false, length = 1000)
+    private String content;
 
     @Column(nullable = false)
-    private String content; // 본문
+    private String name;
 
     @Column(nullable = false)
-    private String name; // 작성자 이름
+    private String phoneNumber;
 
     @Column(nullable = false)
-    private String phoneNumber; // 작성자 전화번호
-
-    @Column(nullable = false)
-    private String email; // 작성자 이메일
+    private String email;
 }

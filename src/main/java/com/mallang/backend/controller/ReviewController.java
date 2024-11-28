@@ -3,7 +3,6 @@ package com.mallang.backend.controller;
 import com.mallang.backend.dto.ReviewDTO;
 import com.mallang.backend.service.ReviewService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +38,7 @@ public class ReviewController {
     @PostMapping
     @PreAuthorize("@customSecurityService.hasMedicalRecord(authentication.name)")
     public ResponseEntity<?> createReview(
-            @RequestPart ReviewDTO reviewDTO,
+            @ModelAttribute ReviewDTO reviewDTO,
             @RequestPart(required = false) MultipartFile receiptFile
     ) {
         ReviewDTO savedReview = reviewService.createReview(reviewDTO, receiptFile);
@@ -51,7 +50,7 @@ public class ReviewController {
     @PreAuthorize("@customSecurityService.isReviewOwner(authentication.name, #id)")
     public ResponseEntity<?> updateReview(
             @PathVariable Long id,
-            @RequestBody ReviewDTO reviewDTO
+            @ModelAttribute ReviewDTO reviewDTO
     ) {
         boolean isUpdated = reviewService.updateReview(id, reviewDTO);
         if (isUpdated) {

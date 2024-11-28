@@ -10,8 +10,9 @@ import java.time.LocalDate;
 @Setter
 @Builder
 public class DoctorVacationDTO {
-    private Long id;
-    private String doctorName;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private Long id; // 휴진 ID
+    private Long doctorId; // 의사 ID
+    private String doctorName; // 의사 이름
+    private LocalDate startDate; // 휴진 시작일
+    private LocalDate endDate; // 휴진 종료일
 }

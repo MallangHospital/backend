@@ -1,10 +1,16 @@
 package com.mallang.backend.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class NewsDTO {
     private Long id; // 건강매거진 ID
     private String title; // 제목

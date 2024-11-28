@@ -22,7 +22,7 @@ public class ReservationCheckController {
     private final AppointmentService appointmentService;
     private final HealthcareReserveService healthcareReserveService;
 
-    // 진료 및 건강검진 예약 조회
+    // 접수확인
     @GetMapping
     public ResponseEntity<Map<String, List<?>>> getAllReservations(@AuthenticationPrincipal CustomMemberDetails userDetails) {
         String memberId = userDetails.getUserId();

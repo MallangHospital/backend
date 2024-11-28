@@ -29,7 +29,7 @@ public class QuestionnaireController {
     @PostMapping("/responses")
     public ResponseEntity<?> saveResponses(
             @AuthenticationPrincipal CustomMemberDetails userDetails,
-            @RequestBody List<ResponseDTO> responses) {
+            @RequestBody List<ResponseDTO> responseDTOs) {
 
         // CustomMemberDetails에서 memberId 가져오기
         String memberId = userDetails.getUserId();
@@ -37,8 +37,8 @@ public class QuestionnaireController {
             return ResponseEntity.badRequest().body("Invalid member ID");
         }
 
-        // 서비스 호출
-        questionnaireService.saveResponses(memberId, responses);
+        // 서비스 호출 (DTO를 서비스에서 변환하도록 전달)
+        questionnaireService.saveResponsesFromDTOs(memberId, responseDTOs);
         return ResponseEntity.ok("Responses saved successfully!");
     }
 

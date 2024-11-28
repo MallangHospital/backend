@@ -17,12 +17,13 @@ public class DoctorVacation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String doctorName;
+    @ManyToOne
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private Doctor doctor; // Doctor와의 연관 관계
 
     @Column(nullable = false)
-    private LocalDate startDate;
+    private LocalDate startDate; // 휴진 시작일
 
     @Column(nullable = false)
-    private LocalDate endDate;
+    private LocalDate endDate; // 휴진 종료일
 }

@@ -19,53 +19,35 @@ public class QuestionnaireService {
     private final QuestionRepository questionRepository;
     private final ResponseRepository responseRepository;
 
-    // 문진표 질문 불러오기 (DTO 변환)
+    // 모든 질문 조회
     public List<QuestionDTO> getAllQuestions() {
         return questionRepository.findAll().stream()
                 .map(question -> QuestionDTO.builder()
                         .id(question.getId())
-                        .content(question.getContent())
+                        .questionText(question.getContent())
                         .build())
                 .collect(Collectors.toList());
     }
 
-    // 문진표 응답 저장
-    public void saveResponses(String memberId, List<ResponseDTO> responses) {
-        List<Response> responseEntities = responses.stream()
+    // 응답 저장
+    public void saveResponsesFromDTOs(String memberId, List<ResponseDTO> responseDTOs) {
+        List<Response> responses = responseDTOs.stream()
                 .map(dto -> Response.builder()
                         .memberId(memberId)
-                        .question(Question.builder().id(dto.getQuestionId()).build()) // Lazy 로딩 방지
-                        .answer(dto.getAnswer())
+                        .questionId(dto.getQuestionId())
+                        .answer(String.valueOf(dto.getAnswer()))
                         .build())
                 .collect(Collectors.toList());
 
-        responseRepository.saveAll(responseEntities);
+        responseRepository.saveAll(responses);
     }
 
-    // 특정 사용자의 문진표 응답 조회 (DTO 변환)
-    public List<ResponseDTO> getResponsesByMemberId(String memberId) {
-        List<Response> responses = responseRepository.findByMemberId(memberId);
-
-        return responses.stream()
-                .map(response -> ResponseDTO.builder()
-                        .id(response.getId())
-                        .questionId(response.getQuestion().getId())
-                        .questionContent(response.getQuestion().getContent())
-                        .answer(response.getAnswer())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-
+    // 특정 사용자의 응답 조회
     public List<ResponseDTO> getResponses(String memberId) {
-        List<Response> responses = responseRepository.findByMemberId(memberId);
-
-        return responses.stream()
+        return responseRepository.findByMemberId(memberId).stream()
                 .map(response -> ResponseDTO.builder()
-                        .id(response.getId())
-                        .questionId(response.getQuestion().getId()) // questionId 설정
-                        .questionContent(response.getQuestion().getContent())
-                        .answer(response.getAnswer())
+                        .questionId(response.getQuestionId())
+                        .answer(Integer.valueOf(response.getAnswer()))
                         .build())
                 .collect(Collectors.toList());
     }

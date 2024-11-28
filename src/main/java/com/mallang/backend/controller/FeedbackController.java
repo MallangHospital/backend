@@ -1,6 +1,6 @@
 package com.mallang.backend.controller;
 
-import com.mallang.backend.domain.Feedback;
+import com.mallang.backend.dto.FeedbackDTO;
 import com.mallang.backend.service.FeedbackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class FeedbackController {
     // 모든 건의사항 조회 (관리자 전용)
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')") // 관리자만 접근 가능
-    public ResponseEntity<List<Feedback>> getAllFeedback() {
+    public ResponseEntity<List<FeedbackDTO>> getAllFeedback() {
         return ResponseEntity.ok(feedbackService.getAllFeedback());
     }
 
@@ -27,7 +27,7 @@ public class FeedbackController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')") // 관리자만 접근 가능
     public ResponseEntity<?> getFeedbackById(@PathVariable Long id) {
-        Feedback feedback = feedbackService.getFeedbackById(id);
+        FeedbackDTO feedback = feedbackService.getFeedbackById(id);
         if (feedback != null) {
             return ResponseEntity.ok(feedback);
         } else {
@@ -38,24 +38,24 @@ public class FeedbackController {
     // 건의사항 작성 (사용자 전용)
     @PostMapping
     @PreAuthorize("hasRole('USER')") // 사용자만 접근 가능
-    public ResponseEntity<?> submitFeedback(@RequestBody Feedback feedback) {
-        if (feedback.getTitle() == null || feedback.getTitle().trim().isEmpty()) {
+    public ResponseEntity<?> submitFeedback(@RequestBody FeedbackDTO feedbackDTO) {
+        if (feedbackDTO.getTitle() == null || feedbackDTO.getTitle().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다.");
         }
-        if (feedback.getContent() == null || feedback.getContent().trim().isEmpty()) {
+        if (feedbackDTO.getContent() == null || feedbackDTO.getContent().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("내용란이 비어 있습니다.");
         }
-        if (feedback.getName() == null || feedback.getName().trim().isEmpty()) {
+        if (feedbackDTO.getName() == null || feedbackDTO.getName().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("이름이 입력되지 않았습니다.");
         }
-        if (feedback.getPhoneNumber() == null || feedback.getPhoneNumber().trim().isEmpty()) {
+        if (feedbackDTO.getPhoneNumber() == null || feedbackDTO.getPhoneNumber().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("휴대폰 번호가 입력되지 않았습니다.");
         }
-        if (feedback.getEmail() == null || feedback.getEmail().trim().isEmpty()) {
+        if (feedbackDTO.getEmail() == null || feedbackDTO.getEmail().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("이메일이 입력되지 않았습니다.");
         }
 
-        Feedback savedFeedback = feedbackService.submitFeedback(feedback);
+        FeedbackDTO savedFeedback = feedbackService.submitFeedback(feedbackDTO);
         return ResponseEntity.ok("건의사항이 성공적으로 접수되었습니다! ID: " + savedFeedback.getId());
     }
 }

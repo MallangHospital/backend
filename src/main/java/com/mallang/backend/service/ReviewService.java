@@ -9,20 +9,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-
-    private final Path uploadDir = Paths.get("uploads");
 
     // 리뷰 페이지네이션 조회
     public Page<ReviewDTO> getReviewsWithPagination(int page, int size) {
@@ -33,75 +26,60 @@ public class ReviewService {
     public Page<ReviewDTO> getReviewsByDoctorWithPagination(Long doctorId, int page, int size) {
         return reviewRepository.findByDoctorId(doctorId, PageRequest.of(page, size)).map(this::convertToDTO);
     }
-
     // 리뷰 작성
     public ReviewDTO createReview(ReviewDTO reviewDTO, MultipartFile receiptFile) {
-        Review review = new Review();
-        review.setMemberId(reviewDTO.getMemberId());
-        review.setDoctorId(reviewDTO.getDoctorId());
-        review.setDepartmentId(reviewDTO.getDepartmentId());
-        review.setStar(reviewDTO.getStar());
-        review.setDetailStars(reviewDTO.getDetailStars());
-        review.setContent(reviewDTO.getContent());
-        review.setMemberPassword(reviewDTO.getMemberPassword());
+        // 파일 저장 처리 로직 필요
+        String filePath = saveFile(receiptFile);
 
-        // 파일 저장
-        if (receiptFile != null && !receiptFile.isEmpty()) {
-            String filePath = saveFile(receiptFile);
-            review.setReceiptFilePath(filePath);
-        }
-
+        Review review = convertToEntity(reviewDTO, filePath);
         Review savedReview = reviewRepository.save(review);
+
         return convertToDTO(savedReview);
     }
 
     // 리뷰 수정
-    public boolean updateReview(Long id, ReviewDTO updatedReviewDTO) {
-        Optional<Review> optionalReview = reviewRepository.findById(id);
-        if (optionalReview.isPresent()) {
-            Review review = optionalReview.get();
-            if (!review.getMemberPassword().equals(updatedReviewDTO.getMemberPassword())) {
-                return false; // 비밀번호 불일치
-            }
-            review.setStar(updatedReviewDTO.getStar());
-            review.setDetailStars(updatedReviewDTO.getDetailStars());
-            review.setContent(updatedReviewDTO.getContent());
-            reviewRepository.save(review);
-            return true;
+    public boolean updateReview(Long id, ReviewDTO reviewDTO) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
+
+        if (!review.getMemberPassword().equals(reviewDTO.getMemberPassword())) {
+            return false;
         }
-        return false;
+
+        review.setContent(reviewDTO.getContent());
+        review.setStar(reviewDTO.getStar());
+        reviewRepository.save(review);
+
+        return true;
     }
 
     // 리뷰 삭제
     public boolean deleteReview(Long id, String password) {
-        Optional<Review> optionalReview = reviewRepository.findById(id);
-        if (optionalReview.isPresent()) {
-            Review review = optionalReview.get();
-            // 관리자는 비밀번호 없이 삭제 가능
-            if (password == null || review.getMemberPassword().equals(password)) {
-                reviewRepository.deleteById(id);
-                return true;
-            }
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
+
+        if (password == null || review.getMemberPassword().equals(password)) {
+            reviewRepository.delete(review);
+            return true;
         }
+
         return false;
     }
 
-    private String saveFile(MultipartFile file) {
-        try {
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
-            }
-
-            String uniqueFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path targetLocation = uploadDir.resolve(uniqueFileName);
-            Files.copy(file.getInputStream(), targetLocation);
-
-            return targetLocation.toString();
-        } catch (IOException e) {
-            throw new RuntimeException("파일 업로드 실패: " + e.getMessage(), e);
-        }
+    // DTO → 엔티티 변환
+    private Review convertToEntity(ReviewDTO reviewDTO, String filePath) {
+        return Review.builder()
+                .memberId(reviewDTO.getMemberId())
+                .doctorId(reviewDTO.getDoctorId())
+                .departmentId(reviewDTO.getDepartmentId())
+                .star(reviewDTO.getStar())
+                .content(reviewDTO.getContent())
+                .receiptFilePath(filePath)
+                .memberPassword(reviewDTO.getMemberPassword())
+                .build();
     }
 
+    // 엔티티 → DTO 변환
     private ReviewDTO convertToDTO(Review review) {
         return ReviewDTO.builder()
                 .id(review.getId())
@@ -109,10 +87,18 @@ public class ReviewService {
                 .doctorId(review.getDoctorId())
                 .departmentId(review.getDepartmentId())
                 .star(review.getStar())
-                .detailStars(review.getDetailStars())
                 .content(review.getContent())
-                .createdAt(review.getCreatedDate())
-                .receiptFilePath(review.getReceiptFilePath() != null ? "인증 완료" : "인증 없음")
+                .receiptFilePath(review.getReceiptFilePath())
+                .memberPassword(review.getMemberPassword())
                 .build();
+    }
+
+    // 파일 저장 처리 로직 (필요시 구현)
+    private String saveFile(MultipartFile file) {
+        if (file != null && !file.isEmpty()) {
+            // 파일 저장 로직
+            return "path/to/saved/file";
+        }
+        return null;
     }
 }

@@ -35,19 +35,27 @@ public class NewsController {
 
     // 건강매거진 작성 (관리자 전용)
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')") // 관리자 권한 확인
-    public ResponseEntity<?> createNews(@RequestBody NewsDTO newsDTO) {
-        if (newsDTO.getTitle() == null || newsDTO.getTitle().trim().isEmpty()) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> createNews(
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam String password
+    ) {
+        if (title.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다. 다시 확인해 주세요.");
         }
-
-        if (newsDTO.getContent() == null || newsDTO.getContent().trim().isEmpty()) {
+        if (content.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("본문란이 비어 있습니다. 내용을 입력해 주세요.");
         }
-
-        if (newsDTO.getPassword() == null || newsDTO.getPassword().trim().isEmpty()) {
+        if (password.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("비밀번호를 다시 확인해주세요.");
         }
+
+        NewsDTO newsDTO = NewsDTO.builder()
+                .title(title)
+                .content(content)
+                .password(password)
+                .build();
 
         NewsDTO savedNews = newsService.createNews(newsDTO);
         return ResponseEntity.ok("등록이 완료되었습니다.");
@@ -55,19 +63,28 @@ public class NewsController {
 
     // 건강매거진 수정 (관리자 전용)
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // 관리자 권한 확인
-    public ResponseEntity<?> updateNews(@PathVariable Long id, @RequestBody NewsDTO newsDTO) {
-        if (newsDTO.getTitle() == null || newsDTO.getTitle().trim().isEmpty()) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateNews(
+            @PathVariable Long id,
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam String password
+    ) {
+        if (title.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다. 다시 확인해 주세요.");
         }
-
-        if (newsDTO.getContent() == null || newsDTO.getContent().trim().isEmpty()) {
+        if (content.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("본문란이 비어 있습니다. 내용을 입력해 주세요.");
         }
-
-        if (newsDTO.getPassword() == null || newsDTO.getPassword().trim().isEmpty()) {
+        if (password.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("비밀번호를 다시 확인해주세요.");
         }
+
+        NewsDTO newsDTO = NewsDTO.builder()
+                .title(title)
+                .content(content)
+                .password(password)
+                .build();
 
         boolean isUpdated = newsService.updateNewsById(id, newsDTO);
 
@@ -80,14 +97,14 @@ public class NewsController {
 
     // 건강매거진 삭제 (관리자 전용)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // 관리자 권한 확인
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteNews(@PathVariable Long id) {
         boolean isDeleted = newsService.deleteNewsById(id);
 
         if (isDeleted) {
             return ResponseEntity.ok("건강매거진이 성공적으로 삭제되었습니다!");
         } else {
-            return ResponseEntity.badRequest().body("해당 건강매거거진을 찾을 수 없습니다. 삭제에 실패하였습니다.");
+            return ResponseEntity.badRequest().body("해당 건강매거진을 찾을 수 없습니다. 삭제에 실패하였습니다.");
         }
     }
 }

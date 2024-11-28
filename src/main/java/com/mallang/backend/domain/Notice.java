@@ -1,14 +1,16 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Notice {
 
     @Id
@@ -24,9 +26,14 @@ public class Notice {
     @Column(nullable = false)
     private String password; // 비밀번호 (작성 시 필요)
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content; // 본문
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now(); // 작성 날짜
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt; // 작성 날짜
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
