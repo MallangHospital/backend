@@ -46,22 +46,24 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         }
     }
 
-    @Override //로그인 성공 시
+    @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+        // 인증된 사용자 정보 가져오기
         CustomMemberDetails customUserDetails = (CustomMemberDetails) authentication.getPrincipal();
-
         String username = customUserDetails.getUsername();
 
+        // 사용자 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
+        String role = authorities.iterator().next().getAuthority();
 
-        String role = auth.getAuthority();
+        // JWT 토큰 생성 (유효 기간: 1시간)
+        String token = jwtUtil.createJwt(username, role, 60 * 60 * 1000L);
 
-        // 토큰 생성 시 유효 기간 설정
-        String token = jwtUtil.createJwt(username, role, 60 * 60 * 1000L);  // 1시간 동안 유효
-
-        response.addHeader("Authorization", "Bearer " + token); //응답, 띄어쓰기 필
+        // JSON 응답 설정 및 반환
+        response.setContentType("application/json"); // 응답 타입 지정
+        response.setCharacterEncoding("UTF-8"); // UTF-8 인코딩 설정
+        response.getWriter().write("{\"token\":\"" + token + "\"}"); // JSON 형태로 토큰 반환
+        response.getWriter().flush(); // 버퍼 플러시
     }
 
     @Override //로그인 실패 시
