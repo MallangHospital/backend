@@ -15,7 +15,7 @@ public class Notice extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 공지사항 ID
+    private Long id; //공지사항 ID
 
     @Column(nullable = false)
     private String title; // 제목

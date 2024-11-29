@@ -19,7 +19,6 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final DoctorRepository doctorRepository;
     private final DepartmentRepository departmentRepository;
-    private final MemberRepository memberRepository;
     private final ScheduleRepository scheduleRepository;
     private final AvailableTimeRepository availableTimeRepository;
 
@@ -58,6 +57,7 @@ public class AppointmentService {
                 .appointmentDate(date)
                 .appointmentTime(time)
                 .symptomDescription(appointmentDTO.getSymptomDescription())
+                .status("예약")
                 .build();
 
         System.out.println("Member during appointment creation: " + member.getName());
@@ -127,10 +127,13 @@ public class AppointmentService {
         AvailableTime availableTime = availableTimeRepository.findByScheduleAndTime(schedule, appointment.getAppointmentTime())
                 .orElseThrow(() -> new IllegalStateException("AvailableTime not found"));
 
+        // AvailableTime 상태 초기화
         availableTime.setReserved(false);
         availableTimeRepository.save(availableTime);
 
-        appointmentRepository.deleteById(appointmentId);
+        // Appointment 상태를 "취소"로 변경
+        appointment.setStatus("취소");
+        appointmentRepository.save(appointment);
     }
 
     // 모든 진료 예약 조회
@@ -149,11 +152,13 @@ public class AppointmentService {
                 .doctorId(appointment.getDoctor().getId())
                 .departmentId(appointment.getDepartment().getId())
                 .patientName(appointment.getMember().getName()) // Member의 이름 가져오기
+                .phoneNum(appointment.getMember().getPhoneNum())
                 .doctorName(appointment.getDoctor().getName()) // Doctor의 이름 가져오기
                 .appointmentType(appointment.getAppointmentType())
                 .appointmentDate(appointment.getAppointmentDate())
                 .appointmentTime(appointment.getAppointmentTime())
                 .symptomDescription(appointment.getSymptomDescription())
+                .status(appointment.getStatus())
                 .build();
     }
 }
