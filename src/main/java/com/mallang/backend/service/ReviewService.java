@@ -1,3 +1,4 @@
+
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.Review;
@@ -47,7 +48,7 @@ public class ReviewService {
         }
 
         review.setContent(reviewDTO.getContent());
-        review.setStar(reviewDTO.getStar());
+        review.setDetailStars(reviewDTO.getDetailStars());
         reviewRepository.save(review);
 
         return true;
@@ -66,16 +67,15 @@ public class ReviewService {
         return false;
     }
 
-    // DTO → 엔티티 변환
     private Review convertToEntity(ReviewDTO reviewDTO, String filePath) {
         return Review.builder()
-                .memberId(reviewDTO.getMemberId())
-                .doctorId(reviewDTO.getDoctorId())
-                .departmentId(reviewDTO.getDepartmentId())
-                .star(reviewDTO.getStar())
-                .content(reviewDTO.getContent())
-                .receiptFilePath(filePath)
-                .memberPassword(reviewDTO.getMemberPassword())
+                .memberId(reviewDTO.getMemberId())         // 작성자 ID
+                .doctorId(reviewDTO.getDoctorId())         // 의사 ID
+                .departmentId(reviewDTO.getDepartmentId()) // 부서 ID
+                .detailStars(reviewDTO.getDetailStars())   // 세부 별점 리스트
+                .content(reviewDTO.getContent())           // 리뷰 본문
+                .receiptFilePath(filePath)                 // 영수증 파일 경로
+                .memberPassword(reviewDTO.getMemberPassword()) // 작성자 비밀번호
                 .build();
     }
 
@@ -86,9 +86,9 @@ public class ReviewService {
                 .memberId(review.getMemberId())
                 .doctorId(review.getDoctorId())
                 .departmentId(review.getDepartmentId())
-                .star(review.getStar())
+                .detailStars(review.getDetailStars())
                 .content(review.getContent())
-                .receiptFilePath(review.getReceiptFilePath())
+                .file(review.getReceiptFilePath())
                 .memberPassword(review.getMemberPassword())
                 .build();
     }

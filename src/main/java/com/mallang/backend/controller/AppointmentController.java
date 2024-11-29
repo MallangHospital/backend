@@ -33,11 +33,18 @@ public class AppointmentController {
     }
 
     // 특정 회원의 예약 조회
-    @GetMapping
+    @GetMapping("/user")
     public ResponseEntity<List<AppointmentDTO>> getAppointments(
             @AuthenticationPrincipal CustomMemberDetails userDetails) {
         Member member = userDetails.getMember();
         List<AppointmentDTO> appointments = appointmentService.getAppointmentsByMember(member);
+        return ResponseEntity.ok(appointments);
+    }
+
+    // 모든 진료 예약 조회
+    @GetMapping
+    public ResponseEntity<List<AppointmentDTO>> getAllAppointments() {
+        List<AppointmentDTO> appointments = appointmentService.getAllAppointments();
         return ResponseEntity.ok(appointments);
     }
 }

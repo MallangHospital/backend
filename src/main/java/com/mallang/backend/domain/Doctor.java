@@ -22,7 +22,7 @@ public class Doctor {
     @Column(name = "position", nullable = false)
     private String specialty; // 전문 분야
 
-    @Column(name = "phone_number",nullable = false)
+    @Column(name = "contact",nullable = false)
     private String contact; // 연락처
 
     @Column(name = "photo_url",nullable = false)

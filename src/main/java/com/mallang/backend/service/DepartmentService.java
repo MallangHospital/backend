@@ -1,8 +1,8 @@
 package com.mallang.backend.service;
-
-import com.mallang.backend.domain.Department;
 import com.mallang.backend.dto.DepartmentDTO;
+import com.mallang.backend.dto.DoctorDTO;
 import com.mallang.backend.repository.DepartmentRepository;
+import com.mallang.backend.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

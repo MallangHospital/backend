@@ -11,5 +11,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findByDoctorId(Long doctorId, Pageable pageable);
 
     // 특정 사용자가 작성한 리뷰 여부 확인
-    boolean existsByIdAndMemberId(Long id, String memberId);
+    boolean existsByIdAndMemberId(String id, String memberId);
 }
