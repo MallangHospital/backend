@@ -16,7 +16,7 @@ public class AppointmentDTO {
     private Long doctorId; // 의사 ID
     private Long departmentId; // 진료과 ID
     private String patientName; // 환자 이름
-    private String phoneNum;
+    private String phoneNum; //전화번호
     private String doctorName; // 의사 이름
     private AppointmentType appointmentType;
     private LocalDate appointmentDate; // 예약 날짜
