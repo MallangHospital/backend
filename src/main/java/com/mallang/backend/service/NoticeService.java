@@ -83,6 +83,6 @@ public class NoticeService {
             return true;
         }
 
-        return false; // 수정할 공지사항이 존재하지 않을 경우
+        return false; //수정할 공지사항이 존재하지 않을 경우
     }
 }
