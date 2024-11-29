@@ -58,6 +58,7 @@ public class AppointmentService {
                 .appointmentDate(date)
                 .appointmentTime(time)
                 .symptomDescription(appointmentDTO.getSymptomDescription())
+                .status("예약")
                 .build();
 
         System.out.println("Member during appointment creation: " + member.getName());

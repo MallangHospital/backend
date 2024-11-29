@@ -42,5 +42,5 @@ public class Appointment extends BaseEntity{
     private String symptomDescription; // 증상 설명
 
     @Column(nullable = false)
-    private String status = "예약";
+    private String status;
 }
