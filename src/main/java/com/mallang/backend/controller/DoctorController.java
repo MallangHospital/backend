@@ -22,7 +22,12 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.getAllDoctors());
     }
 
-
+    // 특정 부서의 의사 목록 조회
+    @GetMapping(params = "departmentId")
+    public ResponseEntity<List<DoctorDTO>> getDoctorsByDepartment(@RequestParam Long departmentId) {
+        List<DoctorDTO> doctors = doctorService.getDoctorsByDepartment(departmentId);
+        return ResponseEntity.ok(doctors);
+    }
 
     @PostMapping
     public ResponseEntity<String> createDoctor(@RequestBody DoctorDTO doctorDTO) {
