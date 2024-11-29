@@ -5,6 +5,7 @@ import com.mallang.backend.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,11 +22,7 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.getAllDoctors());
     }
 
-    // 특정 의료진 정보 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<DoctorDTO> getDoctorById(@PathVariable Long id) {
-        return ResponseEntity.ok(doctorService.getDoctorById(id));
-    }
+
 
     @PostMapping
     public ResponseEntity<String> createDoctor(@RequestBody DoctorDTO doctorDTO) {
@@ -33,13 +30,13 @@ public class DoctorController {
         return ResponseEntity.ok("Doctor created successfully.");
     }
 
-    // 의료진 정보 수정
     @PutMapping("/{id}")
     public ResponseEntity<String> updateDoctor(
             @PathVariable Long id,
-            @RequestBody DoctorDTO doctorDTO
+            @RequestPart("doctor") DoctorDTO doctorDTO,
+            @RequestPart(value = "photo", required = false) MultipartFile photo // 사진은 선택 사항
     ) {
-        doctorService.updateDoctor(id, doctorDTO, null); // 사진 없이 수정
+        doctorService.updateDoctor(id, doctorDTO, photo);
         return ResponseEntity.ok("Doctor updated successfully.");
     }
 
