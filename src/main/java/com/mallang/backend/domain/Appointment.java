@@ -1,16 +1,14 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -43,4 +41,6 @@ public class Appointment extends BaseEntity{
 
     private String symptomDescription; // 증상 설명
 
+    @Column(nullable = false)
+    private String status = "예약";
 }

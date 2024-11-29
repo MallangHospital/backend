@@ -127,10 +127,13 @@ public class AppointmentService {
         AvailableTime availableTime = availableTimeRepository.findByScheduleAndTime(schedule, appointment.getAppointmentTime())
                 .orElseThrow(() -> new IllegalStateException("AvailableTime not found"));
 
+        // AvailableTime 상태 초기화
         availableTime.setReserved(false);
         availableTimeRepository.save(availableTime);
 
-        appointmentRepository.deleteById(appointmentId);
+        // Appointment 상태를 "취소"로 변경
+        appointment.setStatus("취소");
+        appointmentRepository.save(appointment);
     }
 
     // 모든 진료 예약 조회
@@ -154,6 +157,7 @@ public class AppointmentService {
                 .appointmentDate(appointment.getAppointmentDate())
                 .appointmentTime(appointment.getAppointmentTime())
                 .symptomDescription(appointment.getSymptomDescription())
+                .status(appointment.getStatus())
                 .build();
     }
 }

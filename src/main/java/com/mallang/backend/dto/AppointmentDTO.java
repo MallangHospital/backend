@@ -21,4 +21,5 @@ public class AppointmentDTO {
     private LocalDate appointmentDate; // 예약 날짜
     private LocalTime appointmentTime; // 예약 시간
     private String symptomDescription; // 증상 설명
+    private String status; //예약 상태
 }
