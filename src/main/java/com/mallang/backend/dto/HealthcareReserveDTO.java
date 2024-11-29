@@ -17,5 +17,4 @@ public class HealthcareReserveDTO {
     private String phoneNumber; // 휴대폰 번호
     private LocalDate reserveDate; // 예약 날짜
     private HealthcareType hType; // 검진 구분
-    private String status; //예약 상태
 }

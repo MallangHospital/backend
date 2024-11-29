@@ -23,7 +23,6 @@ public class HealthcareReserveService {
                 .phoneNumber(dto.getPhoneNumber())
                 .reserveDate(dto.getReserveDate())
                 .hType(dto.getHType())
-                .status("예약")
                 .build();
         HealthcareReserve savedReservation = healthcareReserveRepository.save(reservation);
         return HealthcareReserveDTO.builder()
@@ -33,7 +32,6 @@ public class HealthcareReserveService {
                 .phoneNumber(savedReservation.getPhoneNumber())
                 .reserveDate(savedReservation.getReserveDate())
                 .hType(savedReservation.getHType())
-                .status(savedReservation.getStatus())
                 .build();
     }
 
@@ -49,7 +47,6 @@ public class HealthcareReserveService {
                         .phoneNumber(reserve.getPhoneNumber())
                         .reserveDate(reserve.getReserveDate())
                         .hType(reserve.getHType())
-                        .status(reserve.getStatus())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -66,20 +63,16 @@ public class HealthcareReserveService {
                         .phoneNumber(reserve.getPhoneNumber())
                         .reserveDate(reserve.getReserveDate())
                         .hType(reserve.getHType())
-                        .status(reserve.getStatus())
                         .build())
                 .collect(Collectors.toList());
     }
 
-    //예약 취소
+    // 건강검진 예약 취소
     @Transactional
     public void cancelHealthCheck(Long id) {
         HealthcareReserve reserve = healthcareReserveRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Healthcare reservation not found."));
-
-        // 상태를 "취소"로 변경
-        reserve.setStatus("취소");
-        healthcareReserveRepository.save(reserve);
+        healthcareReserveRepository.delete(reserve);
     }
 
 }

@@ -32,9 +32,6 @@ public class HealthcareReserve extends BaseEntity {
     @Column(nullable = false) // 필드가 null이 아닌 값으로 설정되어야 함
     private HealthcareType hType;
 
-    @Column(nullable = false)
-    private String status; //예약 상태
-
     @PrePersist
     public void prePersist() {
         // hType이 null일 경우 기본값 설정

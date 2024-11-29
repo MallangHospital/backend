@@ -45,7 +45,7 @@ public class ReservationCheckController {
     }
 
     // 건강검진 예약 취소
-    @PatchMapping("/health-check/{id}/cancel")
+    @DeleteMapping("/health-check/{id}")
     public ResponseEntity<?> cancelHealthCheck(@PathVariable Long id) {
         healthcareReserveService.cancelHealthCheck(id);
         return ResponseEntity.ok("Health check reservation canceled successfully.");
