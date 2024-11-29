@@ -13,7 +13,7 @@ public class Feedback extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private  Long id;
 
     @Column(nullable = false)
     private String title;
@@ -27,6 +27,6 @@ public class Feedback extends BaseEntity {
     @Column(nullable = false)
     private String phoneNumber;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private String email;
 }

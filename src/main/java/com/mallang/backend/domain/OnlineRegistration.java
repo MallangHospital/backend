@@ -1,24 +1,32 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter // 모든 필드에 대해 setter 자동 생성
-@NoArgsConstructor // 기본 생성자만 유지
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class OnlineRegistration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // ID 필드 (기본 키)
+    private Long id;
 
-    private String patientName; // 환자 이름
-    private String registrationDate; // 등록 날짜
-    private String doctorName; // 의사 이름
-    private String symptom; // 증상
+    @Column(nullable = false)
+    private String patientName; // 예약자 이름
 
-    // 필요 시 추가적인 로직은 별도 메서드로 구현
+    @Column(nullable = false)
+    private LocalDateTime registrationDateTime; // 접수 일시
+
+    @ManyToOne
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private Doctor doctor; // 담당 의사 (다대일 관계)
+
+    @Column(length = 1000)
+    private String details; // 상세 정보
 }

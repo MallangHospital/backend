@@ -1,4 +1,3 @@
-
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.Review;
@@ -22,12 +21,13 @@ public class ReviewService {
     }
 
     // 특정 의사에 대한 리뷰 조회
-    public Page<ReviewDTO> getReviewsByDoctorWithPagination(String doctorId, int page, int size) {
-        return reviewRepository.findByDoctorId(doctorId, PageRequest.of(page, size)).map(this::convertToDTO);
+    public Page<ReviewDTO> getReviewsByDoctorWithPagination(String doctorName, int page, int size) {
+        return reviewRepository.findByDoctorName(doctorName, PageRequest.of(page, size)).map(this::convertToDTO);
     }
+
     // 리뷰 작성
     public ReviewDTO createReview(ReviewDTO reviewDTO, MultipartFile receiptFile) {
-        // 파일 저장 처리 로직 필요
+        // 파일 저장 처리 로직
         String filePath = saveFile(receiptFile);
 
         Review review = convertToEntity(reviewDTO, filePath);
@@ -65,6 +65,7 @@ public class ReviewService {
         return false;
     }
 
+    // 엔티티 변환
     private Review convertToEntity(ReviewDTO reviewDTO, String filePath) {
         return Review.builder()
                 .memberId(reviewDTO.getMemberId())         // 작성자 ID
@@ -77,7 +78,7 @@ public class ReviewService {
                 .build();
     }
 
-    // 엔티티 → DTO 변환
+    // DTO 변환
     private ReviewDTO convertToDTO(Review review) {
         return ReviewDTO.builder()
                 .id(review.getId())

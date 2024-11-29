@@ -1,29 +1,5 @@
 package com.mallang.backend.service;
 
-import com.mallang.backend.domain.Appointment;
-import com.mallang.backend.domain.Department;
-import com.mallang.backend.domain.Doctor;
-import com.mallang.backend.domain.Schedule;
-import com.mallang.backend.dto.AppointmentDTO;
-import com.mallang.backend.repository.AppointmentRepository;
-import com.mallang.backend.repository.DepartmentRepository;
-import com.mallang.backend.repository.DoctorRepository;
-import com.mallang.backend.repository.ScheduleRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 /*class AppointmentServiceTest {
 
     @Mock
