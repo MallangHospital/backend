@@ -17,14 +17,14 @@ public class CustomSecurityService {
     }
 
     // 리뷰 작성자 확인
-    public boolean isReviewOwner(String username, Long reviewId) {
+    public boolean isReviewOwner(String username, String reviewId) {
         return reviewRepository.findById(reviewId)
                 .map(review -> review.getMemberId().equals(username))
                 .orElse(false);
     }
 
     // 리뷰 작성자 또는 관리자 확인
-    public boolean isReviewOwnerOrAdmin(String username, Long reviewId) {
+    public boolean isReviewOwnerOrAdmin(String username, String reviewId) {
         // 관리자 확인 로직 추가
         return isReviewOwner(username, reviewId) || username.equals("admin");
     }

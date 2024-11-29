@@ -16,16 +16,16 @@ public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id; // 리뷰 ID (String)
+    private String id; // 리뷰 ID
 
     @Column(name = "member_id", nullable = false)
-    private String memberId; // 작성자 ID (String)
+    private String memberId; // 작성자 ID
 
-    @Column(name = "doctor_id", nullable = false)
-    private Long doctorId; // 의사 ID
+    @Column(name = "doctor_name", nullable = false)
+    private String doctorName; // 의사 이름
 
-    @Column(name = "department_id", nullable = false)
-    private Long departmentId; // 진료과 ID
+    @Column(name = "department_name", nullable = false)
+    private String departmentName; // 진료과 이름
 
     @ElementCollection
     @CollectionTable(name = "review_detail_stars", joinColumns = @JoinColumn(name = "review_id"))
