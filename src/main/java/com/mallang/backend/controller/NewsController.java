@@ -1,5 +1,6 @@
 package com.mallang.backend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mallang.backend.dto.NewsDTO;
 import com.mallang.backend.service.NewsService;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +16,15 @@ import java.util.List;
 public class NewsController {
 
     private final NewsService newsService;
+    private final ObjectMapper objectMapper;
 
-    // 건강매거진 전체 조회 (모든 사용자 접근 가능)
+    // 모든 건강매거진 조회
     @GetMapping
     public ResponseEntity<List<NewsDTO>> getAllNews() {
         return ResponseEntity.ok(newsService.getAllNews());
     }
 
-    // 특정 ID 건강매거진 조회 (모든 사용자 접근 가능)
+    // 특정 ID 건강매거진 조회
     @GetMapping("/{id}")
     public ResponseEntity<?> getNewsById(@PathVariable Long id) {
         NewsDTO newsDTO = newsService.getNewsById(id);
@@ -33,76 +35,75 @@ public class NewsController {
         }
     }
 
-    // 건강매거진 작성 (관리자 접근 가능) - JSON 데이터와 파일 처리 추가
+    // 건강매거진 작성
     @PostMapping
     public ResponseEntity<?> createNews(
-            @RequestPart("newsDTO") NewsDTO newsDTO,
+            @RequestParam("newsDTO") String newsDTOString,
             @RequestPart(value = "mainFile", required = false) MultipartFile mainFile,
             @RequestPart(value = "attachment", required = false) MultipartFile attachment) {
 
-        // Validation for NewsDTO
-        if (newsDTO.getTitle() == null || newsDTO.getTitle().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다.");
-        }
-        if (newsDTO.getContent() == null || newsDTO.getContent().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("본문란이 비어 있습니다.");
-        }
-        if (newsDTO.getPassword() == null || newsDTO.getPassword().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("비밀번호를 다시 확인해주세요.");
-        }
+        try {
+            // JSON -> DTO 변환
+            NewsDTO newsDTO = objectMapper.readValue(newsDTOString, NewsDTO.class);
 
+            // Validation
+            if (newsDTO.getTitle() == null || newsDTO.getTitle().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다.");
+            }
+            if (newsDTO.getContent() == null || newsDTO.getContent().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("본문란이 비어 있습니다.");
+            }
 
+            // Service 호출
+            NewsDTO savedNews = newsService.createNews(newsDTO, mainFile, attachment);
+            return ResponseEntity.ok(savedNews);
 
-        NewsDTO savedNews = newsService.createNews(newsDTO);
-        return ResponseEntity.ok(savedNews);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("데이터 처리 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 
-    // 건강매거진 수정 (모든 관리자 접근 가능)
+    // 건강매거진 수정
     @PutMapping("/{id}")
     public ResponseEntity<?> updateNews(
             @PathVariable Long id,
-            @RequestPart("newsDTO") NewsDTO newsDTO,
+            @RequestParam("newsDTO") String newsDTOString,
             @RequestPart(value = "mainFile", required = false) MultipartFile mainFile,
             @RequestPart(value = "attachment", required = false) MultipartFile attachment) {
 
-        // Validation for NewsDTO
-        if (newsDTO.getTitle() == null || newsDTO.getTitle().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다.");
-        }
-        if (newsDTO.getContent() == null || newsDTO.getContent().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("본문란이 비어 있습니다.");
-        }
-        if (newsDTO.getPassword() == null || newsDTO.getPassword().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("비밀번호를 다시 확인해주세요.");
-        }
+        try {
+            // JSON -> DTO 변환
+            NewsDTO newsDTO = objectMapper.readValue(newsDTOString, NewsDTO.class);
 
+            // Validation
+            if (newsDTO.getTitle() == null || newsDTO.getTitle().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다.");
+            }
+            if (newsDTO.getContent() == null || newsDTO.getContent().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("본문란이 비어 있습니다.");
+            }
 
+            boolean isUpdated = newsService.updateNewsById(id, newsDTO, mainFile, attachment);
 
-        boolean isUpdated = newsService.updateNewsById(id, newsDTO);
+            if (isUpdated) {
+                return ResponseEntity.ok("수정이 완료되었습니다!");
+            } else {
+                return ResponseEntity.badRequest().body("해당 건강매거진을 찾을 수 없습니다.");
+            }
 
-        if (isUpdated) {
-            return ResponseEntity.ok("수정이 완료되었습니다!");
-        } else {
-            return ResponseEntity.badRequest().body("해당 건강매거진을 찾을 수 없습니다. 수정에 실패하였습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("데이터 처리 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
-    // 건강매거진 삭제 (모든 관리자 접근 가능)
+    // 건강매거진 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteNews(@PathVariable Long id) {
         boolean isDeleted = newsService.deleteNewsById(id);
-
         if (isDeleted) {
             return ResponseEntity.ok("건강매거진이 성공적으로 삭제되었습니다!");
         } else {
-            return ResponseEntity.badRequest().body("해당 건강매거진을 찾을 수 없습니다. 삭제에 실패하였습니다.");
+            return ResponseEntity.badRequest().body("해당 건강매거진을 찾을 수 없습니다.");
         }
-    }
-
-    // Helper method to save files (implement storage logic here)
-    private String saveFile(MultipartFile file) {
-        // Logic to save file to a directory and return the path
-        // For example: "uploads/mainfile.jpg"
-        return "saved-file-path";
     }
 }

@@ -18,22 +18,22 @@ public class News extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 건강매거진 ID
 
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false)
     private String title; // 제목
 
-    @Column(nullable = false)
+    @Column(name = "news_writer", nullable = false)
     private String newsWriter; // 작성자
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password; // 비밀번호
 
-    @Column(nullable = true)
+    @Column(name = "main_file",nullable = true)
     private String mainFile; // 대표 이미지
 
-    @Column(nullable = true)
+    @Column(name = "attachment", nullable = true)
     private String attachment; // 첨부파일 경로
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content; // 본문
 
 }
