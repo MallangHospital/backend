@@ -20,5 +20,5 @@ public class NewsDTO {
     private MultipartFile mainFile; // 대표 이미지
     private MultipartFile attachment; // 첨부파일
     private String content; // 본문
-    private String createdAt; // 작성 날짜 (문자열)
+    private String regDate;
 }
