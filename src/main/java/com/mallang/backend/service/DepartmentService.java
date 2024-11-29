@@ -14,26 +14,11 @@ import java.util.stream.Collectors;
 public class DepartmentService {
 
     private final DepartmentRepository departmentRepository;
-    private final DoctorRepository doctorRepository;
 
     public List<DepartmentDTO> getAllDepartments() {
         return departmentRepository.findAll()
                 .stream()
                 .map(department -> new DepartmentDTO(department.getId(), department.getName()))
-                .collect(Collectors.toList());
-    }
-
-    // 부서별 의사 조회
-    public List<DoctorDTO> getDoctorsByDepartmentId(Long departmentId) {
-        return doctorRepository.findByDepartmentId(departmentId) // 메서드 이름 수정
-                .stream()
-                .map(doctor -> DoctorDTO.builder()
-                        .id(doctor.getId())
-                        .name(doctor.getName())
-                        .specialty(doctor.getSpecialty())
-                        .contact(doctor.getContact())
-                        .photoPath(doctor.getPhotoPath())
-                        .build())
                 .collect(Collectors.toList());
     }
 }

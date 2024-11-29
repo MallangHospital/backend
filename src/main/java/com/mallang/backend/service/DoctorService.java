@@ -27,6 +27,12 @@ public class DoctorService {
                 .collect(Collectors.toList());
     }
 
+    public List<DoctorDTO> getDoctorsByDepartment(Long departmentId) {
+        return doctorRepository.findByDepartmentId(departmentId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     // 의료진 등록
     public void createDoctor(DoctorDTO doctorDTO, MultipartFile photo) {

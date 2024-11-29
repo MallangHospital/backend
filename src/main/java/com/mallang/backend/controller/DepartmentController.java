@@ -24,10 +24,4 @@ public class DepartmentController {
         List<DepartmentDTO> departments = departmentService.getAllDepartments();
         return ResponseEntity.ok(departments);
     }
-    // 부서별 의사 조회
-    @GetMapping("/{departmentId}")
-    public ResponseEntity<List<DoctorDTO>> getDoctorsByDepartmentId(@PathVariable Long departmentId) {
-        List<DoctorDTO> doctors = departmentService.getDoctorsByDepartmentId(departmentId);
-        return ResponseEntity.ok(doctors);
-    }
 }
