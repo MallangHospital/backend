@@ -54,7 +54,7 @@ public class NoticeController {
         return ResponseEntity.ok("공지사항이 성공적으로 등록되었습니다! ID: " + savedNotice.getId());
     }
 
-    // 공지사항 삭제 (관리자 전용)
+    // 공지사항 삭제(관리자 전용)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteNotice(@PathVariable Long id) {
         boolean isDeleted = noticeService.deleteNoticeById(id);

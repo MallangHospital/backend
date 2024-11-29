@@ -12,7 +12,7 @@ public class CustomSecurityService {
 
     // 진료기록 여부 확인
     public boolean hasMedicalRecord(String username) {
-        // 진료기록 로직 구현
+        //진료기록 로직 구현
         return true; // 예: 사용자가 진료기록이 있는 경우 true 반환
     }
 
