@@ -19,7 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/*class ReviewServiceTest {
+class ReviewServiceTest {
 
     @InjectMocks
     private ReviewService reviewService;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.*;
     void testGetReviewsWithPagination() {
         // Given
         Review review = Review.builder()
-                .id(1)
+                .id(1L)
                 .memberId(1L)
                 .doctorId(2L)
                 .departmentId(3L)
@@ -157,4 +157,4 @@ import static org.mockito.Mockito.*;
         assertTrue(result);
         verify(reviewRepository, times(1)).delete(review);
     }
-}*/
+}
