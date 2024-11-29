@@ -33,7 +33,7 @@ public class AppointmentController {
     }
 
     // 특정 회원의 예약 조회
-    @GetMapping
+    @GetMapping("/user")
     public ResponseEntity<List<AppointmentDTO>> getAppointments(
             @AuthenticationPrincipal CustomMemberDetails userDetails) {
         Member member = userDetails.getMember();
