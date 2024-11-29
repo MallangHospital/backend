@@ -5,6 +5,7 @@ import com.mallang.backend.service.NewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -32,9 +33,14 @@ public class NewsController {
         }
     }
 
-    // 건강매거진 작성 (관리자 접근 가능)
+    // 건강매거진 작성 (관리자 접근 가능) - JSON 데이터와 파일 처리 추가
     @PostMapping
-    public ResponseEntity<?> createNews(@RequestBody NewsDTO newsDTO) {
+    public ResponseEntity<?> createNews(
+            @RequestPart("newsDTO") NewsDTO newsDTO,
+            @RequestPart(value = "mainFile", required = false) MultipartFile mainFile,
+            @RequestPart(value = "attachment", required = false) MultipartFile attachment) {
+
+        // Validation for NewsDTO
         if (newsDTO.getTitle() == null || newsDTO.getTitle().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다.");
         }
@@ -44,6 +50,8 @@ public class NewsController {
         if (newsDTO.getPassword() == null || newsDTO.getPassword().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("비밀번호를 다시 확인해주세요.");
         }
+
+
 
         NewsDTO savedNews = newsService.createNews(newsDTO);
         return ResponseEntity.ok(savedNews);
@@ -51,7 +59,13 @@ public class NewsController {
 
     // 건강매거진 수정 (모든 관리자 접근 가능)
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateNews(@PathVariable Long id, @RequestBody NewsDTO newsDTO) {
+    public ResponseEntity<?> updateNews(
+            @PathVariable Long id,
+            @RequestPart("newsDTO") NewsDTO newsDTO,
+            @RequestPart(value = "mainFile", required = false) MultipartFile mainFile,
+            @RequestPart(value = "attachment", required = false) MultipartFile attachment) {
+
+        // Validation for NewsDTO
         if (newsDTO.getTitle() == null || newsDTO.getTitle().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("제목이 입력되지 않았습니다.");
         }
@@ -61,6 +75,8 @@ public class NewsController {
         if (newsDTO.getPassword() == null || newsDTO.getPassword().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("비밀번호를 다시 확인해주세요.");
         }
+
+
 
         boolean isUpdated = newsService.updateNewsById(id, newsDTO);
 
@@ -81,5 +97,12 @@ public class NewsController {
         } else {
             return ResponseEntity.badRequest().body("해당 건강매거진을 찾을 수 없습니다. 삭제에 실패하였습니다.");
         }
+    }
+
+    // Helper method to save files (implement storage logic here)
+    private String saveFile(MultipartFile file) {
+        // Logic to save file to a directory and return the path
+        // For example: "uploads/mainfile.jpg"
+        return "saved-file-path";
     }
 }
