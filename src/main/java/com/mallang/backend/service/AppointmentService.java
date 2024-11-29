@@ -19,7 +19,6 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final DoctorRepository doctorRepository;
     private final DepartmentRepository departmentRepository;
-    private final MemberRepository memberRepository;
     private final ScheduleRepository scheduleRepository;
     private final AvailableTimeRepository availableTimeRepository;
 
@@ -153,6 +152,7 @@ public class AppointmentService {
                 .doctorId(appointment.getDoctor().getId())
                 .departmentId(appointment.getDepartment().getId())
                 .patientName(appointment.getMember().getName()) // Member의 이름 가져오기
+                .phoneNum(appointment.getMember().getPhoneNum())
                 .doctorName(appointment.getDoctor().getName()) // Doctor의 이름 가져오기
                 .appointmentType(appointment.getAppointmentType())
                 .appointmentDate(appointment.getAppointmentDate())
