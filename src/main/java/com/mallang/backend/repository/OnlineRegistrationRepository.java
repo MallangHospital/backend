@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OnlineRegistrationRepository extends JpaRepository<OnlineRegistration, Long> {
-    // 기본적인 CRUD 메서드는 JpaRepository에서 제공
+    // 기본적인 CRUD 기능은 JpaRepository에서 제공
 }
