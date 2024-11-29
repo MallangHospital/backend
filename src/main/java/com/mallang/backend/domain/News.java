@@ -1,14 +1,17 @@
 package com.mallang.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class News extends BaseEntity {
 
     @Id
@@ -25,7 +28,7 @@ public class News extends BaseEntity {
     private String password; // 비밀번호
 
     @Column(nullable = true)
-    private String mainFile; // 대표 이미지 경로
+    private String mainFile; // 대표 이미지
 
     @Column(nullable = true)
     private String attachment; // 첨부파일 경로
