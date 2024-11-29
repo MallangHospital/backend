@@ -7,6 +7,7 @@ import com.mallang.backend.repository.DoctorRepository;
 import com.mallang.backend.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ScheduleBatchService {
 
     private final ScheduleRepository scheduleRepository;
@@ -34,21 +36,24 @@ public class ScheduleBatchService {
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
             // 월~금요일만 스케줄 생성
             if (date.getDayOfWeek().getValue() >= 1 && date.getDayOfWeek().getValue() <= 5) {
-                // 예약 가능한 시간 생성
-                List<AvailableTime> availableTimes = new ArrayList<>();
-                for (int hour = 9; hour <= 17; hour++) {
-                    availableTimes.add(AvailableTime.builder()
-                            .time(LocalTime.of(hour, 0))
-                            .reserved(false)
-                            .build());
-                }
-
                 // 스케줄 생성
                 Schedule schedule = Schedule.builder()
                         .doctor(doctor)
                         .date(date)
-                        .availableTimes(availableTimes)
                         .build();
+
+                // 예약 가능한 시간 생성 및 양방향 관계 설정
+                List<AvailableTime> availableTimes = new ArrayList<>();
+                for (int hour = 9; hour <= 17; hour++) {
+                    AvailableTime availableTime = AvailableTime.builder()
+                            .time(LocalTime.of(hour, 0))
+                            .reserved(false)
+                            .schedule(schedule) // 양방향 관계 설정
+                            .build();
+                    availableTimes.add(availableTime);
+                }
+                schedule.setAvailableTimes(availableTimes);
+
                 schedules.add(schedule);
             }
         }
