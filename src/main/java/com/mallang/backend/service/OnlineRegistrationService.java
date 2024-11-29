@@ -1,58 +1,43 @@
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.OnlineRegistration;
+import com.mallang.backend.dto.OnlineRegistrationDTO;
 import com.mallang.backend.repository.OnlineRegistrationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OnlineRegistrationService {
 
-    private final OnlineRegistrationRepository registrationRepository;
+    private final OnlineRegistrationRepository onlineRegistrationRepository;
 
-    @Autowired
-    public OnlineRegistrationService(OnlineRegistrationRepository registrationRepository) {
-        this.registrationRepository = registrationRepository;
+    // 전체 등록 조회
+    public List<OnlineRegistrationDTO> getAllRegistrations() {
+        return onlineRegistrationRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    /**
-     * 온라인 접수 등록
-     */
-    public OnlineRegistration registerOnline(OnlineRegistration registration) {
-        // 등록된 데이터를 저장
-        return registrationRepository.save(registration);
+    // 특정 등록 상세 보기
+    public OnlineRegistrationDTO getRegistrationById(Long id) {
+        return onlineRegistrationRepository.findById(id)
+                .map(this::convertToDTO)
+                .orElseThrow(() -> new IllegalArgumentException("OnlineRegistration not found with id: " + id));
     }
 
-    /**
-     * 모든 접수 내역 조회
-     */
-    public List<OnlineRegistration> getAllRegistrations() {
-        // 데이터베이스에서 전체 조회
-        return registrationRepository.findAll();
-    }
-
-    /**
-     * 특정 접수 상세 조회
-     */
-    public OnlineRegistration getRegistrationDetails(Long id) {
-        // ID를 사용해 데이터 검색
-        return registrationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 접수 정보를 찾을 수 없습니다."));
-    }
-
-    /**
-     * 접수 삭제
-     */
-    public void deleteRegistration(Long id) {
-        // 데이터가 존재하는지 확인
-        Optional<OnlineRegistration> registration = registrationRepository.findById(id);
-        if (registration.isEmpty()) {
-            throw new IllegalArgumentException("해당 ID의 접수 정보를 찾을 수 없습니다.");
-        }
-        // 데이터 삭제
-        registrationRepository.deleteById(id);
+    // Entity -> DTO 변환
+    private OnlineRegistrationDTO convertToDTO(OnlineRegistration registration) {
+        return OnlineRegistrationDTO.builder()
+                .id(registration.getId())
+                .patientName(registration.getPatientName())
+                .registrationDateTime(registration.getRegistrationDateTime())
+                .doctorName(registration.getDoctor().getName())
+                .details(registration.getDetails())
+                .build();
     }
 }
