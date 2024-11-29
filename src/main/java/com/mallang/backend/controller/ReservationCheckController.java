@@ -38,7 +38,7 @@ public class ReservationCheckController {
     }
 
     // 진료 예약 취소
-    @DeleteMapping("/appointment/{id}")
+    @PatchMapping("/appointment/{id}/cancel")
     public ResponseEntity<?> cancelAppointment(@PathVariable Long id) {
         appointmentService.cancelAppointment(id);
         return ResponseEntity.ok("Appointment canceled successfully.");

@@ -8,13 +8,13 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewDTO {
+
     private String id;                 // 리뷰 ID
     private String memberId;           // 작성자 ID
     private String doctorName;         // 의사 이름

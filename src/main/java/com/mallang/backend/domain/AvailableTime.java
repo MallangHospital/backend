@@ -12,7 +12,6 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AvailableTime {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
