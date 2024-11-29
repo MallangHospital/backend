@@ -1,4 +1,3 @@
-
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.Review;
@@ -68,8 +67,8 @@ public class ReviewService {
     private Review convertToEntity(ReviewDTO reviewDTO, String filePath) {
         return Review.builder()
                 .memberId(reviewDTO.getMemberId())         // 작성자 ID
-                .doctorName(reviewDTO.getDoctorName())     // 의사 이름
-                .departmentName(reviewDTO.getDepartmentName()) // 진료과 이름
+                .doctorId(reviewDTO.getDoctorId())         // 의사 ID
+                .departmentId(reviewDTO.getDepartmentId()) // 부서 ID
                 .detailStars(reviewDTO.getDetailStars())   // 세부 별점 리스트
                 .content(reviewDTO.getContent())           // 리뷰 본문
                 .receiptFilePath(filePath)                 // 영수증 파일 경로
@@ -82,8 +81,8 @@ public class ReviewService {
         return ReviewDTO.builder()
                 .id(review.getId())
                 .memberId(review.getMemberId())
-                .doctorName(review.getDoctorName())         // 의사 이름
-                .departmentName(review.getDepartmentName()) // 진료과 이름
+                .doctorId(review.getDoctorId())
+                .departmentId(review.getDepartmentId())
                 .detailStars(review.getDetailStars())
                 .content(review.getContent())
                 .file(review.getReceiptFilePath())
