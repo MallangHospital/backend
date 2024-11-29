@@ -16,7 +16,7 @@ public class CorsConfig {
         configuration.addAllowedOrigin("http://localhost:5500"); // 허용할 Origin
         configuration.addAllowedOrigin("http://42.82.194.26:5500"); // 허용할 Origin
         configuration.addAllowedOrigin("http://127.0.0.1:5500"); // 허용할 Origin
-        configuration.addAllowedOrigin("http://36.39.158.155:5501"); // 허용할 Origin
+        configuration.addAllowedOrigin("http://172.30.1.92:5501"); // 허용할 Origin
         configuration.addAllowedOrigin("https://mallang-a85bb2ff492b.herokuapp.com");
         configuration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
         configuration.addAllowedHeader("*"); // 모든 헤더 허용
