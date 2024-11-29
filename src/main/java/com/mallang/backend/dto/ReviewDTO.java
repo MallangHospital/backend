@@ -14,8 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewDTO {
-    private Long id;                 // 리뷰 ID
-    private Long memberId;           // 작성자 ID
+    private String id;                 // 리뷰 ID
+    private String memberId;           // 작성자 ID
     private Long doctorId;           // 의사 ID
     private Long departmentId;       // 부서 ID
     private List<Integer> detailStars; // 세부 별점 리스트

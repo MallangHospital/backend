@@ -16,10 +16,10 @@ public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 리뷰 ID
+    private String id; // 리뷰 ID (String)
 
     @Column(name = "member_id", nullable = false)
-    private Long memberId; // 작성자 ID (Long으로 수정)
+    private String memberId; // 작성자 ID (String)
 
     @Column(name = "doctor_id", nullable = false)
     private Long doctorId; // 의사 ID
