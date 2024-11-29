@@ -25,7 +25,7 @@ public class ReviewController {
     @GetMapping("/doctor")
     public ResponseEntity<?> getReviewsByDoctor(@RequestBody ReviewDTO reviewFilterDTO) {
         return ResponseEntity.ok(reviewService.getReviewsByDoctorWithPagination(
-                reviewFilterDTO.getDoctorId(),
+                reviewFilterDTO.getDoctorName(), // 의사 이름
                 reviewFilterDTO.getPage(),
                 reviewFilterDTO.getSize()
         ));
@@ -38,26 +38,70 @@ public class ReviewController {
             @RequestPart ReviewDTO reviewDTO,
             @RequestPart(required = false) MultipartFile receiptFile
     ) {
-        ReviewDTO savedReview = reviewService.createReview(reviewDTO, receiptFile);
-        return ResponseEntity.ok("리뷰가 성공적으로 등록되었습니다! ID: " + savedReview.getId());
+        try {
+            // 입력 검증
+            validateReviewData(reviewDTO, receiptFile);
+
+            // 리뷰 작성
+            ReviewDTO savedReview = reviewService.createReview(reviewDTO, receiptFile);
+            return ResponseEntity.ok("리뷰가 성공적으로 등록되었습니다! ID: " + savedReview.getId());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // 리뷰 수정 (작성자 본인만 가능, 비밀번호 필요)
     @PutMapping("/{id}")
     @PreAuthorize("@customSecurityService.isReviewOwner(authentication.name, #id)")
-    public ResponseEntity<?> updateReview(@PathVariable Long id, @RequestBody ReviewDTO reviewDTO) {
-        boolean isUpdated = reviewService.updateReview(id, reviewDTO);
-        if (isUpdated) {
-            return ResponseEntity.ok("리뷰가 성공적으로 수정되었습니다!");
-        } else {
-            return ResponseEntity.badRequest().body("리뷰 수정에 실패하였습니다. 비밀번호를 확인해주세요.");
+    public ResponseEntity<?> updateReview(@PathVariable String id, @RequestBody ReviewDTO reviewDTO) {
+        try {
+            // 입력 검증 (리뷰 수정에는 receiptFile 필요 없음)
+            validateReviewUpdateData(reviewDTO);
+
+            boolean isUpdated = reviewService.updateReview(id, reviewDTO);
+            if (isUpdated) {
+                return ResponseEntity.ok("리뷰가 성공적으로 수정되었습니다!");
+            } else {
+                return ResponseEntity.badRequest().body("리뷰 수정에 실패하였습니다. 비밀번호를 확인해주세요.");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // 입력 데이터 검증 (리뷰 작성 시)
+    private void validateReviewData(ReviewDTO reviewDTO, MultipartFile receiptFile) {
+        if (reviewDTO.getDepartmentName() == null || reviewDTO.getDepartmentName().isEmpty()) {
+            throw new IllegalArgumentException("진료과를 선택해주세요.");
+        }
+        if (reviewDTO.getDoctorName() == null || reviewDTO.getDoctorName().isEmpty()) {
+            throw new IllegalArgumentException("의사를 선택해주세요.");
+        }
+        if (reviewDTO.getDetailStars() == null || reviewDTO.getDetailStars().isEmpty()) {
+            throw new IllegalArgumentException("별점을 선택해주세요.");
+        }
+        if (reviewDTO.getContent() == null || reviewDTO.getContent().isEmpty()) {
+            throw new IllegalArgumentException("리뷰 내용을 입력해주세요.");
+        }
+        if (receiptFile == null || receiptFile.isEmpty()) {
+            throw new IllegalArgumentException("병원 방문을 인증할 자료를 업로드해주세요.");
+        }
+    }
+
+    // 입력 데이터 검증 (리뷰 수정 시)
+    private void validateReviewUpdateData(ReviewDTO reviewDTO) {
+        if (reviewDTO.getDetailStars() == null || reviewDTO.getDetailStars().isEmpty()) {
+            throw new IllegalArgumentException("별점을 선택해주세요.");
+        }
+        if (reviewDTO.getContent() == null || reviewDTO.getContent().isEmpty()) {
+            throw new IllegalArgumentException("리뷰 내용을 입력해주세요.");
         }
     }
 
     // 리뷰 삭제 (작성자는 비밀번호 필요, 관리자는 비밀번호 없이 가능)
     @DeleteMapping("/{id}")
     @PreAuthorize("@customSecurityService.isReviewOwnerOrAdmin(authentication.name, #id)")
-    public ResponseEntity<?> deleteReview(@PathVariable Long id, @RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<?> deleteReview(@PathVariable String id, @RequestBody ReviewDTO reviewDTO) {
         boolean isDeleted = reviewService.deleteReview(id, reviewDTO.getMemberPassword());
         if (isDeleted) {
             return ResponseEntity.ok("리뷰가 성공적으로 삭제되었습니다!");

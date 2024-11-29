@@ -10,8 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -24,7 +22,7 @@ public class ReviewService {
     }
 
     // 특정 의사에 대한 리뷰 조회
-    public Page<ReviewDTO> getReviewsByDoctorWithPagination(Long doctorId, int page, int size) {
+    public Page<ReviewDTO> getReviewsByDoctorWithPagination(String doctorId, int page, int size) {
         return reviewRepository.findByDoctorId(doctorId, PageRequest.of(page, size)).map(this::convertToDTO);
     }
     // 리뷰 작성
@@ -39,7 +37,7 @@ public class ReviewService {
     }
 
     // 리뷰 수정
-    public boolean updateReview(Long id, ReviewDTO reviewDTO) {
+    public boolean updateReview(String id, ReviewDTO reviewDTO) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
 
@@ -55,7 +53,7 @@ public class ReviewService {
     }
 
     // 리뷰 삭제
-    public boolean deleteReview(Long id, String password) {
+    public boolean deleteReview(String id, String password) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
 
@@ -70,8 +68,8 @@ public class ReviewService {
     private Review convertToEntity(ReviewDTO reviewDTO, String filePath) {
         return Review.builder()
                 .memberId(reviewDTO.getMemberId())         // 작성자 ID
-                .doctorId(reviewDTO.getDoctorId())         // 의사 ID
-                .departmentId(reviewDTO.getDepartmentId()) // 부서 ID
+                .doctorName(reviewDTO.getDoctorName())     // 의사 이름
+                .departmentName(reviewDTO.getDepartmentName()) // 진료과 이름
                 .detailStars(reviewDTO.getDetailStars())   // 세부 별점 리스트
                 .content(reviewDTO.getContent())           // 리뷰 본문
                 .receiptFilePath(filePath)                 // 영수증 파일 경로
@@ -84,8 +82,8 @@ public class ReviewService {
         return ReviewDTO.builder()
                 .id(review.getId())
                 .memberId(review.getMemberId())
-                .doctorId(review.getDoctorId())
-                .departmentId(review.getDepartmentId())
+                .doctorName(review.getDoctorName())         // 의사 이름
+                .departmentName(review.getDepartmentName()) // 진료과 이름
                 .detailStars(review.getDetailStars())
                 .content(review.getContent())
                 .file(review.getReceiptFilePath())
