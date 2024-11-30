@@ -22,4 +22,6 @@ public class Department {
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Doctor> doctors; // Department와 Doctor 간의 연관 관계
+
+
 }
