@@ -3,7 +3,7 @@ package com.mallang.backend.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+
 
 @Entity
 @Getter
@@ -15,18 +15,15 @@ public class OnlineRegistration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @Column(nullable = false)
-    private String patientName; // 예약자 이름
+    private Long id; // ID 필드
 
-    @Column(nullable = false)
-    private LocalDateTime registrationDateTime; // 접수 일시
-
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor; // 담당 의사 (다대일 관계)
-
-    @Column(length = 1000)
-    private String details; // 상세 정보
+    private String patientName; // 환자 이름
+    private String doctorName; // 의사 이름
+    private String registrationDate; // 등록 날짜
+    private String registrationTime; // 등록 시간
+    private String phoneNumber; // 전화번호
+    private String department; // 진료과목
+    private String visitType; // 진료유형 (초진, 재진, 상담)
+    private String symptom; // 증상
 }
