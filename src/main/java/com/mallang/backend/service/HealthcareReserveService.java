@@ -22,6 +22,7 @@ public class HealthcareReserveService {
                 .memberId(dto.getMemberId())
                 .phoneNumber(dto.getPhoneNumber())
                 .reserveDate(dto.getReserveDate())
+                .status("예약")
                 .hType(dto.getHType())
                 .build();
         HealthcareReserve savedReservation = healthcareReserveRepository.save(reservation);
