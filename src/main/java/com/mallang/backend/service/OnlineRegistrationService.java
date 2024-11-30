@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OnlineRegistrationService {
 
-    private final OnlineRegistrationRepository registrationRepository;
+    private final OnlineRegistrationRepository onlineRegistrationRepository;
 
     // 새로운 접수 등록
     public OnlineRegistrationDTO registerOnline(OnlineRegistrationDTO registrationDTO) {
@@ -41,10 +41,12 @@ public class OnlineRegistrationService {
     }
 
     // 엔티티를 DTO로 변환
+
     private OnlineRegistrationDTO convertToDTO(OnlineRegistration registration) {
         return OnlineRegistrationDTO.builder()
                 .id(registration.getId())
                 .patientName(registration.getPatientName())
+
                 .doctorName(registration.getDoctorName())
                 .registrationDate(registration.getRegistrationDate())
                 .registrationTime(registration.getRegistrationTime())
@@ -67,6 +69,7 @@ public class OnlineRegistrationService {
                 .department(registrationDTO.getDepartment())
                 .visitType(registrationDTO.getVisitType())
                 .symptom(registrationDTO.getSymptom())
+
                 .build();
     }
 }

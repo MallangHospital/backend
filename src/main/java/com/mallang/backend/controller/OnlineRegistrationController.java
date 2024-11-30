@@ -1,5 +1,7 @@
 package com.mallang.backend.controller;
 
+
+
 import com.mallang.backend.dto.OnlineRegistrationDTO;
 import com.mallang.backend.service.OnlineRegistrationService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+
 @RequestMapping("/api/registrations")
 @RequiredArgsConstructor
 public class OnlineRegistrationController {
@@ -38,5 +41,6 @@ public class OnlineRegistrationController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+
     }
 }

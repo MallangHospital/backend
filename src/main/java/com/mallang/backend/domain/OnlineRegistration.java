@@ -3,6 +3,8 @@ package com.mallang.backend.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+
+
 @Entity
 @Getter
 @Setter
@@ -13,6 +15,7 @@ public class OnlineRegistration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id; // ID 필드
 
     private String patientName; // 환자 이름

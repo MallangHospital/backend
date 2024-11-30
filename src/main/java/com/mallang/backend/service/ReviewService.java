@@ -28,6 +28,7 @@ public class ReviewService {
     public ReviewDTO createReview(ReviewDTO reviewDTO, MultipartFile proveFile) {
         String filePath = saveFile(proveFile);
 
+
         Review review = convertToEntity(reviewDTO, filePath);
         review.setAverageStars(calculateAverageStars(review));
         Review savedReview = reviewRepository.save(review);
@@ -97,7 +98,6 @@ public class ReviewService {
         return (review.getExplanationStars() + review.getTreatmentResultStars()
                 + review.getStaffKindnessStars() + review.getCleanlinessStars()) / 4.0;
     }
-
     private Review convertToEntity(ReviewDTO reviewDTO, String filePath) {
         return Review.builder()
                 .memberId(reviewDTO.getMemberId())
@@ -112,6 +112,7 @@ public class ReviewService {
                 .memberPassword(reviewDTO.getMemberPassword())
                 .build();
     }
+
 
     private ReviewDTO convertToDTO(Review review) {
         return ReviewDTO.builder()

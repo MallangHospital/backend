@@ -15,4 +15,5 @@ public class FeedbackDTO {
     private String phoneNumber;
     private String email;
     private String regDate;
+    private String modDate;
 }

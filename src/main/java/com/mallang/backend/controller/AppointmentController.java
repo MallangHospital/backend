@@ -47,4 +47,12 @@ public class AppointmentController {
         List<AppointmentDTO> appointments = appointmentService.getAllAppointments();
         return ResponseEntity.ok(appointments);
     }
+
+    // 예약 상세 조회
+    @GetMapping("/{appointmentId}")
+    public ResponseEntity<AppointmentDTO> getAppointmentDetails(
+            @PathVariable Long appointmentId) {
+        AppointmentDTO appointmentDetails = appointmentService.getAppointmentDetails(appointmentId);
+        return ResponseEntity.ok(appointmentDetails);
+    }
 }
