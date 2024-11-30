@@ -18,13 +18,13 @@ public class OnlineRegistrationService {
     // 새로운 접수 등록
     public OnlineRegistrationDTO registerOnline(OnlineRegistrationDTO registrationDTO) {
         OnlineRegistration registration = convertToEntity(registrationDTO);
-        OnlineRegistration savedRegistration = registrationRepository.save(registration);
+        OnlineRegistration savedRegistration = onlineRegistrationRepository.save(registration);
         return convertToDTO(savedRegistration);
     }
 
     // 모든 접수 조회
     public List<OnlineRegistrationDTO> getAllRegistrations() {
-        return registrationRepository.findAll().stream()
+        return onlineRegistrationRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .map(registration -> {
                     registration.setSymptom(null); // 전체 조회에서는 증상 제외
@@ -35,7 +35,7 @@ public class OnlineRegistrationService {
 
     // 특정 접수 상세 조회
     public OnlineRegistrationDTO getRegistrationDetails(Long id) {
-        OnlineRegistration registration = registrationRepository.findById(id)
+        OnlineRegistration registration = onlineRegistrationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 접수 정보를 찾을 수 없습니다."));
         return convertToDTO(registration); // 상세 조회 시 증상 포함
     }
