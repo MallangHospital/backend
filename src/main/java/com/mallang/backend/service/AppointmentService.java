@@ -145,6 +145,14 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
+    // AppointmentService.java
+    @Transactional(readOnly = true)
+    public AppointmentDTO getAppointmentDetails(Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+        return convertToDTO(appointment);
+    }
+
     // DTO 생성 메서드
     private AppointmentDTO convertToDTO(Appointment appointment) {
         return AppointmentDTO.builder()
