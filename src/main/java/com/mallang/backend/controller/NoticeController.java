@@ -63,12 +63,31 @@ public class NoticeController {
 
     // 공지사항 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteNotice(@PathVariable Long id, @RequestBody NoticeDTO noticeDTO) {
-        boolean isDeleted = noticeService.deleteNotice(id, noticeDTO.getPassword());
+public ResponseEntity<?> deleteNotice(@PathVariable Long id, @RequestBody(required = false) NoticeDTO noticeDTO,
+                                      @RequestHeader("Authorization") String token) {
+    // 관리자 권한 확인
+    boolean isAdmin = userService.isAdmin(token);  // 예: JWT 토큰을 통해 관리자 권한 확인
+
+    // 관리자일 경우 비밀번호를 요구하지 않음
+    if (isAdmin) {
+        boolean isDeleted = noticeService.deleteNotice(id, null);  // 비밀번호 없이 삭제
         if (isDeleted) {
             return ResponseEntity.ok("공지사항이 성공적으로 삭제되었습니다!");
         } else {
-            return ResponseEntity.badRequest().body("비밀번호가 일치하지 않거나 공지사항을 찾을 수 없습니다.");
+            return ResponseEntity.badRequest().body("공지사항을 찾을 수 없습니다.");
         }
     }
+
+    // 일반 사용자일 경우 비밀번호 확인
+    if (noticeDTO == null || noticeDTO.getPassword() == null || noticeDTO.getPassword().isEmpty()) {
+        return ResponseEntity.badRequest().body("비밀번호를 입력해주세요.");
+    }
+
+    boolean isDeleted = noticeService.deleteNotice(id, noticeDTO.getPassword());  // 비밀번호 확인
+    if (isDeleted) {
+        return ResponseEntity.ok("공지사항이 성공적으로 삭제되었습니다!");
+    } else {
+        return ResponseEntity.badRequest().body("비밀번호가 일치하지 않거나 공지사항을 찾을 수 없습니다.");
+    }
+}
 }
