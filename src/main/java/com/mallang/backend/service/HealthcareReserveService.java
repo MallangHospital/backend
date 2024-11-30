@@ -75,7 +75,10 @@ public class HealthcareReserveService {
     public void cancelHealthCheck(Long id) {
         HealthcareReserve reserve = healthcareReserveRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Healthcare reservation not found."));
-        healthcareReserveRepository.delete(reserve);
+
+        // 상태를 "취소"로 변경
+        reserve.setStatus("취소");
+        healthcareReserveRepository.save(reserve);
     }
 
 }
