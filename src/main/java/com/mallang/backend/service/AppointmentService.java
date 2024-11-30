@@ -162,6 +162,7 @@ public class AppointmentService {
                 .patientName(appointment.getMember().getName()) // Member의 이름 가져오기
                 .phoneNum(appointment.getMember().getPhoneNum())
                 .doctorName(appointment.getDoctor().getName()) // Doctor의 이름 가져오기
+                .departmentName(appointment.getDepartment().getName())
                 .appointmentType(appointment.getAppointmentType())
                 .appointmentDate(appointment.getAppointmentDate())
                 .appointmentTime(appointment.getAppointmentTime())
