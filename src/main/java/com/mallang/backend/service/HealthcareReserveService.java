@@ -31,6 +31,7 @@ public class HealthcareReserveService {
                 .memberId(savedReservation.getMemberId())
                 .phoneNumber(savedReservation.getPhoneNumber())
                 .reserveDate(savedReservation.getReserveDate())
+                .status("예약")
                 .hType(savedReservation.getHType())
                 .build();
     }
@@ -47,6 +48,7 @@ public class HealthcareReserveService {
                         .phoneNumber(reserve.getPhoneNumber())
                         .reserveDate(reserve.getReserveDate())
                         .hType(reserve.getHType())
+                        .status(reserve.getStatus())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -63,6 +65,7 @@ public class HealthcareReserveService {
                         .phoneNumber(reserve.getPhoneNumber())
                         .reserveDate(reserve.getReserveDate())
                         .hType(reserve.getHType())
+                        .status(reserve.getStatus())
                         .build())
                 .collect(Collectors.toList());
     }
