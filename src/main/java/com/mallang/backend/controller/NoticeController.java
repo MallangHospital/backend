@@ -2,6 +2,7 @@ package com.mallang.backend.controller;
 
 import com.mallang.backend.dto.NoticeDTO;
 import com.mallang.backend.service.NoticeService;
+import com.mallang.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NoticeController {
 
+    private final UserService userService; // UserService 주입
+
+    /**
+     * 관리자 권한 확인 API
+     *
+     * @param token JWT 토큰
+     * @return 관리자 여부
+     */
+    @GetMapping("/check-admin")
+    public ResponseEntity<?> checkAdmin(@RequestHeader("Authorization") String token) {
+        try {
+            boolean isAdmin = userService.isAdmin(token); // 관리자 확인 로직
+            return ResponseEntity.ok(isAdmin);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("관리자 권한 확인 중 오류 발생: " + e.getMessage());
+        }
+    }
     private final NoticeService noticeService;
+
 
     // 공지사항 전체 조회
     @GetMapping
@@ -61,10 +80,28 @@ public class NoticeController {
         }
     }
 
-    // 공지사항 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteNotice(@PathVariable Long id, @RequestBody NoticeDTO noticeDTO) {
-        boolean isDeleted = noticeService.deleteNotice(id, noticeDTO.getPassword());
+    public ResponseEntity<?> deleteNotice(@PathVariable Long id, @RequestBody(required = false) NoticeDTO noticeDTO,
+                                          @RequestHeader("Authorization") String token) {
+        // 관리자 권한 확인
+        boolean isAdmin = userService.isAdmin(token);  // 예: JWT 토큰을 통해 관리자 권한 확인
+
+        // 관리자일 경우 비밀번호를 요구하지 않음
+        if (isAdmin) {
+            boolean isDeleted = noticeService.deleteNotice(id, null);  // 비밀번호 없이 삭제
+            if (isDeleted) {
+                return ResponseEntity.ok("공지사항이 성공적으로 삭제되었습니다!");
+            } else {
+                return ResponseEntity.badRequest().body("공지사항을 찾을 수 없습니다.");
+            }
+        }
+
+        // 일반 사용자일 경우 비밀번호 확인
+        if (noticeDTO == null || noticeDTO.getPassword() == null || noticeDTO.getPassword().isEmpty()) {
+            return ResponseEntity.badRequest().body("비밀번호를 입력해주세요.");
+        }
+
+        boolean isDeleted = noticeService.deleteNotice(id, noticeDTO.getPassword());  // 비밀번호 확인
         if (isDeleted) {
             return ResponseEntity.ok("공지사항이 성공적으로 삭제되었습니다!");
         } else {
