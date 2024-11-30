@@ -1,26 +1,18 @@
-package com.mallang.backend.domain;
+package com.mallang.backend.dto;
 
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
-@Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Builder
-public class OnlineRegistration {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class OnlineRegistrationDTO {
     private Long id; // ID 필드
-
     private String patientName; // 환자 이름
     private String doctorName; // 의사 이름
     private String registrationDate; // 등록 날짜
     private String registrationTime; // 등록 시간
     private String phoneNumber; // 전화번호
     private String department; // 진료과목
-    private String visitType; // 진료유형 (초진, 재진, 상담)
+    private String visitType; // 진료유형
     private String symptom; // 증상
 }
