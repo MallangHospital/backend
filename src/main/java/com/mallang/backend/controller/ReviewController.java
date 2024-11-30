@@ -1,112 +1,57 @@
 package com.mallang.backend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mallang.backend.dto.ReviewDTO;
 import com.mallang.backend.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/review")
+@RequestMapping("/api/reviews")
 @RequiredArgsConstructor
 public class ReviewController {
 
     private final ReviewService reviewService;
 
-    // 모든 리뷰 조회 (로그인하지 않은 사용자도 접근 가능)
-    @GetMapping
-    public ResponseEntity<?> getAllReviews(@RequestBody ReviewDTO reviewFilterDTO) {
-        return ResponseEntity.ok(reviewService.getReviewsWithPagination(reviewFilterDTO.getPage(), reviewFilterDTO.getSize()));
-    }
-
-    // 특정 의사에 대한 리뷰 조회 (로그인하지 않은 사용자도 접근 가능)
-    @GetMapping("/doctor")
-    public ResponseEntity<?> getReviewsByDoctor(@RequestBody ReviewDTO reviewFilterDTO) {
-        return ResponseEntity.ok(reviewService.getReviewsByDoctorWithPagination(
-                reviewFilterDTO.getDoctorName(), // 의사 이름
-                reviewFilterDTO.getPage(),
-                reviewFilterDTO.getSize()
-        ));
-    }
-
-    // 리뷰 작성 (진료기록이 있는 사용자만 가능)
+    // 리뷰 등록
     @PostMapping
-    @PreAuthorize("@customSecurityService.hasMedicalRecord(authentication.name)")
     public ResponseEntity<?> createReview(
-            @RequestPart ReviewDTO reviewDTO,
-            @RequestPart(required = false) MultipartFile receiptFile
-    ) {
+            @RequestPart("reviewDTO") String reviewDTOString,
+            @RequestPart(value = "proveFile", required = false) MultipartFile proveFile) {
         try {
-            // 입력 검증
-            validateReviewData(reviewDTO, receiptFile);
+            // JSON -> DTO 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            ReviewDTO reviewDTO = objectMapper.readValue(reviewDTOString, ReviewDTO.class);
 
-            // 리뷰 작성
-            ReviewDTO savedReview = reviewService.createReview(reviewDTO, receiptFile);
-            return ResponseEntity.ok("리뷰가 성공적으로 등록되었습니다! ID: " + savedReview.getId());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            ReviewDTO createdReview = reviewService.createReview(reviewDTO, proveFile);
+            return ResponseEntity.ok(createdReview);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid request data: " + e.getMessage());
         }
     }
 
-    // 리뷰 수정 (작성자 본인만 가능, 비밀번호 필요)
-    @PutMapping("/{id}")
-    @PreAuthorize("@customSecurityService.isReviewOwner(authentication.name, #id)")
-    public ResponseEntity<?> updateReview(@PathVariable String id, @RequestBody ReviewDTO reviewDTO) {
-        try {
-            // 입력 검증 (리뷰 수정에는 receiptFile 필요 없음)
-            validateReviewUpdateData(reviewDTO);
-
-            boolean isUpdated = reviewService.updateReview(id, reviewDTO);
-            if (isUpdated) {
-                return ResponseEntity.ok("리뷰가 성공적으로 수정되었습니다!");
-            } else {
-                return ResponseEntity.badRequest().body("리뷰 수정에 실패하였습니다. 비밀번호를 확인해주세요.");
-            }
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    // 입력 데이터 검증 (리뷰 작성 시)
-    private void validateReviewData(ReviewDTO reviewDTO, MultipartFile receiptFile) {
-        if (reviewDTO.getDepartmentName() == null || reviewDTO.getDepartmentName().isEmpty()) {
-            throw new IllegalArgumentException("진료과를 선택해주세요.");
-        }
-        if (reviewDTO.getDoctorName() == null || reviewDTO.getDoctorName().isEmpty()) {
-            throw new IllegalArgumentException("의사를 선택해주세요.");
-        }
-        if (reviewDTO.getDetailStars() == null || reviewDTO.getDetailStars().isEmpty()) {
-            throw new IllegalArgumentException("별점을 선택해주세요.");
-        }
-        if (reviewDTO.getContent() == null || reviewDTO.getContent().isEmpty()) {
-            throw new IllegalArgumentException("리뷰 내용을 입력해주세요.");
-        }
-        if (receiptFile == null || receiptFile.isEmpty()) {
-            throw new IllegalArgumentException("병원 방문을 인증할 자료를 업로드해주세요.");
-        }
-    }
-
-    // 입력 데이터 검증 (리뷰 수정 시)
-    private void validateReviewUpdateData(ReviewDTO reviewDTO) {
-        if (reviewDTO.getDetailStars() == null || reviewDTO.getDetailStars().isEmpty()) {
-            throw new IllegalArgumentException("별점을 선택해주세요.");
-        }
-        if (reviewDTO.getContent() == null || reviewDTO.getContent().isEmpty()) {
-            throw new IllegalArgumentException("리뷰 내용을 입력해주세요.");
-        }
-    }
-
-    // 리뷰 삭제 (작성자는 비밀번호 필요, 관리자는 비밀번호 없이 가능)
+    // 리뷰 삭제
     @DeleteMapping("/{id}")
-    @PreAuthorize("@customSecurityService.isReviewOwnerOrAdmin(authentication.name, #id)")
-    public ResponseEntity<?> deleteReview(@PathVariable String id, @RequestBody ReviewDTO reviewDTO) {
-        boolean isDeleted = reviewService.deleteReview(id, reviewDTO.getMemberPassword());
+    public ResponseEntity<?> deleteReview(
+            @PathVariable Long id,
+            @RequestParam(value = "password", required = false) String password,
+            @RequestParam(value = "isAdmin", defaultValue = "false") boolean isAdmin) {
+        boolean isDeleted = reviewService.deleteReview(id, password, isAdmin);
         if (isDeleted) {
-            return ResponseEntity.ok("리뷰가 성공적으로 삭제되었습니다!");
-        } else {
-            return ResponseEntity.badRequest().body("리뷰 삭제에 실패하였습니다. 비밀번호를 확인해주세요.");
+            return ResponseEntity.ok("리뷰가 삭제되었습니다.");
         }
+        return ResponseEntity.badRequest().body("비밀번호가 올바르지 않거나 삭제 권한이 없습니다.");
+    }
+
+    // 리뷰 조회 (페이지네이션 및 평균 데이터 포함)
+    @GetMapping
+    public ResponseEntity<?> getAllReviews(@RequestParam(value = "page", defaultValue = "1") int page) {
+        final int fixedSize = 10;
+        Map<String, Object> response = reviewService.getReviewsWithPaginationAndAverages(page, fixedSize);
+        return ResponseEntity.ok(response);
     }
 }
