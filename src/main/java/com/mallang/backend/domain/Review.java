@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Review {
+public class Review extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,4 +48,10 @@ public class Review {
 
     @Column(name = "member_password", nullable = false)
     private String memberPassword; // 작성자 비밀번호
+
+    @Column(name = "department_name")
+    private String departmentName;
+
+    @Column(name = "doctor_name")
+    private String doctorName;
 }
