@@ -13,43 +13,44 @@ public class Review extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 리뷰 ID
-
+    private Long id;
 
     @Column(name = "doctor_Id", nullable = false)
-    private Long doctorId; // 리뷰 대상 의사
+    private Long doctorId;
 
     @Column(name = "department_Id", nullable = false)
-    private Long departmentId; // 리뷰 대상 진료과
+    private Long departmentId;
 
-    // 추가: 세부 평가 항목별 별점
     @Column(name = "explanation_stars", nullable = false)
-    private Integer explanationStars; // 자세한 설명 별점
+    private Integer explanationStars;
 
     @Column(name = "treatment_result_stars", nullable = false)
-    private Integer treatmentResultStars; // 치료 후 결과 별점
+    private Integer treatmentResultStars;
 
     @Column(name = "kindness_stars", nullable = false)
-    private Integer staffKindnessStars; // 직원의 친절 별점
+    private Integer staffKindnessStars;
 
     @Column(name = "cleanliness_stars", nullable = false)
-    private Integer cleanlinessStars; // 청결함 별점
+    private Integer cleanlinessStars;
 
     @Column(name = "average_stars", nullable = false)
-    private Double averageStars; // 리뷰 별점 평균 (자동 계산)
+    private Double averageStars;
 
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
-    private String content; // 리뷰 본문 내용
+    private String content;
 
     @Column(name = "prove_file_path")
-    private String proveFilePath; // 방문 증명 첨부 파일 경로
+    private String proveFilePath;
 
     @Column(name = "member_password", nullable = false)
-    private String memberPassword; // 작성자 비밀번호
+    private String memberPassword;
 
     @Column(name = "department_name")
     private String departmentName;
 
     @Column(name = "doctor_name")
     private String doctorName;
+
+    @Column(name = "member_id", nullable = false)
+    private Long memberId; // 서버에서 관리되는 멤버 ID
 }

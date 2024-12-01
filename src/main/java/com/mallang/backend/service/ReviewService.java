@@ -24,13 +24,26 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
 
+    private final MemberService memberService; // MemberService 주입
+
     // 리뷰 등록
     public ReviewDTO createReview(ReviewDTO reviewDTO, MultipartFile proveFile) {
+        // 별점 항목 검증 추가
+        if (reviewDTO.getExplanationStars() == null || reviewDTO.getTreatmentResultStars() == null ||
+                reviewDTO.getStaffKindnessStars() == null || reviewDTO.getCleanlinessStars() == null) {
+            throw new IllegalArgumentException("모든 별점 항목을 입력해야 합니다.");
+        }
+        // memberId를 가져오기 위해 패스워드 사용
+        String memberId = memberService.getMemberIdByPassword(reviewDTO.getMemberPassword());
+
+        // 파일 저장
         String filePath = saveFile(proveFile);
 
-
+        // Review 엔터티 변환 및 평균 별점 계산
         Review review = convertToEntity(reviewDTO, filePath);
         review.setAverageStars(calculateAverageStars(review));
+
+        // 저장 후 DTO 반환
         Review savedReview = reviewRepository.save(review);
         return convertToDTO(savedReview);
     }
@@ -50,37 +63,29 @@ public class ReviewService {
     public Map<String, Object> getReviewsWithPaginationAndAverages(int page, int size) {
         Page<Review> reviewsPage = reviewRepository.findAll(PageRequest.of(page - 1, size));
 
-        // 리뷰 데이터
         List<ReviewDTO> reviews = reviewsPage.getContent().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
-        // 각 세부 항목의 평균 별점 계산
         double averageExplanationStars = reviewRepository.findAll().stream()
                 .mapToInt(Review::getExplanationStars)
-                .average()
-                .orElse(0.0);
+                .average().orElse(0.0);
 
         double averageTreatmentResultStars = reviewRepository.findAll().stream()
                 .mapToInt(Review::getTreatmentResultStars)
-                .average()
-                .orElse(0.0);
+                .average().orElse(0.0);
 
         double averageStaffKindnessStars = reviewRepository.findAll().stream()
                 .mapToInt(Review::getStaffKindnessStars)
-                .average()
-                .orElse(0.0);
+                .average().orElse(0.0);
 
         double averageCleanlinessStars = reviewRepository.findAll().stream()
                 .mapToInt(Review::getCleanlinessStars)
-                .average()
-                .orElse(0.0);
+                .average().orElse(0.0);
 
-        // 전체 평균 계산
         double overallAverageStars = (averageExplanationStars + averageTreatmentResultStars +
                 averageStaffKindnessStars + averageCleanlinessStars) / 4;
 
-        // 응답 데이터 구성
         Map<String, Object> response = new HashMap<>();
         response.put("reviews", reviews);
         response.put("totalReviews", reviewsPage.getTotalElements());
@@ -98,6 +103,7 @@ public class ReviewService {
         return (review.getExplanationStars() + review.getTreatmentResultStars()
                 + review.getStaffKindnessStars() + review.getCleanlinessStars()) / 4.0;
     }
+
     private Review convertToEntity(ReviewDTO reviewDTO, String filePath) {
         return Review.builder()
                 .doctorId(reviewDTO.getDoctorId())
@@ -111,9 +117,9 @@ public class ReviewService {
                 .memberPassword(reviewDTO.getMemberPassword())
                 .departmentName(reviewDTO.getDepartment())
                 .doctorName(reviewDTO.getDoctor())
+                .memberId(getCurrentMemberId()) // 서버에서 관리하는 멤버 ID
                 .build();
     }
-
 
     private ReviewDTO convertToDTO(Review review) {
         return ReviewDTO.builder()
@@ -126,9 +132,11 @@ public class ReviewService {
                 .cleanlinessStars(review.getCleanlinessStars())
                 .averageStars(review.getAverageStars())
                 .content(review.getContent())
+                .proveFilePath(review.getProveFilePath())
                 .department(review.getDepartmentName())
                 .doctor(review.getDoctorName())
                 .regDate(review.getRegDate() != null ? review.getRegDate().toString() : null)
+                .memberId(review.getMemberId()) // 반환 시 포함
                 .build();
     }
 
@@ -148,5 +156,12 @@ public class ReviewService {
             }
         }
         return null;
+    }
+
+    // 예시: 현재 사용자의 memberId 가져오는 메서드
+    private Long getCurrentMemberId() {
+        // 인증된 사용자 정보를 기반으로 현재 사용자 ID를 가져옵니다.
+        // 실제 구현에서는 SecurityContextHolder 등을 통해 인증 정보를 가져옵니다.
+        return 123L; // 예제용으로 하드코딩
     }
 }
