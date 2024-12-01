@@ -18,6 +18,7 @@ public class MemberService {
     private final ModelMapper modelMapper;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+
     public void join(MemberJoinDTO memberJoinDTO) {
         // 아이디 중복 확인
         if (memberRepository.existsById(memberJoinDTO.getMid())) {
@@ -129,11 +130,5 @@ public class MemberService {
         }
 
         memberRepository.save(member);
-    }
-    // 패스워드로 mid 검색
-    public String getMemberIdByPassword(String password) {
-        return memberRepository.findByMpw(password)
-                .map(Member::getMid)
-                .orElseThrow(() -> new IllegalArgumentException("해당 패스워드와 일치하는 사용자가 없습니다."));
     }
 }
