@@ -42,7 +42,7 @@ public class SecurityConfig {
       
         // 접근 권한 설정
         /*http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/api/member/join", "/", "/error").permitAll() // 인증 없이 접근 가능
+                .requestMatchers("/api/member/join", "/", "/error", "/login").permitAll() // 인증 없이 접근 가능
 
                 //관리자 허용
                 .requestMatchers(HttpMethod.GET, "/api/feedback/**").hasRole("ADMIN") // 피드백 전체 조회, ID조회 허용
