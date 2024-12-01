@@ -20,4 +20,7 @@ public class ReviewDTO {
     private String content;
     private String proveFilePath; // 첨부 파일 경로 추가
     private String memberPassword;
+    private String department;
+    private String doctor;
+    private String createdAt;
 }
