@@ -24,18 +24,15 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
 
-    // 리뷰 등록
-    public ReviewDTO createReview(ReviewDTO reviewDTO, MultipartFile proveFile) {
+    public ReviewDTO createReview(ReviewDTO reviewDTO, MultipartFile proveFile, String memberId) {
         String filePath = saveFile(proveFile);
-
-
         Review review = convertToEntity(reviewDTO, filePath);
+        review.setMemberId(memberId);
         review.setAverageStars(calculateAverageStars(review));
         Review savedReview = reviewRepository.save(review);
         return convertToDTO(savedReview);
     }
 
-    // 리뷰 삭제
     public boolean deleteReview(Long id, String password, boolean isAdmin) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
@@ -46,16 +43,12 @@ public class ReviewService {
         return false;
     }
 
-    // 페이지네이션과 평균 데이터 포함한 리뷰 조회
     public Map<String, Object> getReviewsWithPaginationAndAverages(int page, int size) {
         Page<Review> reviewsPage = reviewRepository.findAll(PageRequest.of(page - 1, size));
-
-        // 리뷰 데이터
         List<ReviewDTO> reviews = reviewsPage.getContent().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
-        // 각 세부 항목의 평균 별점 계산
         double averageExplanationStars = reviewRepository.findAll().stream()
                 .mapToInt(Review::getExplanationStars)
                 .average()
@@ -76,11 +69,9 @@ public class ReviewService {
                 .average()
                 .orElse(0.0);
 
-        // 전체 평균 계산
         double overallAverageStars = (averageExplanationStars + averageTreatmentResultStars +
                 averageStaffKindnessStars + averageCleanlinessStars) / 4;
 
-        // 응답 데이터 구성
         Map<String, Object> response = new HashMap<>();
         response.put("reviews", reviews);
         response.put("totalReviews", reviewsPage.getTotalElements());
@@ -98,6 +89,7 @@ public class ReviewService {
         return (review.getExplanationStars() + review.getTreatmentResultStars()
                 + review.getStaffKindnessStars() + review.getCleanlinessStars()) / 4.0;
     }
+
     private Review convertToEntity(ReviewDTO reviewDTO, String filePath) {
         return Review.builder()
                 .doctorId(reviewDTO.getDoctorId())
@@ -114,7 +106,6 @@ public class ReviewService {
                 .build();
     }
 
-
     private ReviewDTO convertToDTO(Review review) {
         return ReviewDTO.builder()
                 .id(review.getId())
@@ -128,6 +119,7 @@ public class ReviewService {
                 .content(review.getContent())
                 .department(review.getDepartmentName())
                 .doctor(review.getDoctorName())
+                .memberId(review.getMemberId())
                 .regDate(review.getRegDate() != null ? review.getRegDate().toString() : null)
                 .build();
     }
