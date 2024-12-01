@@ -45,12 +45,12 @@ public class Review extends BaseEntity {
     @Column(name = "member_password", nullable = false)
     private String memberPassword;
 
+    @Column(name = "member_id", nullable = false)
+    private String memberId;
+
     @Column(name = "department_name")
     private String departmentName;
 
     @Column(name = "doctor_name")
     private String doctorName;
-
-    @Column(name = "member_id", nullable = false)
-    private Long memberId; // 서버에서 관리되는 멤버 ID
 }

@@ -24,31 +24,15 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
 
-    private final MemberService memberService; // MemberService 주입
-
-    // 리뷰 등록
-    public ReviewDTO createReview(ReviewDTO reviewDTO, MultipartFile proveFile) {
-        // 별점 항목 검증 추가
-        if (reviewDTO.getExplanationStars() == null || reviewDTO.getTreatmentResultStars() == null ||
-                reviewDTO.getStaffKindnessStars() == null || reviewDTO.getCleanlinessStars() == null) {
-            throw new IllegalArgumentException("모든 별점 항목을 입력해야 합니다.");
-        }
-        // memberId를 가져오기 위해 패스워드 사용
-        String memberId = memberService.getMemberIdByPassword(reviewDTO.getMemberPassword());
-
-        // 파일 저장
+    public ReviewDTO createReview(ReviewDTO reviewDTO, MultipartFile proveFile, String memberId) {
         String filePath = saveFile(proveFile);
-
-        // Review 엔터티 변환 및 평균 별점 계산
         Review review = convertToEntity(reviewDTO, filePath);
+        review.setMemberId(memberId);
         review.setAverageStars(calculateAverageStars(review));
-
-        // 저장 후 DTO 반환
         Review savedReview = reviewRepository.save(review);
         return convertToDTO(savedReview);
     }
 
-    // 리뷰 삭제
     public boolean deleteReview(Long id, String password, boolean isAdmin) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
@@ -59,29 +43,31 @@ public class ReviewService {
         return false;
     }
 
-    // 페이지네이션과 평균 데이터 포함한 리뷰 조회
     public Map<String, Object> getReviewsWithPaginationAndAverages(int page, int size) {
         Page<Review> reviewsPage = reviewRepository.findAll(PageRequest.of(page - 1, size));
-
         List<ReviewDTO> reviews = reviewsPage.getContent().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
         double averageExplanationStars = reviewRepository.findAll().stream()
                 .mapToInt(Review::getExplanationStars)
-                .average().orElse(0.0);
+                .average()
+                .orElse(0.0);
 
         double averageTreatmentResultStars = reviewRepository.findAll().stream()
                 .mapToInt(Review::getTreatmentResultStars)
-                .average().orElse(0.0);
+                .average()
+                .orElse(0.0);
 
         double averageStaffKindnessStars = reviewRepository.findAll().stream()
                 .mapToInt(Review::getStaffKindnessStars)
-                .average().orElse(0.0);
+                .average()
+                .orElse(0.0);
 
         double averageCleanlinessStars = reviewRepository.findAll().stream()
                 .mapToInt(Review::getCleanlinessStars)
-                .average().orElse(0.0);
+                .average()
+                .orElse(0.0);
 
         double overallAverageStars = (averageExplanationStars + averageTreatmentResultStars +
                 averageStaffKindnessStars + averageCleanlinessStars) / 4;
@@ -117,7 +103,6 @@ public class ReviewService {
                 .memberPassword(reviewDTO.getMemberPassword())
                 .departmentName(reviewDTO.getDepartment())
                 .doctorName(reviewDTO.getDoctor())
-                .memberId(getCurrentMemberId()) // 서버에서 관리하는 멤버 ID
                 .build();
     }
 
@@ -132,11 +117,10 @@ public class ReviewService {
                 .cleanlinessStars(review.getCleanlinessStars())
                 .averageStars(review.getAverageStars())
                 .content(review.getContent())
-                .proveFilePath(review.getProveFilePath())
                 .department(review.getDepartmentName())
                 .doctor(review.getDoctorName())
+                .memberId(review.getMemberId())
                 .regDate(review.getRegDate() != null ? review.getRegDate().toString() : null)
-                .memberId(review.getMemberId()) // 반환 시 포함
                 .build();
     }
 
@@ -156,12 +140,5 @@ public class ReviewService {
             }
         }
         return null;
-    }
-
-    // 예시: 현재 사용자의 memberId 가져오는 메서드
-    private Long getCurrentMemberId() {
-        // 인증된 사용자 정보를 기반으로 현재 사용자 ID를 가져옵니다.
-        // 실제 구현에서는 SecurityContextHolder 등을 통해 인증 정보를 가져옵니다.
-        return 123L; // 예제용으로 하드코딩
     }
 }
