@@ -19,4 +19,15 @@ public class VacationController {
             @RequestBody VacationDTO vacationDTO) {
         return ResponseEntity.ok(vacationService.createVacation(doctorId, vacationDTO));
     }
+
+    @GetMapping
+    public ResponseEntity<?> getAllVacations() {
+        return ResponseEntity.ok(vacationService.getAllVacations());
+    }
+
+    @GetMapping("/{doctorId}")
+    public ResponseEntity<?> getVacationsByDoctorId(@PathVariable Long doctorId) {
+        return ResponseEntity.ok(vacationService.getVacationsByDoctorId(doctorId));
+    }
+
 }
