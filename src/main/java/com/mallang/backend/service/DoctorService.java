@@ -85,7 +85,6 @@ public class DoctorService {
 
         Doctor doctor = doctorOptional.get();
         doctor.setName(doctorDTO.getName());
-        doctor.setContact(doctorDTO.getContact());
         doctor.setPosition(doctorDTO.getPosition());
         doctor.setPhoneNumber(doctorDTO.getPhoneNumber());
         doctor.setPhotoPath(doctorDTO.getPhotoPath());
@@ -177,7 +176,6 @@ public class DoctorService {
                 .id(doctor.getId())
                 .name(doctor.getName())
                 .specialty(doctor.getSpecialty())
-                .contact(doctor.getContact())
                 .photoUrl(doctor.getPhotoUrl())
                 .position(doctor.getPosition())
                 .phoneNumber(doctor.getPhoneNumber())
@@ -192,7 +190,6 @@ public class DoctorService {
     private Doctor convertToEntity(DoctorDTO doctorDTO) {
         return Doctor.builder()
                 .name(doctorDTO.getName())
-                .contact(doctorDTO.getContact())
                 .photoUrl(doctorDTO.getPhotoUrl())
                 .position(doctorDTO.getPosition())
                 .phoneNumber(doctorDTO.getPhoneNumber())

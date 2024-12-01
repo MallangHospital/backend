@@ -23,7 +23,6 @@ public class DoctorDTO {
     private Long departmentId; // 소속 진료과 ID (필수)
     private String name; // 이름
     private String specialty; // 전문 분야 (specialty 추가)
-    private String contact; // 연락처
     private String photoUrl; // 사진 URL
     private String position; // 직위
     private String phoneNumber; // 전화번호

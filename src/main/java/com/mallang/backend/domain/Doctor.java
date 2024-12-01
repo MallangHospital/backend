@@ -24,9 +24,6 @@ public class Doctor {
     @Column(name = "specialty", nullable = false)
     private String specialty; // 전문 분야
 
-    @Column(name = "contact", nullable = false)
-    private String contact; // 연락처
-
     @Column(name = "photo_url", nullable = false)
     private String photoUrl; // 사진 URL
 
@@ -42,7 +39,7 @@ public class Doctor {
     @Column(name = "photo_path", nullable = false)
     private String photoPath; // 사진 경로
 
-    @Column(name = "admin_id", nullable = true)
+    @Column(name = "admin_id", nullable = false)
     private String adminId; // 관리자 ID
 
     @ManyToOne
