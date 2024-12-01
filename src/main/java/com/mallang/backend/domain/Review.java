@@ -15,7 +15,7 @@ public class Review extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 리뷰 ID
 
-    @Column(name = "member_Id", nullable = false)
+    @Column(name = "member_Id")
     private Long memberId; // 리뷰 작성자
 
     @Column(name = "doctor_Id", nullable = false)
