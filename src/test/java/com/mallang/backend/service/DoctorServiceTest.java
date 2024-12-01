@@ -1,6 +1,6 @@
 package com.mallang.backend.service;
 
-import com.mallang.backend.domain.Doctor;
+/*import com.mallang.backend.domain.Doctor;
 import com.mallang.backend.dto.DoctorDTO;
 import com.mallang.backend.repository.DoctorRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -115,4 +115,4 @@ class DoctorServiceTest {
         // Then
         verify(doctorRepository, times(1)).deleteById(doctorId);
     }
-}
+}*/

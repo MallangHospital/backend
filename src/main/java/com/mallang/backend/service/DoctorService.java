@@ -7,7 +7,10 @@ import com.mallang.backend.repository.DoctorRepository;
 import com.mallang.backend.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,34 +34,57 @@ public class DoctorService {
         return doctors.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    // 의사 정보 등록
-    public DoctorDTO createDoctor(DoctorDTO doctorDTO) {
+    // 의사 등록
+    public DoctorDTO createDoctor(DoctorDTO doctorDTO, MultipartFile photo) throws IOException {
+        System.out.println("Starting createDoctor with DTO: " + doctorDTO);
+
         Doctor doctor = convertToEntity(doctorDTO);
 
         // 소속 진료과 설정
         if (doctorDTO.getDepartmentId() != null) {
             Optional<Department> department = departmentRepository.findById(doctorDTO.getDepartmentId());
-            department.ifPresent(doctor::setDepartment);
-
-            // departmentId에 따른 specialty 설정
-            doctor.setSpecialty(getSpecialtyByDepartmentId(doctorDTO.getDepartmentId()));
+            if (department.isPresent()) {
+                doctor.setDepartment(department.get());
+                doctor.setSpecialty(getSpecialtyByDepartmentId(doctorDTO.getDepartmentId()));
+            } else {
+                System.out.println("Department not found for ID: " + doctorDTO.getDepartmentId());
+            }
+        } else {
+            System.out.println("DepartmentId is null");
         }
 
-        Doctor savedDoctor = doctorRepository.save(doctor);
+        // 사진 파일 저장
+        if (photo != null && !photo.isEmpty()) {
+            String photoPath = saveFile(photo);
+            doctor.setPhotoPath(photoPath);
+            doctor.setPhotoUrl("/uploads/doctors/" + photo.getOriginalFilename()); // URL 경로
+            System.out.println("Photo saved at: " + photoPath);
+        } else {
+            System.out.println("No photo uploaded");
+        }
+
+        // Doctor 저장
+        Doctor savedDoctor;
+        try {
+            savedDoctor = doctorRepository.save(doctor);
+            System.out.println("Doctor saved successfully with ID: " + savedDoctor.getId());
+        } catch (Exception e) {
+            System.out.println("Error saving doctor: " + e.getMessage());
+            throw new RuntimeException("Doctor saving failed", e);
+        }
+
         return convertToDTO(savedDoctor);
     }
 
     // 의사 정보 수정
-    public boolean updateDoctor(Long id, DoctorDTO doctorDTO) {
+    public boolean updateDoctor(Long id, DoctorDTO doctorDTO, MultipartFile photo) {
         Optional<Doctor> doctorOptional = doctorRepository.findById(id);
         if (doctorOptional.isEmpty()) {
-            return false;
+            throw new IllegalArgumentException("Doctor not found.");
         }
 
         Doctor doctor = doctorOptional.get();
         doctor.setName(doctorDTO.getName());
-        doctor.setContact(doctorDTO.getContact());
-        doctor.setPhotoUrl(doctorDTO.getPhotoUrl());
         doctor.setPosition(doctorDTO.getPosition());
         doctor.setPhoneNumber(doctorDTO.getPhoneNumber());
         doctor.setPhotoPath(doctorDTO.getPhotoPath());
@@ -71,11 +97,17 @@ public class DoctorService {
             doctor.setSpecialty(getSpecialtyByDepartmentId(doctorDTO.getDepartmentId()));
         }
 
+        // 사진 파일 저장
+        if (photo != null && !photo.isEmpty()) {
+            String photoPath = saveFile(photo);
+            doctor.setPhotoPath(photoPath);
+        }
+
         doctorRepository.save(doctor);
         return true;
     }
 
-    // 의사 정보 삭제
+    // 의사 삭제
     public boolean deleteDoctor(Long id) {
         Optional<Doctor> doctorOptional = doctorRepository.findById(id);
         if (doctorOptional.isEmpty()) {
@@ -84,11 +116,42 @@ public class DoctorService {
         doctorRepository.deleteById(id);
         return true;
     }
+
     // 특정 ID로 의사 조회
     public DoctorDTO getDoctorById(Long id) {
         Doctor doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Doctor with ID " + id + " not found."));
         return convertToDTO(doctor);
+    }
+
+    // 파일 저장 로직
+    private String saveFile(MultipartFile file) {
+        try {
+            // 현재 애플리케이션의 실행 경로를 기준으로 디렉터리 설정
+            String baseDir = System.getProperty("user.dir"); // 애플리케이션 실행 디렉터리
+            String uploadDir = baseDir + File.separator + "uploads" + File.separator + "doctors";
+
+            // 디렉터리 생성
+            File dir = new File(uploadDir);
+            if (!dir.exists()) {
+                boolean dirsCreated = dir.mkdirs(); // 디렉터리 생성
+                if (!dirsCreated) {
+                    throw new IOException("Failed to create directories: " + uploadDir);
+                }
+            }
+
+            // 파일 이름 생성
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+            File uploadFile = new File(dir, fileName);
+
+            // 파일 저장
+            file.transferTo(uploadFile);
+            System.out.println("File saved at: " + uploadFile.getAbsolutePath());
+
+            return uploadFile.getAbsolutePath(); // 저장된 파일 경로 반환
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save file: " + file.getOriginalFilename(), e);
+        }
     }
 
     // departmentId에 따른 specialty 설정
@@ -113,7 +176,6 @@ public class DoctorService {
                 .id(doctor.getId())
                 .name(doctor.getName())
                 .specialty(doctor.getSpecialty())
-                .contact(doctor.getContact())
                 .photoUrl(doctor.getPhotoUrl())
                 .position(doctor.getPosition())
                 .phoneNumber(doctor.getPhoneNumber())
@@ -128,7 +190,6 @@ public class DoctorService {
     private Doctor convertToEntity(DoctorDTO doctorDTO) {
         return Doctor.builder()
                 .name(doctorDTO.getName())
-                .contact(doctorDTO.getContact())
                 .photoUrl(doctorDTO.getPhotoUrl())
                 .position(doctorDTO.getPosition())
                 .phoneNumber(doctorDTO.getPhoneNumber())

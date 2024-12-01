@@ -18,6 +18,7 @@ public class AppointmentDTO {
     private String patientName; // 환자 이름
     private String phoneNum; //전화번호
     private String doctorName; // 의사 이름
+    private String departmentName;
     private AppointmentType appointmentType;
     private LocalDate appointmentDate; // 예약 날짜
     private LocalTime appointmentTime; // 예약 시간
