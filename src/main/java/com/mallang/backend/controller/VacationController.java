@@ -13,11 +13,9 @@ public class VacationController {
 
     private final VacationService vacationService;
 
-    @PostMapping("/{doctorId}")
-    public ResponseEntity<VacationDTO> createVacation(
-            @PathVariable Long doctorId,
-            @RequestBody VacationDTO vacationDTO) {
-        return ResponseEntity.ok(vacationService.createVacation(doctorId, vacationDTO));
+    @PostMapping
+    public ResponseEntity<VacationDTO> createVacation(@RequestBody VacationDTO vacationDTO) {
+        return ResponseEntity.ok(vacationService.createVacation(vacationDTO.getDoctorId(), vacationDTO));
     }
 
     @GetMapping
@@ -25,9 +23,21 @@ public class VacationController {
         return ResponseEntity.ok(vacationService.getAllVacations());
     }
 
-    @GetMapping("/{doctorId}")
-    public ResponseEntity<?> getVacationsByDoctorId(@PathVariable Long doctorId) {
-        return ResponseEntity.ok(vacationService.getVacationsByDoctorId(doctorId));
+    @GetMapping("/{doctor_id}")
+    public ResponseEntity<?> getVacationsByDoctorId(@PathVariable Long doctor_id) {
+        return ResponseEntity.ok(vacationService.getVacationsByDoctorId(doctor_id));
     }
 
+    @PutMapping("/{vacationId}")
+    public ResponseEntity<VacationDTO> updateVacation(
+            @PathVariable Long vacationId,
+            @RequestBody VacationDTO vacationDTO) {
+        return ResponseEntity.ok(vacationService.updateVacation(vacationId, vacationDTO));
+    }
+
+    @DeleteMapping("/{vacationId}")
+    public ResponseEntity<Void> deleteVacation(@PathVariable Long vacationId) {
+        vacationService.deleteVacation(vacationId);
+        return ResponseEntity.noContent().build();
+    }
 }

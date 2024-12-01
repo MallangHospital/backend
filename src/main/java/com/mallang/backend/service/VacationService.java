@@ -65,4 +65,32 @@ public class VacationService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    public VacationDTO updateVacation(Long vacationId, VacationDTO vacationDTO) {
+        Vacation vacation = vacationRepository.findById(vacationId)
+                .orElseThrow(() -> new IllegalArgumentException("Vacation not found"));
+
+        vacation.setStartDate(vacationDTO.getStartDate());
+        vacation.setEndDate(vacationDTO.getEndDate());
+
+        Vacation updatedVacation = vacationRepository.save(vacation);
+
+        return VacationDTO.builder()
+                .id(updatedVacation.getId())
+                .startDate(updatedVacation.getStartDate())
+                .endDate(updatedVacation.getEndDate())
+                .doctorId(updatedVacation.getDoctor().getId())
+                .build();
+    }
+
+    public void deleteVacation(Long vacationId) {
+        Vacation vacation = vacationRepository.findById(vacationId)
+                .orElseThrow(() -> new IllegalArgumentException("Vacation not found"));
+
+        Doctor doctor = vacation.getDoctor();
+        doctor.getVacations().remove(vacation);
+
+        vacationRepository.delete(vacation);
+        doctorRepository.save(doctor);
+    }
 }
