@@ -68,20 +68,15 @@ public class NoticeController {
             return ResponseEntity.badRequest().body("해당 공지사항을 찾을 수 없습니다. 수정에 실패하였습니다.");
         }
     }
+
+    // 공지사항 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteNotice(
-            @PathVariable Long id,
-            @RequestParam("password") String password) {
-        try {
-            boolean isDeleted = noticeService.deleteNotice(id, password);
-            if (isDeleted) {
-                return ResponseEntity.ok("공지사항이 성공적으로 삭제되었습니다!");
-            } else {
-                return ResponseEntity.badRequest().body("공지사항을 찾을 수 없거나 비밀번호가 올바르지 않습니다.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("서버 오류: " + e.getMessage());
+    public ResponseEntity<?> deleteNotice(@PathVariable Long id, @RequestBody NoticeDTO noticeDTO) {
+        boolean isDeleted = noticeService.deleteNotice(id, noticeDTO.getPassword());
+        if (isDeleted) {
+            return ResponseEntity.ok("공지사항이 성공적으로 삭제되었습니다!");
+        } else {
+            return ResponseEntity.badRequest().body("비밀번호가 일치하지 않거나 공지사항을 찾을 수 없습니다.");
         }
     }
 }

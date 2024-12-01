@@ -58,18 +58,20 @@ public class NoticeService {
         return true;
     }
 
-    @DeleteMapping("/{id}")
     // 공지사항 삭제
     public boolean deleteNotice(Long id, String password) {
-        Optional<Notice> notice = noticeRepository.findById(id);
-        if (notice.isEmpty()) {
-            return false; // 공지사항이 없는 경우
+        Optional<Notice> noticeOptional = noticeRepository.findById(id);
+        if (noticeOptional.isEmpty()) {
+            return false;
         }
-        if (!notice.get().getPassword().equals(password)) {
-            return false; // 비밀번호가 틀린 경우
+
+        Notice notice = noticeOptional.get();
+        if (!notice.getPassword().equals(password)) {
+            return false;
         }
-        noticeRepository.deleteById(id); // 삭제 수행
-        return true; // 성공적으로 삭제
+
+        noticeRepository.deleteById(id);
+        return true;
     }
 
 
