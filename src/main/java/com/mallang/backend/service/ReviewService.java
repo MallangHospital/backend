@@ -110,6 +110,8 @@ public class ReviewService {
                 .content(reviewDTO.getContent())
                 .proveFilePath(filePath)
                 .memberPassword(reviewDTO.getMemberPassword())
+                .departmentName(reviewDTO.getDepartment())
+                .doctorName(reviewDTO.getDoctor())
                 .build();
     }
 
@@ -126,6 +128,9 @@ public class ReviewService {
                 .cleanlinessStars(review.getCleanlinessStars())
                 .averageStars(review.getAverageStars())
                 .content(review.getContent())
+                .department(review.getDepartmentName())
+                .doctor(review.getDoctorName())
+                .regDate(review.getRegDate() != null ? review.getRegDate().toString() : null)
                 .build();
     }
 

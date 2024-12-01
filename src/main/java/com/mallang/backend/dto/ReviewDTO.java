@@ -22,5 +22,5 @@ public class ReviewDTO {
     private String memberPassword;
     private String department;
     private String doctor;
-    private String createdAt;
+    private String regDate;
 }
