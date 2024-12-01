@@ -100,7 +100,6 @@ public class ReviewService {
     }
     private Review convertToEntity(ReviewDTO reviewDTO, String filePath) {
         return Review.builder()
-                .memberId(reviewDTO.getMemberId())
                 .doctorId(reviewDTO.getDoctorId())
                 .departmentId(reviewDTO.getDepartmentId())
                 .explanationStars(reviewDTO.getExplanationStars())
@@ -119,7 +118,6 @@ public class ReviewService {
     private ReviewDTO convertToDTO(Review review) {
         return ReviewDTO.builder()
                 .id(review.getId())
-                .memberId(review.getMemberId())
                 .doctorId(review.getDoctorId())
                 .departmentId(review.getDepartmentId())
                 .explanationStars(review.getExplanationStars())

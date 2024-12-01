@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class ReviewDTO {
     private Long id;
-    private Long memberId;
     private Long doctorId;
     private Long departmentId;
     private Integer explanationStars;
