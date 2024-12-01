@@ -1,19 +1,27 @@
 package com.mallang.backend.controller;
 
+import com.mallang.backend.domain.Notice;
 import com.mallang.backend.dto.NoticeDTO;
+import com.mallang.backend.repository.NoticeRepository;
 import com.mallang.backend.service.NoticeService;
+import com.mallang.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/notice")
 @RequiredArgsConstructor
 public class NoticeController {
 
+
+
     private final NoticeService noticeService;
+    private final NoticeRepository noticeRepository;
+
 
     // 공지사항 전체 조회
     @GetMapping
