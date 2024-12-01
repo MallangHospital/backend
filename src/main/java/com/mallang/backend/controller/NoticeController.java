@@ -1,6 +1,8 @@
 package com.mallang.backend.controller;
 
+import com.mallang.backend.domain.Notice;
 import com.mallang.backend.dto.NoticeDTO;
+import com.mallang.backend.repository.NoticeRepository;
 import com.mallang.backend.service.NoticeService;
 import com.mallang.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -8,30 +10,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/notice")
 @RequiredArgsConstructor
 public class NoticeController {
 
-    private final UserService userService; // UserService 주입
 
-    /**
-     * 관리자 권한 확인 API
-     *
-     * @param token JWT 토큰
-     * @return 관리자 여부
-     */
-    @GetMapping("/check-admin")
-    public ResponseEntity<?> checkAdmin(@RequestHeader("Authorization") String token) {
-        try {
-            boolean isAdmin = userService.isAdmin(token); // 관리자 확인 로직
-            return ResponseEntity.ok(isAdmin);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("관리자 권한 확인 중 오류 발생: " + e.getMessage());
-        }
-    }
+
     private final NoticeService noticeService;
+    private final NoticeRepository noticeRepository;
 
 
     // 공지사항 전체 조회
@@ -79,33 +68,20 @@ public class NoticeController {
             return ResponseEntity.badRequest().body("해당 공지사항을 찾을 수 없습니다. 수정에 실패하였습니다.");
         }
     }
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteNotice(@PathVariable Long id, @RequestBody(required = false) NoticeDTO noticeDTO,
-                                          @RequestHeader("Authorization") String token) {
-        // 관리자 권한 확인
-        boolean isAdmin = userService.isAdmin(token);  // 예: JWT 토큰을 통해 관리자 권한 확인
-
-        // 관리자일 경우 비밀번호를 요구하지 않음
-        if (isAdmin) {
-            boolean isDeleted = noticeService.deleteNotice(id, null);  // 비밀번호 없이 삭제
+    public ResponseEntity<?> deleteNotice(
+            @PathVariable Long id,
+            @RequestParam("password") String password) {
+        try {
+            boolean isDeleted = noticeService.deleteNotice(id, password);
             if (isDeleted) {
                 return ResponseEntity.ok("공지사항이 성공적으로 삭제되었습니다!");
             } else {
-                return ResponseEntity.badRequest().body("공지사항을 찾을 수 없습니다.");
+                return ResponseEntity.badRequest().body("공지사항을 찾을 수 없거나 비밀번호가 올바르지 않습니다.");
             }
-        }
-
-        // 일반 사용자일 경우 비밀번호 확인
-        if (noticeDTO == null || noticeDTO.getPassword() == null || noticeDTO.getPassword().isEmpty()) {
-            return ResponseEntity.badRequest().body("비밀번호를 입력해주세요.");
-        }
-
-        boolean isDeleted = noticeService.deleteNotice(id, noticeDTO.getPassword());  // 비밀번호 확인
-        if (isDeleted) {
-            return ResponseEntity.ok("공지사항이 성공적으로 삭제되었습니다!");
-        } else {
-            return ResponseEntity.badRequest().body("비밀번호가 일치하지 않거나 공지사항을 찾을 수 없습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("서버 오류: " + e.getMessage());
         }
     }
 }
