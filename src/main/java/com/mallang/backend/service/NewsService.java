@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,15 +88,15 @@ public class NewsService {
     // 파일 저장 로직
     private String saveFile(MultipartFile file) {
         try {
-            String uploadDir = "uploads/news/";
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            String uploadDir = "src/main/resources/static/uploads/news/";
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(uploadDir, fileName);
 
             // 디렉토리 생성
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, file.getBytes());
 
-            return filePath.toString();
+            return "/uploads/news/" + fileName;
         } catch (IOException e) {
             throw new RuntimeException("파일 저장 실패: " + e.getMessage(), e);
         }
@@ -109,6 +110,8 @@ public class NewsService {
                 .newsWriter(news.getNewsWriter())
                 .password(news.getPassword())
                 .content(news.getContent())
+                .mainFile(news.getMainFile())
+                .attachment(news.getAttachment())
                 .regDate(news.getRegDate() != null ? news.getRegDate().toString() : null)
                 .build();
     }
