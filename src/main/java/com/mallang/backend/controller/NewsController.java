@@ -35,13 +35,12 @@ public class NewsController {
         }
     }
 
-    // 건강매거진 작성
     @PostMapping
     public ResponseEntity<?> createNews(
-            @RequestParam("newsDTO") String newsDTOString,
-            @RequestPart(value = "mainFile", required = false) MultipartFile mainFile,
-            @RequestPart(value = "attachment", required = false) MultipartFile attachment) {
-
+            @RequestPart("newsDTO") String newsDTOString, // JSON 데이터
+            @RequestPart(value = "mainFile", required = false) MultipartFile mainFile, // 대표 이미지
+            @RequestPart(value = "attachment", required = false) MultipartFile attachment // 첨부파일
+    ) {
         try {
             // JSON -> DTO 변환
             NewsDTO newsDTO = objectMapper.readValue(newsDTOString, NewsDTO.class);
