@@ -80,7 +80,7 @@ public class DoctorController {
     public ResponseEntity<?> updateDoctor(
             @PathVariable Long id,
             @RequestPart("doctor") DoctorDTO doctorDTO,
-            @RequestPart(value = "photo", required = false) MultipartFile photo) {
+            @RequestPart(value = "photo", required = true) MultipartFile photo) {
         try {
             boolean updatedDoctor = doctorService.updateDoctor(id, doctorDTO, photo);
             return ResponseEntity.ok(updatedDoctor);

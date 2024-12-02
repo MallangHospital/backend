@@ -19,4 +19,5 @@ public class VacationDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private Long doctorId;
+    private String doctorName; // 추가된 필드
 }

@@ -18,12 +18,12 @@ public class Vacation {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDate startDate; // 휴진 시작일
+    private LocalDate startDate;
 
     @Column(nullable = false)
-    private LocalDate endDate; // 휴진 종료일
+    private LocalDate endDate;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor; // 의사와의 관계
+    private Doctor doctor;
 }
