@@ -43,8 +43,8 @@ public class ReviewDTO {
     private Double averageStars;
     private String proveFilePath;
     private String memberPassword;
-    private String department;
-    private String doctor;
+    private String departmentName;
+    private String doctorName;
     private String regDate;
     private String memberId;
 }

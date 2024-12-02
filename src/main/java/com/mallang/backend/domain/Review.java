@@ -15,11 +15,14 @@ public class Review extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "doctor_Id", nullable = false)
-    private Long doctorId;
+    @ManyToOne(fetch = FetchType.LAZY) // Doctor와의 관계 설정 (다대일)
+    @JoinColumn(name = "doctor_id", nullable = false) // 외래키 설정, 반드시 설정
+    private Doctor doctor;
 
-    @Column(name = "department_Id", nullable = false)
-    private Long departmentId;
+    @ManyToOne(fetch = FetchType.LAZY) // Department와의 관계 설정 (다대일)
+    @JoinColumn(name = "department_id", nullable = false) // 외래키 설정, 반드시 설정
+    private Department department;
+
 
     @Column(name = "explanation_stars", nullable = false)
     private Integer explanationStars;

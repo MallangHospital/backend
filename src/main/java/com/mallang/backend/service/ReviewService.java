@@ -1,7 +1,11 @@
 package com.mallang.backend.service;
 
+import com.mallang.backend.domain.Department;
+import com.mallang.backend.domain.Doctor;
 import com.mallang.backend.domain.Review;
 import com.mallang.backend.dto.ReviewDTO;
+import com.mallang.backend.repository.DepartmentRepository;
+import com.mallang.backend.repository.DoctorRepository;
 import com.mallang.backend.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +27,8 @@ import java.util.stream.Collectors;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final DoctorRepository doctorRepository;
+    private final DepartmentRepository departmentRepository;
 
     public ReviewDTO createReview(ReviewDTO reviewDTO, MultipartFile proveFile, String memberId) {
         String filePath = saveFile(proveFile);
@@ -91,9 +97,16 @@ public class ReviewService {
     }
 
     private Review convertToEntity(ReviewDTO reviewDTO, String filePath) {
+        // Doctor와 Department 엔티티 조회
+        Doctor doctor = doctorRepository.findById(reviewDTO.getDoctorId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid doctor ID: " + reviewDTO.getDoctorId()));
+        Department department = departmentRepository.findById(reviewDTO.getDepartmentId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid department ID: " + reviewDTO.getDepartmentId()));
+
+        // Review 엔티티 생성
         return Review.builder()
-                .doctorId(reviewDTO.getDoctorId())
-                .departmentId(reviewDTO.getDepartmentId())
+                .doctor(doctor) // Doctor 객체 설정
+                .department(department) // Department 객체 설정
                 .explanationStars(reviewDTO.getExplanationStars())
                 .treatmentResultStars(reviewDTO.getTreatmentResultStars())
                 .staffKindnessStars(reviewDTO.getStaffKindnessStars())
@@ -101,26 +114,24 @@ public class ReviewService {
                 .content(reviewDTO.getContent())
                 .proveFilePath(filePath)
                 .memberPassword(reviewDTO.getMemberPassword())
-                .departmentName(reviewDTO.getDepartment())
-                .doctorName(reviewDTO.getDoctor())
                 .build();
     }
 
     private ReviewDTO convertToDTO(Review review) {
         return ReviewDTO.builder()
                 .id(review.getId())
-                .doctorId(review.getDoctorId())
-                .departmentId(review.getDepartmentId())
+                .doctorId(review.getDoctor().getId())
+                .doctorName(review.getDoctor().getName()) // Doctor 이름 가져오기
+                .departmentId(review.getDepartment().getId())
+                .departmentName(review.getDepartment().getName()) // Department 이름 가져오기
                 .explanationStars(review.getExplanationStars())
                 .treatmentResultStars(review.getTreatmentResultStars())
                 .staffKindnessStars(review.getStaffKindnessStars())
                 .cleanlinessStars(review.getCleanlinessStars())
                 .averageStars(review.getAverageStars())
                 .content(review.getContent())
-                .department(review.getDepartmentName())
-                .doctor(review.getDoctorName())
                 .memberId(review.getMemberId())
-                .regDate(review.getRegDate() != null ? review.getRegDate().toString() : null)
+                .proveFilePath(review.getProveFilePath())
                 .build();
     }
 
