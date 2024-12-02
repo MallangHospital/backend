@@ -55,10 +55,9 @@ public class DoctorService {
 
         // 사진 파일 저장
         if (photo != null && !photo.isEmpty()) {
-            String photoPath = saveFile(photo);
-            doctor.setPhotoPath(photoPath);
-            doctor.setPhotoUrl("/uploads/doctors/" + photo.getOriginalFilename()); // URL 경로
-            System.out.println("Photo saved at: " + photoPath);
+            String photoUrl = saveFile(photo);
+            doctor.setPhotoUrl(photoUrl); // URL 경로 저장
+            System.out.println("Photo saved with URL: " + photoUrl);
         } else {
             System.out.println("No photo uploaded");
         }
@@ -87,7 +86,6 @@ public class DoctorService {
         doctor.setName(doctorDTO.getName());
         doctor.setPosition(doctorDTO.getPosition());
         doctor.setPhoneNumber(doctorDTO.getPhoneNumber());
-        doctor.setPhotoPath(doctorDTO.getPhotoPath());
         doctor.setAdminId(doctorDTO.getAdminId());
 
         // 소속 진료과 업데이트 및 specialty 설정
@@ -99,8 +97,8 @@ public class DoctorService {
 
         // 사진 파일 저장
         if (photo != null && !photo.isEmpty()) {
-            String photoPath = saveFile(photo);
-            doctor.setPhotoPath(photoPath);
+            String photoUrl = saveFile(photo);
+            doctor.setPhotoUrl(photoUrl);
         }
 
         doctorRepository.save(doctor);
@@ -127,17 +125,13 @@ public class DoctorService {
     // 파일 저장 로직
     private String saveFile(MultipartFile file) {
         try {
-            // 현재 애플리케이션의 실행 경로를 기준으로 디렉터리 설정
             String baseDir = System.getProperty("user.dir"); // 애플리케이션 실행 디렉터리
             String uploadDir = baseDir + File.separator + "uploads" + File.separator + "doctors";
 
             // 디렉터리 생성
             File dir = new File(uploadDir);
-            if (!dir.exists()) {
-                boolean dirsCreated = dir.mkdirs(); // 디렉터리 생성
-                if (!dirsCreated) {
-                    throw new IOException("Failed to create directories: " + uploadDir);
-                }
+            if (!dir.exists() && !dir.mkdirs()) {
+                throw new IOException("Failed to create directories: " + uploadDir);
             }
 
             // 파일 이름 생성
@@ -148,7 +142,7 @@ public class DoctorService {
             file.transferTo(uploadFile);
             System.out.println("File saved at: " + uploadFile.getAbsolutePath());
 
-            return uploadFile.getAbsolutePath(); // 저장된 파일 경로 반환
+            return "/uploads/doctors/" + fileName; // URL 반환
         } catch (IOException e) {
             throw new RuntimeException("Failed to save file: " + file.getOriginalFilename(), e);
         }
@@ -181,6 +175,7 @@ public class DoctorService {
                 .adminId(doctor.getAdminId())
                 .departmentId(doctor.getDepartment() != null ? doctor.getDepartment().getId() : null)
                 .departmentName(doctor.getDepartment() != null ? doctor.getDepartment().getName() : null)
+                .photoUrl(doctor.getPhotoUrl()) // photoUrl 설정 추가
                 .build();
     }
 
