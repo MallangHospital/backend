@@ -26,7 +26,6 @@ public class DoctorDTO {
     private String photoUrl; // 사진 URL
     private String position; // 직위
     private String phoneNumber; // 전화번호
-    private String photoPath; // 사진 경로
     private String adminId; // 관리자 ID
     private String departmentName; // 소속 진료과 이름
     private List<VacationDTO> vacations; // 휴진 정보 리스트
