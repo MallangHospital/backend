@@ -30,14 +30,12 @@ public class VacationService {
 
         Vacation savedVacation = vacationRepository.save(vacation);
 
-        doctor.getVacations().add(savedVacation);
-        doctorRepository.save(doctor);
-
         return VacationDTO.builder()
                 .id(savedVacation.getId())
                 .startDate(savedVacation.getStartDate())
                 .endDate(savedVacation.getEndDate())
                 .doctorId(savedVacation.getDoctor().getId())
+                .doctorName(savedVacation.getDoctor().getName()) // 이름 포함
                 .build();
     }
 
@@ -48,6 +46,7 @@ public class VacationService {
                         .startDate(vacation.getStartDate())
                         .endDate(vacation.getEndDate())
                         .doctorId(vacation.getDoctor().getId())
+                        .doctorName(vacation.getDoctor().getName()) // 이름 포함
                         .build())
                 .collect(Collectors.toList());
     }
@@ -62,6 +61,7 @@ public class VacationService {
                         .startDate(vacation.getStartDate())
                         .endDate(vacation.getEndDate())
                         .doctorId(doctor.getId())
+                        .doctorName(doctor.getName()) // 이름 포함
                         .build())
                 .collect(Collectors.toList());
     }
@@ -80,6 +80,7 @@ public class VacationService {
                 .startDate(updatedVacation.getStartDate())
                 .endDate(updatedVacation.getEndDate())
                 .doctorId(updatedVacation.getDoctor().getId())
+                .doctorName(updatedVacation.getDoctor().getName()) // 이름 포함
                 .build();
     }
 
@@ -87,10 +88,6 @@ public class VacationService {
         Vacation vacation = vacationRepository.findById(vacationId)
                 .orElseThrow(() -> new IllegalArgumentException("Vacation not found"));
 
-        Doctor doctor = vacation.getDoctor();
-        doctor.getVacations().remove(vacation);
-
         vacationRepository.delete(vacation);
-        doctorRepository.save(doctor);
     }
 }

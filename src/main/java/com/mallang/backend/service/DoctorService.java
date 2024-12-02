@@ -176,10 +176,8 @@ public class DoctorService {
                 .id(doctor.getId())
                 .name(doctor.getName())
                 .specialty(doctor.getSpecialty())
-                .photoUrl(doctor.getPhotoUrl())
                 .position(doctor.getPosition())
                 .phoneNumber(doctor.getPhoneNumber())
-                .photoPath(doctor.getPhotoPath())
                 .adminId(doctor.getAdminId())
                 .departmentId(doctor.getDepartment() != null ? doctor.getDepartment().getId() : null)
                 .departmentName(doctor.getDepartment() != null ? doctor.getDepartment().getName() : null)
@@ -190,10 +188,8 @@ public class DoctorService {
     private Doctor convertToEntity(DoctorDTO doctorDTO) {
         return Doctor.builder()
                 .name(doctorDTO.getName())
-                .photoUrl(doctorDTO.getPhotoUrl())
                 .position(doctorDTO.getPosition())
                 .phoneNumber(doctorDTO.getPhoneNumber())
-                .photoPath(doctorDTO.getPhotoPath())
                 .adminId(doctorDTO.getAdminId())
                 .build();
     }
