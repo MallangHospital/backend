@@ -45,7 +45,6 @@ public class DoctorService {
             Optional<Department> department = departmentRepository.findById(doctorDTO.getDepartmentId());
             if (department.isPresent()) {
                 doctor.setDepartment(department.get());
-                doctor.setSpecialty(getSpecialtyByDepartmentId(doctorDTO.getDepartmentId()));
             } else {
                 System.out.println("Department not found for ID: " + doctorDTO.getDepartmentId());
             }
@@ -92,7 +91,6 @@ public class DoctorService {
         if (doctorDTO.getDepartmentId() != null) {
             Optional<Department> department = departmentRepository.findById(doctorDTO.getDepartmentId());
             department.ifPresent(doctor::setDepartment);
-            doctor.setSpecialty(getSpecialtyByDepartmentId(doctorDTO.getDepartmentId()));
         }
 
         // 사진 파일 저장
@@ -147,8 +145,8 @@ public class DoctorService {
             throw new RuntimeException("Failed to save file: " + file.getOriginalFilename(), e);
         }
     }
-
-    // departmentId에 따른 specialty 설정
+    /*
+    departmentId에 따른 specialty 설정
     private String getSpecialtyByDepartmentId(Long departmentId) {
         switch (departmentId.intValue()) {
             case 1:
@@ -163,7 +161,7 @@ public class DoctorService {
                 return "기타";
         }
     }
-
+*/
     // 엔티티를 DTO로 변환
     private DoctorDTO convertToDTO(Doctor doctor) {
         return DoctorDTO.builder()
