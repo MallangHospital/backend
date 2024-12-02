@@ -8,6 +8,7 @@ import com.mallang.backend.repository.VacationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,5 +90,10 @@ public class VacationService {
                 .orElseThrow(() -> new IllegalArgumentException("Vacation not found"));
 
         vacationRepository.delete(vacation);
+    }
+
+    public boolean isDoctorOnVacation(Long doctorId) {
+        LocalDate today = LocalDate.now();
+        return vacationRepository.isDoctorOnVacation(doctorId, today);
     }
 }

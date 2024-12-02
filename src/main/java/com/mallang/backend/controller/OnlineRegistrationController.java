@@ -31,6 +31,12 @@ public class OnlineRegistrationController {
         List<OnlineRegistrationDTO> registrations = registrationService.getAllRegistrations();
         return ResponseEntity.ok(registrations);
     }
+    @GetMapping("/doctor/{doctorId}/count")
+    public ResponseEntity<Integer> getRegistrationCountByDoctor(@PathVariable Long doctorId) {
+        int count = registrationService.getRegistrationCountByDoctor(doctorId);
+        return ResponseEntity.ok(count);
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getRegistrationDetails(@PathVariable Long id) {

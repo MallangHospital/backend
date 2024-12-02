@@ -8,9 +8,11 @@ import com.mallang.backend.dto.OnlineRegistrationDTO;
 import com.mallang.backend.repository.DepartmentRepository;
 import com.mallang.backend.repository.DoctorRepository;
 import com.mallang.backend.repository.OnlineRegistrationRepository;
+import com.mallang.backend.repository.VacationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,6 +55,14 @@ public class OnlineRegistrationService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+
+    public int getRegistrationCountByDoctor(Long doctorId) {
+        // 특정 의사(doctorId)에 대한 접수 건수 조회
+        return (int) onlineRegistrationRepository.countByDoctorId(doctorId);
+
+    }
+
+
 
     private OnlineRegistration convertToEntity(OnlineRegistrationDTO registrationDTO) {
         OnlineRegistration registration = new OnlineRegistration();
