@@ -25,7 +25,7 @@ public class DoctorController {
     @PostMapping
     public ResponseEntity<?> createDoctor(
             @RequestPart("doctor") String doctorJson,
-            @RequestPart(value = "photo", required = false) MultipartFile photo) {
+            @RequestPart(value = "photo", required = true) MultipartFile photo) {
         try {
             // JSON 데이터를 DoctorDTO로 변환
             ObjectMapper objectMapper = new ObjectMapper();
@@ -80,7 +80,7 @@ public class DoctorController {
     public ResponseEntity<?> updateDoctor(
             @PathVariable Long id,
             @RequestPart("doctor") DoctorDTO doctorDTO,
-            @RequestPart(value = "photo", required = false) MultipartFile photo) {
+            @RequestPart(value = "photo", required = true) MultipartFile photo) {
         try {
             boolean updatedDoctor = doctorService.updateDoctor(id, doctorDTO, photo);
             return ResponseEntity.ok(updatedDoctor);
