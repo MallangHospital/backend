@@ -33,7 +33,13 @@ public class ScheduleController {
 
     @PostMapping("/generate-monthly")
     public ResponseEntity<?> generateSchedules(@RequestParam Long doctorId) {
-        scheduleBatchService.generateSchedulesForNextMonth(doctorId);
-        return ResponseEntity.ok("Schedules for the next month have been generated.");
+        try {
+            scheduleBatchService.generateSchedulesForNextMonth(doctorId);
+            return ResponseEntity.ok("Schedules for the next month have been generated.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Internal Server Error: " + e.getMessage());
+        }
     }
 }
