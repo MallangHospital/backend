@@ -15,5 +15,4 @@ public class OnlineRegistrationDTO {
     private String department; // 진료과목
     private String visitType; // 진료유형
     private String symptom; // 증상
-
 }

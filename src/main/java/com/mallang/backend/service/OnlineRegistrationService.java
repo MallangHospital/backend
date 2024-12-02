@@ -1,5 +1,6 @@
 package com.mallang.backend.service;
 
+import com.mallang.backend.domain.Member;
 import com.mallang.backend.domain.OnlineRegistration;
 import com.mallang.backend.dto.OnlineRegistrationDTO;
 import com.mallang.backend.repository.OnlineRegistrationRepository;
@@ -16,16 +17,23 @@ public class OnlineRegistrationService {
     private final OnlineRegistrationRepository onlineRegistrationRepository;
 
     // 새로운 접수 등록
-    public OnlineRegistrationDTO registerOnline(OnlineRegistrationDTO registrationDTO) {
+    public OnlineRegistrationDTO registerOnline(OnlineRegistrationDTO registrationDTO, Member member) {
+        // Member 객체에서 환자 이름과 전화번호를 DTO에 설정
+        registrationDTO.setPatientName(member.getName());
+        registrationDTO.setPhoneNumber(member.getPhoneNum());
+
+        // DTO를 엔티티로 변환 후 저장
         OnlineRegistration registration = convertToEntity(registrationDTO);
         OnlineRegistration savedRegistration = onlineRegistrationRepository.save(registration);
+
+        // 저장된 엔티티를 DTO로 변환하여 반환
         return convertToDTO(savedRegistration);
     }
 
     // 모든 접수 조회
     public List<OnlineRegistrationDTO> getAllRegistrations() {
         return onlineRegistrationRepository.findAll().stream()
-                .map(this::convertToDTO)
+                .map(this::convertToDTO) // 엔티티를 DTO로 변환
                 .map(registration -> {
                     registration.setSymptom(null); // 전체 조회에서는 증상 제외
                     return registration;
@@ -41,19 +49,17 @@ public class OnlineRegistrationService {
     }
 
     // 엔티티를 DTO로 변환
-
     private OnlineRegistrationDTO convertToDTO(OnlineRegistration registration) {
         return OnlineRegistrationDTO.builder()
                 .id(registration.getId())
                 .patientName(registration.getPatientName())
-
                 .doctorName(registration.getDoctorName())
                 .registrationDate(registration.getRegistrationDate())
                 .registrationTime(registration.getRegistrationTime())
                 .phoneNumber(registration.getPhoneNumber())
                 .department(registration.getDepartment())
                 .visitType(registration.getVisitType())
-                .symptom(registration.getSymptom()) // 증상 포함
+                .symptom(registration.getSymptom())
                 .build();
     }
 
@@ -69,7 +75,6 @@ public class OnlineRegistrationService {
                 .department(registrationDTO.getDepartment())
                 .visitType(registrationDTO.getVisitType())
                 .symptom(registrationDTO.getSymptom())
-
                 .build();
     }
 }
