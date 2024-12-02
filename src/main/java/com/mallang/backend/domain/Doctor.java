@@ -36,9 +36,6 @@ public class Doctor {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber; // 전화번호
 
-    @Column(name = "photo_path", nullable = true)
-    private String photoPath; // 사진 경로
-
     @Column(name = "admin_id", nullable = false)
     private String adminId; // 관리자 ID
 

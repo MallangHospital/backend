@@ -1,7 +1,12 @@
 package com.mallang.backend.service;
 
+import com.mallang.backend.domain.Department;
+import com.mallang.backend.domain.Doctor;
+import com.mallang.backend.domain.Member;
 import com.mallang.backend.domain.OnlineRegistration;
 import com.mallang.backend.dto.OnlineRegistrationDTO;
+import com.mallang.backend.repository.DepartmentRepository;
+import com.mallang.backend.repository.DoctorRepository;
 import com.mallang.backend.repository.OnlineRegistrationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,62 +19,79 @@ import java.util.stream.Collectors;
 public class OnlineRegistrationService {
 
     private final OnlineRegistrationRepository onlineRegistrationRepository;
+    private final DepartmentRepository departmentRepository;
+    private final DoctorRepository doctorRepository;
 
-    // 새로운 접수 등록
-    public OnlineRegistrationDTO registerOnline(OnlineRegistrationDTO registrationDTO) {
+    public OnlineRegistrationDTO registerOnline(OnlineRegistrationDTO registrationDTO, Member member) {
+        // 로그인한 사용자 정보로 환자 이름 및 전화번호 설정
+        registrationDTO.setPatientName(member.getName());
+        registrationDTO.setPhoneNumber(member.getPhoneNum());
+
+        // doctorId로 doctorName 자동 설정
+        if (registrationDTO.getDoctorId() != null) {
+            Doctor doctor = doctorRepository.findById(registrationDTO.getDoctorId())
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 의사 ID입니다."));
+            registrationDTO.setDoctorName(doctor.getName()); // doctorName 자동 설정
+        }
+
+        // DTO를 엔티티로 변환 후 저장
         OnlineRegistration registration = convertToEntity(registrationDTO);
         OnlineRegistration savedRegistration = onlineRegistrationRepository.save(registration);
+
+        // 저장된 데이터를 DTO로 변환 후 반환
         return convertToDTO(savedRegistration);
     }
 
-    // 모든 접수 조회
+    public OnlineRegistrationDTO getRegistrationDetails(Long id) {
+        OnlineRegistration registration = onlineRegistrationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("등록 정보를 찾을 수 없습니다."));
+        return convertToDTO(registration);
+    }
+
     public List<OnlineRegistrationDTO> getAllRegistrations() {
         return onlineRegistrationRepository.findAll().stream()
                 .map(this::convertToDTO)
-                .map(registration -> {
-                    registration.setSymptom(null); // 전체 조회에서는 증상 제외
-                    return registration;
-                })
                 .collect(Collectors.toList());
     }
 
-    // 특정 접수 상세 조회
-    public OnlineRegistrationDTO getRegistrationDetails(Long id) {
-        OnlineRegistration registration = onlineRegistrationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 접수 정보를 찾을 수 없습니다."));
-        return convertToDTO(registration); // 상세 조회 시 증상 포함
-    }
+    private OnlineRegistration convertToEntity(OnlineRegistrationDTO registrationDTO) {
+        OnlineRegistration registration = new OnlineRegistration();
+        registration.setPatientName(registrationDTO.getPatientName());
+        registration.setDoctorName(registrationDTO.getDoctorName());
+        registration.setPhoneNumber(registrationDTO.getPhoneNumber());
+        registration.setVisitType(registrationDTO.getVisitType());
+        registration.setSymptom(registrationDTO.getSymptom());
+        registration.setRegistrationTime(registrationDTO.getRegistrationTime());
+        registration.setRegistrationDate(registrationDTO.getRegistrationDate());
 
-    // 엔티티를 DTO로 변환
+        if (registrationDTO.getDepartmentId() != null) {
+            Department department = departmentRepository.findById(registrationDTO.getDepartmentId())
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 부서 ID입니다."));
+            registration.setDepartmentId(department);
+        }
+
+        if (registrationDTO.getDoctorId() != null) {
+            Doctor doctor = doctorRepository.findById(registrationDTO.getDoctorId())
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 의사 ID입니다."));
+            registration.setDoctorId(doctor);
+        }
+
+        return registration;
+    }
 
     private OnlineRegistrationDTO convertToDTO(OnlineRegistration registration) {
         return OnlineRegistrationDTO.builder()
                 .id(registration.getId())
                 .patientName(registration.getPatientName())
-
                 .doctorName(registration.getDoctorName())
-                .registrationDate(registration.getRegistrationDate())
-                .registrationTime(registration.getRegistrationTime())
                 .phoneNumber(registration.getPhoneNumber())
-                .department(registration.getDepartment())
                 .visitType(registration.getVisitType())
-                .symptom(registration.getSymptom()) // 증상 포함
-                .build();
-    }
-
-    // DTO를 엔티티로 변환
-    private OnlineRegistration convertToEntity(OnlineRegistrationDTO registrationDTO) {
-        return OnlineRegistration.builder()
-                .id(registrationDTO.getId())
-                .patientName(registrationDTO.getPatientName())
-                .doctorName(registrationDTO.getDoctorName())
-                .registrationDate(registrationDTO.getRegistrationDate())
-                .registrationTime(registrationDTO.getRegistrationTime())
-                .phoneNumber(registrationDTO.getPhoneNumber())
-                .department(registrationDTO.getDepartment())
-                .visitType(registrationDTO.getVisitType())
-                .symptom(registrationDTO.getSymptom())
-
+                .symptom(registration.getSymptom())
+                .registrationTime(registration.getRegistrationTime())
+                .departmentId(registration.getDepartmentId() != null ? registration.getDepartmentId().getId() : null)
+                .department(registration.getDepartmentId() != null ? registration.getDepartmentId().getName() : null)
+                .doctorId(registration.getDoctorId() != null ? registration.getDoctorId().getId() : null)
+                .registrationDate(registration.getRegistrationDate())
                 .build();
     }
 }
