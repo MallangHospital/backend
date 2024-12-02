@@ -25,7 +25,7 @@ public class DoctorController {
     @PostMapping
     public ResponseEntity<?> createDoctor(
             @RequestPart("doctor") String doctorJson,
-            @RequestPart(value = "photo", required = true) MultipartFile photo) {
+            @RequestPart(value = "photo", required = false) MultipartFile photo) {
         try {
             // JSON 데이터를 DoctorDTO로 변환
             ObjectMapper objectMapper = new ObjectMapper();
