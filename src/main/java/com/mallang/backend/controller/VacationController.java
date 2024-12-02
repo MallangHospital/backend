@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/vacations")
 @RequiredArgsConstructor
@@ -39,5 +41,11 @@ public class VacationController {
     public ResponseEntity<Void> deleteVacation(@PathVariable Long vacationId) {
         vacationService.deleteVacation(vacationId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{doctorId}/status")
+    public ResponseEntity<?> getVacationStatus(@PathVariable Long doctorId) {
+        boolean onVacation = vacationService.isDoctorOnVacation(doctorId);
+        return ResponseEntity.ok().body(Map.of("onVacation", onVacation));
     }
 }
