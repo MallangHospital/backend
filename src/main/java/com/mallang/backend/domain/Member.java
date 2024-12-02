@@ -26,7 +26,7 @@ public class Member extends BaseEntity {
     @Column(length = 255, nullable = false, unique = true)
     private String phoneNum;
 
-    @Column(length = 255, nullable = false)
+    @Column(length = 255, nullable = false, unique = true)
     private String rrn; // 주민등록번호
 
     @Enumerated(EnumType.STRING)

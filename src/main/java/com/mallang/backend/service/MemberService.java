@@ -25,6 +25,21 @@ public class MemberService {
             throw new IllegalArgumentException("아이디가 이미 존재합니다.");
         }
 
+        // 이메일 중복 확인
+        if (memberRepository.existsByEmail(memberJoinDTO.getEmail())) {
+            throw new IllegalArgumentException("이메일이 이미 존재합니다.");
+        }
+
+        // 전화번호 중복 확인
+        if (memberRepository.existsByPhoneNum(memberJoinDTO.getPhoneNum())) {
+            throw new IllegalArgumentException("전화번호가 이미 존재합니다.");
+        }
+
+        // 주민등록번호 중복 확인
+        if (memberRepository.existsByRrn(memberJoinDTO.getRrn())) {
+            throw new IllegalArgumentException("주민등록번호가 이미 존재합니다.");
+        }
+
         // 비밀번호 형식 검사
         if (!isValidPassword(memberJoinDTO.getMpw())) {
             throw new IllegalArgumentException("비밀번호가 형식에 맞지 않습니다.");
@@ -105,10 +120,10 @@ public class MemberService {
         // 비밀번호 변경
         if (updateDTO.getCurrentPassword() != null && updateDTO.getNewPassword() != null) {
             if (!passwordEncoder.matches(updateDTO.getCurrentPassword(), member.getMpw())) {
-                throw new IllegalArgumentException("Invalid current password");
+                throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
             }
             if (!isValidPassword(updateDTO.getNewPassword())) {
-                throw new IllegalArgumentException("New password does not meet the requirements.");
+                throw new IllegalArgumentException("새 비밀번호가 형식에 맞지 않습니다.");
             }
             member.changePassword(passwordEncoder.encode(updateDTO.getNewPassword()));
         }
@@ -116,7 +131,11 @@ public class MemberService {
         // 이메일 변경
         if (updateDTO.getEmail() != null) {
             if (!isValidEmail(updateDTO.getEmail())) {
-                throw new IllegalArgumentException("Invalid email format.");
+                throw new IllegalArgumentException("이메일이 형식에 맞지 않습니다.");
+            }
+            // 이메일 중복 확인
+            if (memberRepository.existsByEmail(updateDTO.getEmail())) {
+                throw new IllegalArgumentException("이메일이 이미 존재합니다.");
             }
             member.changeEmail(updateDTO.getEmail());
         }
@@ -124,7 +143,11 @@ public class MemberService {
         // 전화번호 변경
         if (updateDTO.getPhoneNum() != null) {
             if (!isValidPhoneNumber(updateDTO.getPhoneNum())) {
-                throw new IllegalArgumentException("Invalid phone number format.");
+                throw new IllegalArgumentException("전화번호가 형식에 맞지 않습니다.");
+            }
+            // 전화번호 중복 확인
+            if (memberRepository.existsByPhoneNum(updateDTO.getPhoneNum())) {
+                throw new IllegalArgumentException("전화번호가 이미 존재합니다.");
             }
             member.changePhoneNumber(updateDTO.getPhoneNum());
         }
