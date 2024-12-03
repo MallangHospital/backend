@@ -80,13 +80,41 @@ public class DoctorService {
                     .ifPresent(doctor::setDepartment);
         }
 
-        // 파일 업데이트 처리
+        // 파일 업데이트 처리 (새 파일이 기존 파일과 다를 경우만)
         if (photo != null && !photo.isEmpty()) {
-            doctor.setPhotoUrl(saveFile(photo, doctor.getPhotoUrl()));
+            if (!isSameFile(photo, doctor.getPhotoUrl())) {
+                doctor.setPhotoUrl(saveFile(photo, doctor.getPhotoUrl())); // 파일이 다르면 저장
+            }
         }
 
         doctorRepository.save(doctor);
         return true;
+    }
+
+    // 기존 파일과 새 파일이 동일한지 확인하는 메서드
+    private boolean isSameFile(MultipartFile newFile, String existingFileUrl) {
+        if (existingFileUrl == null || newFile == null || newFile.isEmpty()) {
+            return false; // 기존 파일이 없거나 새 파일이 없으면 같지 않음
+        }
+
+        try {
+            // 기존 파일 경로 설정
+            String uploadDir = "src/main/resources/static/uploads/doctors/";
+            Path existingFilePath = Paths.get(uploadDir, existingFileUrl.replace("/uploads/doctors/", ""));
+
+            // 파일 존재 여부 확인
+            if (!Files.exists(existingFilePath)) {
+                return false; // 기존 파일이 없으면 같지 않음
+            }
+
+            // 기존 파일과 새 파일의 내용 비교
+            byte[] existingFileBytes = Files.readAllBytes(existingFilePath);
+            byte[] newFileBytes = newFile.getBytes();
+
+            return java.util.Arrays.equals(existingFileBytes, newFileBytes); // 내용 비교
+        } catch (IOException e) {
+            throw new RuntimeException("파일 비교 중 오류 발생: " + e.getMessage(), e);
+        }
     }
 
     // 특정 부서의 의사 조회
