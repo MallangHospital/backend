@@ -27,7 +27,7 @@ public class Doctor {
     @Column(name = "photo_url", nullable = true)
     private String photoUrl; // 사진 URL
 
-    @Column(name = "position", nullable = false)
+    @Column(name = "position", nullable = true)
     private String position; // 직위
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -36,7 +36,7 @@ public class Doctor {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber; // 전화번호
 
-    @Column(name = "admin_id", nullable = false)
+    @Column(name = "admin_id", nullable = true)
     private String adminId; // 관리자 ID
 
     @ManyToOne
