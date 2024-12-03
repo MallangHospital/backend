@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -92,6 +93,16 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)  // 세션 무효화 (STATELESS 환경이지만 안전을 위해)
                 .deleteCookies("JSESSIONID")  // 세션 쿠키 삭제
                 .permitAll());
+
+        return http.build();
+    }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // CORS 설정 활성화
+        http.cors(Customizer.withDefaults());
+
+        // 기본 CSRF 설정 활성화
+        http.csrf(Customizer.withDefaults());
 
         return http.build();
     }
