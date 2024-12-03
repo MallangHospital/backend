@@ -165,7 +165,6 @@ public class DoctorService {
                 .photoUrl(doctor.getPhotoUrl()) // S3 URL 반환
                 .position(doctor.getPosition())
                 .phoneNumber(doctor.getPhoneNumber())
-                .adminId(doctor.getAdminId())
                 .departmentId(doctor.getDepartment() != null ? doctor.getDepartment().getId() : null)
                 .departmentName(doctor.getDepartment() != null ? doctor.getDepartment().getName() : null)
                 .build();
@@ -178,7 +177,6 @@ public class DoctorService {
                 .specialty(doctorDTO.getSpecialty())
                 .position(doctorDTO.getPosition())
                 .phoneNumber(doctorDTO.getPhoneNumber())
-                .adminId(doctorDTO.getAdminId())
                 .build();
     }
 }

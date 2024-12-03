@@ -36,9 +36,6 @@ public class Doctor {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber; // 전화번호
 
-    @Column(name = "admin_id", nullable = true)
-    private String adminId; // 관리자 ID
-
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = true)
     private Department department; // 소속 진료과
