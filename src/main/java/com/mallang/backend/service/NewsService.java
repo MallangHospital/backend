@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 public class NewsService {
 
     private final NewsRepository newsRepository;
+    private final S3UploaderService s3UploaderService; // S3 업로드 서비스 추가
+
 
     // 모든 건강매거진 조회
     public List<NewsDTO> getAllNews() {
@@ -38,17 +40,18 @@ public class NewsService {
     public NewsDTO createNews(NewsDTO newsDTO, MultipartFile mainFile, MultipartFile attachment) {
         News news = convertToEntity(newsDTO);
 
-        // 파일 저장 처리
+        // S3에 파일 업로드
         if (mainFile != null && !mainFile.isEmpty()) {
-            news.setMainFile(saveFile(mainFile));
+            news.setMainFile(uploadFileToS3(mainFile, "news/main"));
         }
         if (attachment != null && !attachment.isEmpty()) {
-            news.setAttachment(saveFile(attachment));
+            news.setAttachment(uploadFileToS3(attachment, "news/attachments"));
         }
 
         News savedNews = newsRepository.save(news);
         return convertToDTO(savedNews);
     }
+
 
     // 건강매거진 수정
     public boolean updateNewsById(Long id, NewsDTO newsDTO, MultipartFile mainFile, MultipartFile attachment) {
@@ -63,17 +66,24 @@ public class NewsService {
         news.setPassword(newsDTO.getPassword());
         news.setNewsWriter(newsDTO.getNewsWriter());
 
-        // 파일 업데이트 처리
+        // S3에 파일 업데이트
         if (mainFile != null && !mainFile.isEmpty()) {
-            news.setMainFile(saveFile(mainFile));
+            if (news.getMainFile() != null) {
+                deleteFileFromS3(news.getMainFile()); // 기존 파일 삭제
+            }
+            news.setMainFile(uploadFileToS3(mainFile, "news/main"));
         }
         if (attachment != null && !attachment.isEmpty()) {
-            news.setAttachment(saveFile(attachment));
+            if (news.getAttachment() != null) {
+                deleteFileFromS3(news.getAttachment()); // 기존 파일 삭제
+            }
+            news.setAttachment(uploadFileToS3(attachment, "news/attachments"));
         }
 
         newsRepository.save(news);
         return true;
     }
+
 
     // 건강매거진 삭제
     public boolean deleteNewsById(Long id) {
@@ -81,26 +91,40 @@ public class NewsService {
         if (newsOptional.isEmpty()) {
             return false;
         }
-        newsRepository.deleteById(id);
+
+        News news = newsOptional.get();
+
+        // S3에 저장된 파일 삭제
+        if (news.getMainFile() != null) {
+            deleteFileFromS3(news.getMainFile());
+        }
+        if (news.getAttachment() != null) {
+            deleteFileFromS3(news.getAttachment());
+        }
+
+        newsRepository.delete(news);
         return true;
     }
 
-    // 파일 저장 로직
-    private String saveFile(MultipartFile file) {
+    // S3에 파일 업로드
+    private String uploadFileToS3(MultipartFile file, String dirName) {
         try {
-            String uploadDir = "src/main/resources/static/uploads/news/";
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(uploadDir, fileName);
-
-            // 디렉토리 생성
-            Files.createDirectories(filePath.getParent());
-            Files.write(filePath, file.getBytes());
-
-            return "/uploads/news/" + fileName;
+            return s3UploaderService.upload(file, dirName);
         } catch (IOException e) {
-            throw new RuntimeException("파일 저장 실패: " + e.getMessage(), e);
+            throw new RuntimeException("S3 파일 업로드 실패: " + e.getMessage(), e);
         }
     }
+
+    // S3에서 파일 삭제
+    private void deleteFileFromS3(String fileUrl) {
+        try {
+            s3UploaderService.delete(fileUrl);
+        } catch (Exception e) {
+            throw new RuntimeException("S3 파일 삭제 실패: " + e.getMessage(), e);
+        }
+    }
+
+
 
     // 엔티티를 DTO로 변환
     private NewsDTO convertToDTO(News news) {
@@ -110,8 +134,8 @@ public class NewsService {
                 .newsWriter(news.getNewsWriter())
                 .password(news.getPassword())
                 .content(news.getContent())
-                .mainFile(news.getMainFile())
-                .attachment(news.getAttachment())
+                .mainFile(news.getMainFile()) // S3 URL 반환
+                .attachment(news.getAttachment()) // S3 URL 반환
                 .regDate(news.getRegDate() != null ? news.getRegDate().toString() : null)
                 .build();
     }
