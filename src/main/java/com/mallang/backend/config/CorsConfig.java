@@ -17,7 +17,7 @@ public class CorsConfig {
         configuration.addAllowedOrigin("http://127.0.0.1:5500"); // 허용할 Origin
         configuration.addAllowedOrigin("http://127.0.0.1:5501"); // 허용할 Origin
         configuration.addAllowedOrigin("https://mallang-a85bb2ff492b.herokuapp.com");
-        configuration.addAllowedOrigin("https://674f009b52bd070a474dd84c--mallanghospital.netlify.app/");
+        configuration.addAllowedOrigin("https://674f009b52bd070a474dd84c--mallanghospital.netlify.app");
         configuration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
         configuration.addAllowedHeader("*"); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 쿠키 허용
