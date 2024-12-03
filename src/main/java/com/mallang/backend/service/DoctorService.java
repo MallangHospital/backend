@@ -1,7 +1,6 @@
 package com.mallang.backend.service;
 
 import com.mallang.backend.domain.Doctor;
-import com.mallang.backend.domain.Department;
 import com.mallang.backend.dto.DoctorDTO;
 import com.mallang.backend.repository.DoctorRepository;
 import com.mallang.backend.repository.DepartmentRepository;
@@ -9,10 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,130 +24,75 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
     private final DepartmentRepository departmentRepository;
 
-    // 전체 의사 조회
+    // 모든 의사 조회
     public List<DoctorDTO> getAllDoctors() {
-        List<Doctor> doctors = doctorRepository.findAll();
-        return doctors.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return doctorRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    // 특정 부서의 의사 조회
-    public List<DoctorDTO> getDoctorsByDepartmentId(Long departmentId) {
-        List<Doctor> doctors = doctorRepository.findByDepartmentId(departmentId);
-        return doctors.stream().map(this::convertToDTO).collect(Collectors.toList());
+    // 특정 의사 조회
+    public DoctorDTO getDoctorById(Long id) {
+        return doctorRepository.findById(id)
+                .map(this::convertToDTO)
+                .orElse(null);
     }
 
-    // 의사 등록
-    public DoctorDTO createDoctor(DoctorDTO doctorDTO, MultipartFile photo) throws IOException {
-        System.out.println("Starting createDoctor with DTO: " + doctorDTO);
-
+    // 의사 생성
+    public DoctorDTO createDoctor(DoctorDTO doctorDTO, MultipartFile photo) {
         Doctor doctor = convertToEntity(doctorDTO);
 
         // 소속 진료과 설정
         if (doctorDTO.getDepartmentId() != null) {
-            Optional<Department> department = departmentRepository.findById(doctorDTO.getDepartmentId());
-            if (department.isPresent()) {
-                doctor.setDepartment(department.get());
-                doctor.setSpecialty(getSpecialtyByDepartmentId(doctorDTO.getDepartmentId()));
-            } else {
-                System.out.println("Department not found for ID: " + doctorDTO.getDepartmentId());
-            }
-        } else {
-            System.out.println("DepartmentId is null");
+            departmentRepository.findById(doctorDTO.getDepartmentId())
+                    .ifPresent(doctor::setDepartment);
         }
 
-        // 사진 파일 저장
+        // 파일 저장 및 URL 설정
         if (photo != null && !photo.isEmpty()) {
-            String photoUrl = saveFile(photo);
-            doctor.setPhotoUrl(photoUrl); // URL 경로 저장
-            System.out.println("Photo saved with URL: " + photoUrl);
-        } else {
-            System.out.println("No photo uploaded");
+            doctor.setPhotoUrl(saveFile(photo));
         }
 
-        // Doctor 저장
-        Doctor savedDoctor;
-        try {
-            savedDoctor = doctorRepository.save(doctor);
-            System.out.println("Doctor saved successfully with ID: " + savedDoctor.getId());
-        } catch (Exception e) {
-            System.out.println("Error saving doctor: " + e.getMessage());
-            throw new RuntimeException("Doctor saving failed", e);
-        }
-
+        Doctor savedDoctor = doctorRepository.save(doctor);
         return convertToDTO(savedDoctor);
     }
 
-    // 의사 정보 수정
-    public boolean updateDoctor(Long id, DoctorDTO doctorDTO, MultipartFile photo) {
-        Optional<Doctor> doctorOptional = doctorRepository.findById(id);
-        if (doctorOptional.isEmpty()) {
-            throw new IllegalArgumentException("Doctor not found.");
+    // 의사 수정
+    public boolean updateDoctorById(Long id, DoctorDTO doctorDTO, MultipartFile photo) {
+        Optional<Doctor> optionalDoctor = doctorRepository.findById(id);
+        if (optionalDoctor.isEmpty()) {
+            return false;
         }
 
-        Doctor doctor = doctorOptional.get();
+        Doctor doctor = optionalDoctor.get();
+
+        // 기본 정보 업데이트
         doctor.setName(doctorDTO.getName());
+        doctor.setSpecialty(doctorDTO.getSpecialty());
         doctor.setPosition(doctorDTO.getPosition());
         doctor.setPhoneNumber(doctorDTO.getPhoneNumber());
         doctor.setAdminId(doctorDTO.getAdminId());
 
-        // 소속 진료과 업데이트 및 specialty 설정
+        // 소속 진료과 설정
         if (doctorDTO.getDepartmentId() != null) {
-            Optional<Department> department = departmentRepository.findById(doctorDTO.getDepartmentId());
-            department.ifPresent(doctor::setDepartment);
-            doctor.setSpecialty(getSpecialtyByDepartmentId(doctorDTO.getDepartmentId()));
+            departmentRepository.findById(doctorDTO.getDepartmentId())
+                    .ifPresent(doctor::setDepartment);
         }
 
-        // 사진 파일 저장
+        // 파일 업데이트 처리
         if (photo != null && !photo.isEmpty()) {
-            String photoUrl = saveFile(photo);
-            doctor.setPhotoUrl(photoUrl);
+            doctor.setPhotoUrl(saveFile(photo));
         }
 
         doctorRepository.save(doctor);
         return true;
     }
 
-    // 의사 삭제
-    public boolean deleteDoctor(Long id) {
-        Optional<Doctor> doctorOptional = doctorRepository.findById(id);
-        if (doctorOptional.isEmpty()) {
-            return false;
-        }
-        doctorRepository.deleteById(id);
-        return true;
-    }
-
-    // 특정 ID로 의사 조회
-    public DoctorDTO getDoctorById(Long id) {
-        Doctor doctor = doctorRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Doctor with ID " + id + " not found."));
-        return convertToDTO(doctor);
-    }
-
-    // 파일 저장 로직
-    private String saveFile(MultipartFile file) {
-        try {
-            String baseDir = System.getProperty("user.dir"); // 애플리케이션 실행 디렉터리
-            String uploadDir = baseDir + File.separator + "uploads" + File.separator + "doctors";
-
-            // 디렉터리 생성
-            File dir = new File(uploadDir);
-            if (!dir.exists() && !dir.mkdirs()) {
-                throw new IOException("Failed to create directories: " + uploadDir);
-            }
-
-            // 파일 이름 생성
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
-            File uploadFile = new File(dir, fileName);
-
-            // 파일 저장
-            file.transferTo(uploadFile);
-            System.out.println("File saved at: " + uploadFile.getAbsolutePath());
-
-            return "/uploads/doctors/" + fileName; // URL 반환
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save file: " + file.getOriginalFilename(), e);
-        }
+    // 특정 부서의 의사 조회
+    public List<DoctorDTO> getDoctorsByDepartmentId(Long departmentId) {
+        List<Doctor> doctors = doctorRepository.findByDepartmentId(departmentId);
+        return doctors.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     // departmentId에 따른 specialty 설정
@@ -164,28 +111,61 @@ public class DoctorService {
         }
     }
 
-    // 엔티티를 DTO로 변환
+    // 의사 삭제
+    public boolean deleteDoctorById(Long id) {
+        if (doctorRepository.existsById(id)) {
+            doctorRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    // 파일 저장 로직
+    private String saveFile(MultipartFile file) {
+        try {
+            // 파일 저장 경로 설정
+            String uploadDir = "src/main/resources/static/uploads/doctors/";
+            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir, fileName);
+
+            // 디렉토리 생성
+            Files.createDirectories(filePath.getParent());
+            Files.write(filePath, file.getBytes());
+
+            // 저장된 파일의 URL 반환
+            return "/uploads/doctors/" + fileName;
+        } catch (IOException e) {
+            throw new RuntimeException("파일 저장 실패: " + e.getMessage(), e);
+        }
+    }
+
+    // 엔티티 -> DTO 변환
     private DoctorDTO convertToDTO(Doctor doctor) {
         return DoctorDTO.builder()
                 .id(doctor.getId())
                 .name(doctor.getName())
                 .specialty(doctor.getSpecialty())
+                .photoUrl(doctor.getPhotoUrl())
                 .position(doctor.getPosition())
                 .phoneNumber(doctor.getPhoneNumber())
                 .adminId(doctor.getAdminId())
                 .departmentId(doctor.getDepartment() != null ? doctor.getDepartment().getId() : null)
                 .departmentName(doctor.getDepartment() != null ? doctor.getDepartment().getName() : null)
-                .photoUrl(doctor.getPhotoUrl()) // photoUrl 설정 추가
                 .build();
     }
 
-    // DTO를 엔티티로 변환
+    // DTO -> 엔티티 변환
     private Doctor convertToEntity(DoctorDTO doctorDTO) {
         return Doctor.builder()
                 .name(doctorDTO.getName())
+                .specialty(doctorDTO.getSpecialty())
                 .position(doctorDTO.getPosition())
                 .phoneNumber(doctorDTO.getPhoneNumber())
                 .adminId(doctorDTO.getAdminId())
                 .build();
     }
 }
+
+
+
+

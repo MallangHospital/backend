@@ -1,18 +1,23 @@
 package com.mallang.backend.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class NewsDTO {
-    private Long id;
-    private String title;
-    private String newsWriter;
-    private String password;
-    private String content;
-    private String mainFileBase64; // Base64 이미지 데이터
-    private String attachmentBase64; // Base64 첨부 파일 데이터
-    private String regDate;
+    private Long id; // 건강매거진 ID
+    private String title; // 제목
+    private String newsWriter; // 작성자
+    private String password; // 비밀번호
+    private String mainFile; // 대표 이미지 경로
+    private String attachment; // 첨부파일 경로
+    private String content; // 본문
+    private String regDate; // 등록일
 }

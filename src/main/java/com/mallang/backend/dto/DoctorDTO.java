@@ -17,16 +17,14 @@ import jakarta.validation.constraints.NotNull;
 @AllArgsConstructor
 public class DoctorDTO {
 
-    private Long id; // 의사 ID
-
-    @NotNull(message = "Department ID cannot be null.")
-    private Long departmentId; // 소속 진료과 ID (필수)
-    private String name; // 이름
-    private String specialty; // 전문 분야 (specialty 추가)
-    private String photoUrl; // 사진 URL
-    private String position; // 직위
-    private String phoneNumber; // 전화번호
-    private String adminId; // 관리자 ID
-    private String departmentName; // 소속 진료과 이름
+    private Long id;
+    private Long departmentId;
+    private String name;
+    private String specialty;
+    private String photoUrl;
+    private String position;
+    private String phoneNumber;
+    private String adminId;
+    private String departmentName;
     private List<VacationDTO> vacations; // 휴진 정보 리스트
 }
