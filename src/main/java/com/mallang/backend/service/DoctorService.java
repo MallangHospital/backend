@@ -58,7 +58,6 @@ public class DoctorService {
         return convertToDTO(savedDoctor);
     }
 
-    // 의사 수정
     public boolean updateDoctorById(Long id, DoctorDTO doctorDTO, MultipartFile photo) {
         Optional<Doctor> optionalDoctor = doctorRepository.findById(id);
         if (optionalDoctor.isEmpty()) {
@@ -67,24 +66,27 @@ public class DoctorService {
 
         Doctor doctor = optionalDoctor.get();
 
-        // 기본 정보 업데이트
-        doctor.setName(doctorDTO.getName());
-        doctor.setSpecialty(doctorDTO.getSpecialty());
-        doctor.setPosition(doctorDTO.getPosition());
-        doctor.setPhoneNumber(doctorDTO.getPhoneNumber());
-        doctor.setAdminId(doctorDTO.getAdminId());
-
-        // 소속 진료과 설정
+        // 전달받은 JSON 필드만 업데이트
+        if (doctorDTO.getName() != null) {
+            doctor.setName(doctorDTO.getName());
+        }
         if (doctorDTO.getDepartmentId() != null) {
             departmentRepository.findById(doctorDTO.getDepartmentId())
                     .ifPresent(doctor::setDepartment);
         }
+        if (doctorDTO.getPhoneNumber() != null) {
+            doctor.setPhoneNumber(doctorDTO.getPhoneNumber());
+        }
+        if (doctorDTO.getSpecialty() != null) {
+            doctor.setSpecialty(doctorDTO.getSpecialty());
+        }
+        if (doctorDTO.getPosition() != null) {
+            doctor.setPosition(doctorDTO.getPosition());
+        }
 
-        // 파일 업데이트 처리 (새 파일이 기존 파일과 다를 경우만)
+        // 파일 처리: 새로운 사진이 첨부된 경우 기존 사진을 삭제 후 저장
         if (photo != null && !photo.isEmpty()) {
-            if (!isSameFile(photo, doctor.getPhotoUrl())) {
-                doctor.setPhotoUrl(saveFile(photo, doctor.getPhotoUrl())); // 파일이 다르면 저장
-            }
+            doctor.setPhotoUrl(saveFile(photo, doctor.getPhotoUrl()));
         }
 
         doctorRepository.save(doctor);
