@@ -40,9 +40,10 @@ public class DoctorController {
 
     @PostMapping
     public ResponseEntity<?> createDoctor(
-            @RequestBody DoctorDTO doctorDTO,  // JSON 데이터는 @RequestBody로 받음
+            @RequestPart("doctorDTO") String doctorDTOString,
             @RequestPart(value = "photo", required = false) MultipartFile photo) {
         try {
+            DoctorDTO doctorDTO = objectMapper.readValue(doctorDTOString, DoctorDTO.class);
             DoctorDTO savedDoctor = doctorService.createDoctor(doctorDTO, photo);
             return ResponseEntity.ok(savedDoctor);
         } catch (Exception e) {
@@ -53,9 +54,13 @@ public class DoctorController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateDoctor(
             @PathVariable Long id,
-            @RequestBody DoctorDTO doctorDTO,  // JSON 데이터를 @RequestBody로 수신
+            @RequestPart("doctorDTO") String doctorDTOString,
             @RequestPart(value = "photo", required = false) MultipartFile photo) {
         try {
+            // JSON 데이터를 DoctorDTO로 변환
+            DoctorDTO doctorDTO = objectMapper.readValue(doctorDTOString, DoctorDTO.class);
+
+            // 서비스 호출
             boolean isUpdated = doctorService.updateDoctorById(id, doctorDTO, photo);
             if (isUpdated) {
                 return ResponseEntity.ok("수정이 완료되었습니다!");
