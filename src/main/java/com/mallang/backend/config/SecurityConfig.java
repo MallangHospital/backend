@@ -64,8 +64,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/notice").hasRole("ADMIN") // 공지사항 전체 조회, ID조회는 허용
                 .requestMatchers(HttpMethod.POST, "/api/notice").hasRole("ADMIN")  // 공지 작성 허용
                 .requestMatchers(HttpMethod.DELETE, "/api/notice/**").hasRole("ADMIN")  // 공지 삭제허용
-                .requestMatchers(HttpMethod.PUT, "/api/notice/**").hasRole("ADMIN")  // 공지 수정허용*/
-                
+                .requestMatchers(HttpMethod.PUT, "/api/notice/**").hasRole("ADMIN")  // 공지 수정허용
+                .anyRequest().authenticated() // 다른 요청은 로그인한 사용자만 접근 가능*/
+
         http.cors(cors -> cors.configurationSource(corsConfigurationSource)); // CORS 설정 등록
 
         /*http.authorizeHttpRequests((auth) -> auth

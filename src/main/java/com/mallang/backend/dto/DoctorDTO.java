@@ -24,7 +24,6 @@ public class DoctorDTO {
     private String photoUrl;
     private String position;
     private String phoneNumber;
-    private String adminId;
     private String departmentName;
     private List<VacationDTO> vacations; // 휴진 정보 리스트
 }

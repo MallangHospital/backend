@@ -125,22 +125,6 @@ public class DoctorService {
         return doctors.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    // departmentId에 따른 specialty 설정
-    private String getSpecialtyByDepartmentId(Long departmentId) {
-        switch (departmentId.intValue()) {
-            case 1:
-                return "내과";
-            case 2:
-                return "산부인과";
-            case 3:
-                return "소아청소년과";
-            case 4:
-                return "외과";
-            default:
-                return "기타";
-        }
-    }
-
     // 의사 삭제
     public boolean deleteDoctorById(Long id) {
         if (doctorRepository.existsById(id)) {
@@ -193,7 +177,6 @@ public class DoctorService {
                 .photoUrl(doctor.getPhotoUrl())
                 .position(doctor.getPosition())
                 .phoneNumber(doctor.getPhoneNumber())
-                .adminId(doctor.getAdminId())
                 .departmentId(doctor.getDepartment() != null ? doctor.getDepartment().getId() : null)
                 .departmentName(doctor.getDepartment() != null ? doctor.getDepartment().getName() : null)
                 .build();
@@ -206,7 +189,6 @@ public class DoctorService {
                 .specialty(doctorDTO.getSpecialty())
                 .position(doctorDTO.getPosition())
                 .phoneNumber(doctorDTO.getPhoneNumber())
-                .adminId(doctorDTO.getAdminId())
                 .build();
     }
 }

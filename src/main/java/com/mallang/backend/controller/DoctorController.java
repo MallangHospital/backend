@@ -3,17 +3,11 @@ package com.mallang.backend.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mallang.backend.dto.DoctorDTO;
 import com.mallang.backend.service.DoctorService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/doctors")
