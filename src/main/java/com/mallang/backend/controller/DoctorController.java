@@ -21,71 +21,61 @@ import java.util.stream.Collectors;
 public class DoctorController {
 
     private final DoctorService doctorService;
+    private final ObjectMapper objectMapper;
+
+    @GetMapping
+    public ResponseEntity<List<DoctorDTO>> getAllDoctors() {
+        return ResponseEntity.ok(doctorService.getAllDoctors());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getDoctorById(@PathVariable Long id) {
+        DoctorDTO doctorDTO = doctorService.getDoctorById(id);
+        if (doctorDTO != null) {
+            return ResponseEntity.ok(doctorDTO);
+        } else {
+            return ResponseEntity.badRequest().body("해당 의사를 찾을 수 없습니다.");
+        }
+    }
 
     @PostMapping
     public ResponseEntity<?> createDoctor(
-            @RequestPart("doctor") String doctorJson,
+            @RequestPart("doctorDTO") String doctorDTOString,
             @RequestPart(value = "photo", required = false) MultipartFile photo) {
         try {
-            // JSON 데이터를 DoctorDTO로 변환
-            ObjectMapper objectMapper = new ObjectMapper();
-            DoctorDTO doctorDTO = objectMapper.readValue(doctorJson, DoctorDTO.class);
-
-            // 디버깅 로그
-            System.out.println("Doctor Name: " + doctorDTO.getName());
-            if (photo != null) {
-                System.out.println("Photo File Name: " + photo.getOriginalFilename());
-            }
-
-            // 여기에서 저장 로직을 호출 (예: doctorService.saveDoctor(doctorDTO))
-            doctorService.createDoctor(doctorDTO, photo);
-            return ResponseEntity.ok("Doctor created successfully");
-
+            DoctorDTO doctorDTO = objectMapper.readValue(doctorDTOString, DoctorDTO.class);
+            DoctorDTO savedDoctor = doctorService.createDoctor(doctorDTO, photo);
+            return ResponseEntity.ok(savedDoctor);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Invalid JSON format");
+            return ResponseEntity.badRequest().body("데이터 처리 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
-    // 의사 전체 조회
-    @GetMapping
-    public ResponseEntity<List<DoctorDTO>> getAllDoctors() {
-        List<DoctorDTO> doctors = doctorService.getAllDoctors();
-        return ResponseEntity.ok(doctors);
-    }
-
-    // 특정 ID로 의사 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getDoctorById(@PathVariable Long id) {
-        try {
-            DoctorDTO doctor = doctorService.getDoctorById(id);
-            return ResponseEntity.ok(doctor);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    // 의사 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteDoctor(@PathVariable Long id) {
-        if (doctorService.deleteDoctor(id)) {
-            return ResponseEntity.ok("Doctor deleted successfully.");
-        } else {
-            return ResponseEntity.badRequest().body("Doctor not found.");
-        }
-    }
-
-    // 의사 정보 수정
     @PutMapping("/{id}")
     public ResponseEntity<?> updateDoctor(
             @PathVariable Long id,
-            @RequestPart("doctor") DoctorDTO doctorDTO,
-            @RequestPart(value = "photo", required = true) MultipartFile photo) {
+            @RequestPart("doctorDTO") String doctorDTOString,
+            @RequestPart(value = "photo", required = false) MultipartFile photo) {
         try {
-            boolean updatedDoctor = doctorService.updateDoctor(id, doctorDTO, photo);
-            return ResponseEntity.ok(updatedDoctor);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            DoctorDTO doctorDTO = objectMapper.readValue(doctorDTOString, DoctorDTO.class);
+            boolean isUpdated = doctorService.updateDoctorById(id, doctorDTO, photo);
+            if (isUpdated) {
+                return ResponseEntity.ok("수정이 완료되었습니다!");
+            } else {
+                return ResponseEntity.badRequest().body("해당 의사를 찾을 수 없습니다.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("데이터 처리 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteDoctor(@PathVariable Long id) {
+        boolean isDeleted = doctorService.deleteDoctorById(id);
+        if (isDeleted) {
+            return ResponseEntity.ok("의사가 성공적으로 삭제되었습니다!");
+        } else {
+            return ResponseEntity.badRequest().body("해당 의사를 찾을 수 없습니다.");
         }
     }
 

@@ -21,7 +21,7 @@ public class Doctor {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "specialty", nullable = false)
+    @Column(name = "specialty", nullable = true)
     private String specialty; // 전문 분야
 
     @Column(name = "photo_url", nullable = true)
