@@ -54,8 +54,13 @@ public class ReviewController {
         if (reviewDTO.getTreatmentResultStars() == null) return "치료 결과 항목에 별점을 선택해주세요.";
         if (reviewDTO.getStaffKindnessStars() == null) return "친절 항목에 별점을 선택해주세요.";
         if (reviewDTO.getCleanlinessStars() == null) return "청결 항목에 별점을 선택해주세요.";
+        if (reviewDTO.getExplanationStars() < 1 || reviewDTO.getExplanationStars() > 5) return "설명 항목의 별점은 1~5 사이여야 합니다.";
+        if (reviewDTO.getTreatmentResultStars() < 1 || reviewDTO.getTreatmentResultStars() > 5) return "치료 결과 항목의 별점은 1~5 사이여야 합니다.";
+        if (reviewDTO.getStaffKindnessStars() < 1 || reviewDTO.getStaffKindnessStars() > 5) return "친절 항목의 별점은 1~5 사이여야 합니다.";
+        if (reviewDTO.getCleanlinessStars() < 1 || reviewDTO.getCleanlinessStars() > 5) return "청결 항목의 별점은 1~5 사이여야 합니다.";
         if (reviewDTO.getContent() == null || reviewDTO.getContent().trim().isEmpty()) return "리뷰 내용을 입력해주세요.";
         if (proveFile == null || proveFile.isEmpty()) return "병원 방문을 인증할 자료를 업로드해주세요.";
+        if (reviewDTO.getMemberPassword() == null || reviewDTO.getMemberPassword().trim().isEmpty()) return "비밀번호를 입력해주세요.";
         return null;
     }
 

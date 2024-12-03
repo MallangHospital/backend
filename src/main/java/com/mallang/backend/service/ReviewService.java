@@ -97,16 +97,18 @@ public class ReviewService {
     }
 
     private Review convertToEntity(ReviewDTO reviewDTO, String filePath) {
-        // Doctor와 Department 엔티티 조회
+        if (reviewDTO.getMemberPassword() == null || reviewDTO.getMemberPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("비밀번호는 필수 입력 사항입니다.");
+        }
+
         Doctor doctor = doctorRepository.findById(reviewDTO.getDoctorId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid doctor ID: " + reviewDTO.getDoctorId()));
         Department department = departmentRepository.findById(reviewDTO.getDepartmentId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid department ID: " + reviewDTO.getDepartmentId()));
 
-        // Review 엔티티 생성
         return Review.builder()
-                .doctor(doctor) // Doctor 객체 설정
-                .department(department) // Department 객체 설정
+                .doctor(doctor)
+                .department(department)
                 .explanationStars(reviewDTO.getExplanationStars())
                 .treatmentResultStars(reviewDTO.getTreatmentResultStars())
                 .staffKindnessStars(reviewDTO.getStaffKindnessStars())
