@@ -57,10 +57,10 @@ public class DoctorController {
             @RequestPart("doctorDTO") String doctorDTOString,
             @RequestPart(value = "photo", required = false) MultipartFile photo) {
         try {
-            // JSON 문자열을 DoctorDTO 객체로 변환
+            // JSON 데이터를 DoctorDTO로 변환
             DoctorDTO doctorDTO = objectMapper.readValue(doctorDTOString, DoctorDTO.class);
 
-            // 서비스 호출하여 수정 수행
+            // 서비스 호출
             boolean isUpdated = doctorService.updateDoctorById(id, doctorDTO, photo);
             if (isUpdated) {
                 return ResponseEntity.ok("수정이 완료되었습니다!");
