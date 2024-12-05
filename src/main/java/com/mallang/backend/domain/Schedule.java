@@ -20,7 +20,7 @@ public class Schedule extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE) // CascadeType.REMOVE로 삭제 전파
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
