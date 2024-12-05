@@ -70,33 +70,6 @@ public class AppointmentService {
         return convertToDTO(savedAppointment);
     }
 
-    // 특정 의사의 특정 날짜에 예약 불가 시간 목록 조회
-    @Transactional(readOnly = true)
-    public List<LocalTime> getUnavailableTimes(Long doctorId, LocalDate date) {
-        Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid doctor ID"));
-
-        // 예약된 시간 조회
-        List<Appointment> appointments = appointmentRepository.findByDoctorAndAppointmentDate(doctor, date);
-        List<LocalTime> reservedTimes = appointments.stream()
-                .map(Appointment::getAppointmentTime)
-                .collect(Collectors.toList());
-
-        // 스케줄에서 예약 가능한 시간 확인
-        Schedule schedule = scheduleRepository.findByDoctorAndDate(doctor, date)
-                .orElseThrow(() -> new IllegalArgumentException("No schedule found for the doctor on the selected date."));
-
-        List<AvailableTime> availableTimes = availableTimeRepository.findBySchedule(schedule);
-        List<LocalTime> unavailableTimes = availableTimes.stream()
-                .filter(AvailableTime::isReserved)
-                .map(AvailableTime::getTime)
-                .collect(Collectors.toList());
-
-        // 예약된 시간과 이미 예약된 AvailableTime 합산
-        unavailableTimes.addAll(reservedTimes);
-        return unavailableTimes.stream().distinct().collect(Collectors.toList());
-    }
-
     // 특정 회원의 예약 조회
     @Transactional(readOnly = true)
     public List<AppointmentDTO> getAppointmentsByMember(Member member) {

@@ -36,21 +36,4 @@ public class ScheduleService {
                         .build())
                 .collect(Collectors.toList());
     }
-
-    // 특정 시간 예약 처리
-    public void reserveTime(Long scheduleId, LocalTime time) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new IllegalArgumentException("Schedule not found"));
-
-        // Optional 처리
-        AvailableTime availableTime = availableTimeRepository.findByScheduleAndTime(schedule, time)
-                .orElseThrow(() -> new IllegalStateException("Time slot is not available"));
-
-        if (availableTime.isReserved()) {
-            throw new IllegalStateException("The selected time is already reserved");
-        }
-
-        availableTime.setReserved(true); // 예약 처리
-        availableTimeRepository.save(availableTime);
-    }
 }
