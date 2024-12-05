@@ -134,6 +134,7 @@ public class ReviewService {
                 .content(review.getContent())
                 .memberId(review.getMemberId())
                 .proveFilePath(review.getProveFilePath())
+                .regDate(review.getRegDate() != null ? review.getRegDate().toString() : null)
                 .build();
     }
 
