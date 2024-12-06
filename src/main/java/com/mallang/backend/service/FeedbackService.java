@@ -60,6 +60,8 @@ public class FeedbackService {
                 .name(entity.getName())
                 .phoneNumber(entity.getPhoneNumber())
                 .email(entity.getEmail())
+                .regDate(entity.getRegDate() != null ? entity.getRegDate().toString() : null)
+                .modDate(entity.getModDate() != null ? entity.getModDate().toString() : null)
                 .build();
     }
 }
