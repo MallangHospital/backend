@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface AvailableTimeRepository extends JpaRepository<AvailableTime, Long> {
-    List<AvailableTime> findBySchedule(Schedule schedule);
+    List<AvailableTime> findByScheduleId(Long scheduleId);
 
     List<AvailableTime> findByScheduleAndReserved(Schedule schedule, boolean reserved);
 

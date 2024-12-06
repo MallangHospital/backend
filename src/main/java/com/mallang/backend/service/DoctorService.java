@@ -1,9 +1,13 @@
 package com.mallang.backend.service;
 
+import com.mallang.backend.domain.AvailableTime;
 import com.mallang.backend.domain.Doctor;
+import com.mallang.backend.domain.Schedule;
 import com.mallang.backend.dto.DoctorDTO;
+import com.mallang.backend.repository.AvailableTimeRepository;
 import com.mallang.backend.repository.DoctorRepository;
 import com.mallang.backend.repository.DepartmentRepository;
+import com.mallang.backend.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +27,9 @@ public class DoctorService {
 
     private final DoctorRepository doctorRepository;
     private final DepartmentRepository departmentRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final AvailableTimeRepository availableTimeRepository;
+
 
     // 모든 의사 조회
     public List<DoctorDTO> getAllDoctors() {
@@ -128,6 +135,19 @@ public class DoctorService {
     // 의사 삭제
     public boolean deleteDoctorById(Long id) {
         if (doctorRepository.existsById(id)) {
+            // 1. 의사의 스케줄 목록 가져오기
+            List<Schedule> schedules = scheduleRepository.findByDoctorId(id);
+
+            // 2. 각 스케줄에 연관된 AvailableTime 삭제
+            for (Schedule schedule : schedules) {
+                List<AvailableTime> availableTimes = availableTimeRepository.findByScheduleId(schedule.getId());
+                availableTimeRepository.deleteAll(availableTimes); // AvailableTime 삭제
+            }
+
+            // 3. 스케줄 삭제
+            scheduleRepository.deleteAll(schedules);
+
+            // 4. 의사 삭제
             doctorRepository.deleteById(id);
             return true;
         }
