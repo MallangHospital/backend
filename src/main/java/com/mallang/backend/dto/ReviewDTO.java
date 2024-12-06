@@ -8,6 +8,9 @@ import jakarta.validation.constraints.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+
 public class ReviewDTO {
     private Long id;
 
